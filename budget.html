@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- PWA Requirements -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0d1117">
+
+    <!-- iOS Support -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Budget">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
+    <!-- Register Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js');
+            });
+        }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Expense Tracker | 50/30/20</title>
+    <!-- Chart.js for the dynamic doughnut chart -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            /* GitHub Dark Theme Palette */
+            --color-canvas-default: #0d1117;
+            --color-canvas-subtle: #161b22;
+            --color-border-default: #30363d;
+            --color-border-muted: #21262d;
+            --color-fg-default: #c9d1d9;
+            --color-fg-muted: #8b949e;
+            --color-accent-fg: #2f81f7;
+            --color-accent-muted: rgba(47, 129, 247, 0.4);
+            --color-success-fg: #3fb950;
+            --color-success-bg: #238636;
+            --color-success-hover: #2ea043;
+            --color-danger-fg: #f85149;
+            --color-btn-bg: #21262d;
+            --color-btn-border: rgba(240, 246, 252, 0.1);
+            --color-btn-hover-bg: #30363d;
+
+            /* Typography */
+            --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+
+            /* Layout */
+            --radius-md: 6px;
+            --radius-lg: 12px;
+            --transition: 0.2s cubic-bezier(0.3, 0, 0.5, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-stack);
+            background-color: #0d1117;
+            color: var(--color-fg-default);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            overflow-x: hidden;
+
+            /* Split-screen effect keeping UI readable on the left, image on the right */
+            background-image:
+                linear-gradient(to right, rgba(13, 17, 23, 1) 35%, rgba(13, 17, 23, 0.85) 60%, transparent 100%),
+                url('image_c221eb.png');
+            background-position: left center, right top;
+            background-size: 100% 100%, auto 100vh;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        @media (max-width: 1024px) {
+            body {
+                background-image:
+                    linear-gradient(to bottom, rgba(13, 17, 23, 0.95) 0%, rgba(13, 17, 23, 0.7) 100%),
+                    url('image_c221eb.png');
+                background-position: center, center;
+                background-size: 100% 100%, cover;
+            }
+        }
+
+        :focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 3px var(--color-accent-muted);
+            border-radius: var(--radius-md);
+        }
+
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: clamp(20px, 4vw, 60px);
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .content-column {
+            width: 100%;
+            max-width: 750px;
+        }
+
+        @media (max-width: 1024px) {
+            .app-container {
+                justify-content: center;
+            }
+
+            .content-column {
+                max-width: 900px;
+            }
+        }
+
+        /* Header */
+        header {
+            margin-bottom: 40px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        header h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            color: #ffffff;
+            margin-bottom: 12px;
+            line-height: 1.1;
+        }
+
+        header p {
+            color: var(--color-fg-muted);
+            font-size: 1.25rem;
+            max-width: 600px;
+        }
+
+        /* Navigation */
+        .UnderlineNav {
+            display: flex;
+            overflow-x: auto;
+            border-bottom: 1px solid var(--color-border-muted);
+            gap: 8px;
+            margin-bottom: 30px;
+            scrollbar-width: none;
+        }
+
+        .UnderlineNav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .UnderlineNav-item {
+            padding: 8px 16px;
+            font-size: 14px;
+            color: var(--color-fg-default);
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .UnderlineNav-item svg {
+            fill: var(--color-fg-muted);
+            transition: var(--transition);
+        }
+
+        .UnderlineNav-item:hover {
+            background-color: rgba(177, 186, 196, 0.12);
+            border-radius: var(--radius-md) var(--radius-md) 0 0;
+        }
+
+        .UnderlineNav-item.active {
+            font-weight: 600;
+            color: #ffffff;
+            border-bottom-color: #f78166;
+        }
+
+        .UnderlineNav-item.active svg {
+            fill: #ffffff;
+        }
+
+        /* Panels & Cards */
+        .dashboard {
+            width: 100%;
+        }
+
+        .tab-pane {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .tab-pane.active {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .card {
+            background-color: rgba(13, 17, 23, 0.65);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-header h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #ffffff;
+            border-bottom: 1px solid var(--color-border-muted);
+            padding-bottom: 12px;
+            margin-bottom: 4px;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 280px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Stats */
+        .summary-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 8px;
+        }
+
+        .summary-stats .amount {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #ffffff;
+            line-height: 1.1;
+        }
+
+        .summary-stats .target {
+            color: var(--color-fg-default);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-danger {
+            color: var(--color-danger-fg) !important;
+        }
+
+        /* Progress Bars */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid var(--color-border-muted);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--color-success-fg);
+            border-radius: 4px;
+            transition: width 0.5s ease-out, background-color 0.3s ease;
+        }
+
+        .progress-bar.over {
+            background-color: var(--color-danger-fg);
+        }
+
+        .progress-bar.blue {
+            background-color: var(--color-accent-fg);
+        }
+
+        .progress-bar.purple {
+            background-color: #bc8cff;
+        }
+
+        /* Form Controls */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            background: rgba(22, 27, 34, 0.5);
+            padding: 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--color-border-default);
+        }
+
+        @media (min-width: 640px) {
+            .form-grid {
+                grid-template-columns: 2fr 1.5fr 2fr auto;
+                align-items: end;
+            }
+
+            .income-form {
+                grid-template-columns: 1fr auto;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--color-fg-default);
+        }
+
+        /* Combined Input/Datalist Styles */
+        input {
+            width: 100%;
+            padding: 8px 12px;
+            background-color: rgba(13, 17, 23, 0.8);
+            border: 1px solid var(--color-border-default);
+            border-radius: var(--radius-md);
+            color: var(--color-fg-default);
+            font-family: var(--font-stack);
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--color-accent-fg);
+            box-shadow: 0 0 0 3px var(--color-accent-muted);
+        }
+
+        input::-webkit-calendar-picker-indicator {
+            filter: invert(0.6);
+            cursor: pointer;
+        }
+
+        /* Buttons */
+        button {
+            padding: 6px 16px;
+            background-color: var(--color-btn-bg);
+            color: var(--color-fg-default);
+            border: 1px solid var(--color-border-default);
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: var(--font-stack);
+            height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background-color: var(--color-btn-hover-bg);
+            border-color: #8b949e;
+        }
+
+        .btn-primary {
+            background-color: var(--color-success-bg);
+            color: #ffffff;
+            border-color: var(--color-btn-border);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--color-success-hover);
+            border-color: var(--color-btn-border);
+        }
+
+        .btn-danger {
+            color: var(--color-danger-fg);
+        }
+
+        .btn-danger:hover {
+            background-color: var(--color-danger-fg);
+            color: #ffffff;
+            border-color: var(--color-danger-fg);
+        }
+
+        /* Target Boxes */
+        .target-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .target-box {
+            background: rgba(22, 27, 34, 0.5);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--color-border-default);
+        }
+
+        .target-label {
+            color: var(--color-fg-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .target-value {
+            color: #ffffff;
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            max-height: 400px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--color-border-default);
+            background: rgba(13, 17, 23, 0.6);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        thead {
+            position: sticky;
+            top: 0;
+            background-color: rgba(22, 27, 34, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--color-border-default);
+            z-index: 1;
+        }
+
+        th,
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--color-border-muted);
+        }
+
+        th {
+            color: var(--color-fg-muted);
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        td.amount-col {
+            text-align: right;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .note-text {
+            display: block;
+            font-size: 12px;
+            color: var(--color-fg-muted);
+            margin-top: 2px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: var(--color-fg-muted);
+            font-size: 14px;
+        }
+
+        .delete-btn {
+            background: transparent;
+            border: none;
+            color: var(--color-fg-muted);
+            padding: 4px 8px;
+            height: auto;
+        }
+
+        .delete-btn:hover {
+            background: transparent;
+            color: var(--color-danger-fg);
+            border: none;
+        }
+
+        .export-section {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .export-section button {
+            flex: 1;
+            min-width: 180px;
+            height: 40px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-container">
+        <div class="content-column">
+
+            <header>
+                <h1>Budget Overview</h1>
+                <p>Track your 50/30/20 financial framework effortlessly.</p>
+            </header>
+
+            <!-- Navigation Menu -->
+            <nav class="UnderlineNav">
+                <button class="UnderlineNav-item active" data-target="tab-overview">
+                    <svg width="16" height="16" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                            d="M1.5 2.75a.25.25 0 01.25-.25h12.5a.25.25 0 01.25.25v8.5a.25.25 0 01-.25.25H1.75a.25.25 0 01-.25-.25v-8.5zM1.75 1A1.75 1.75 0 000 2.75v8.5C0 12.216.784 13 1.75 13h12.5A1.75 1.75 0 0016 11.25v-8.5A1.75 1.75 0 0014.25 1H1.75zM6 6.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm5 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z">
+                        </path>
+                    </svg>
+                    Overview
+                </button>
+                <button class="UnderlineNav-item" data-target="tab-needs">
+                    <svg width="16" height="16" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                            d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1h-8a1 1 0 00-1 1v6.708A2.492 2.492 0 014.5 9h8V1.5z">
+                        </path>
+                    </svg>
+                    Needs (50%)
+                </button>
+                <button class="UnderlineNav-item" data-target="tab-wants">
+                    <svg width="16" height="16" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                            d="M4.25 2.5c-1.336 0-2.75 1.164-2.75 3 0 2.15 1.58 4.144 3.365 5.682A20.565 20.565 0 008 13.393a20.561 20.561 0 003.135-2.211C12.92 9.644 14.5 7.65 14.5 5.5c0-1.836-1.414-3-2.75-3-1.373 0-2.609.986-3.029 2.456a.75.75 0 01-1.442 0C6.859 3.486 5.623 2.5 4.25 2.5zM8 14.25l-.345.666-.002-.001-.006-.003-.018-.01a7.643 7.643 0 01-.31-.17 22.075 22.075 0 01-3.434-2.414C1.784 10.55 0 8.181 0 5.5C0 2.836 2.086 1 4.25 1 5.797 1 7.153 1.802 8 3.02 8.847 1.802 10.203 1 11.75 1 13.914 1 16 2.836 16 5.5c0 2.681-1.784 5.05-3.885 6.814a22.081 22.081 0 01-3.434 2.414 7.609 7.609 0 01-.31.17l-.018.01-.006.003h-.002L8 14.25zm0 0l.345.666a.752.752 0 01-.69 0L8 14.25z">
+                        </path>
+                    </svg>
+                    Wants (30%)
+                </button>
+                <button class="UnderlineNav-item" data-target="tab-savings">
+                    <svg width="16" height="16" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                            d="M1.5 1.75a.75.75 0 00-1.5 0v12.5c0 .414.336.75.75.75h14.5a.75.75 0 000-1.5H1.5V1.75zm14.28 2.53a.75.75 0 00-1.06-1.06L10 7.94 7.53 5.47a.75.75 0 00-1.06 0L3.22 8.72a.75.75 0 001.06 1.06L7 7.06l2.47 2.47a.75.75 0 001.06 0l5.25-5.25z">
+                        </path>
+                    </svg>
+                    Savings (20%)
+                </button>
+                <button class="UnderlineNav-item" data-target="tab-export">
+                    <svg width="16" height="16" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                            d="M7.47 10.78a.75.75 0 001.06 0l3.75-3.75a.75.75 0 00-1.06-1.06L8.75 8.44V1.75a.75.75 0 00-1.5 0v6.69L4.78 5.97a.75.75 0 00-1.06 1.06l3.75 3.75zM3.75 13a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5z">
+                        </path>
+                    </svg>
+                    Data & Export
+                </button>
+            </nav>
+
+            <main class="dashboard">
+
+                <!-- OVERVIEW TAB -->
+                <section id="tab-overview" class="tab-pane active">
+
+                    <!-- Dynamic Doughnut Chart Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Spending Distribution</h2>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="overviewChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Allocation Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Monthly Allocation</h2>
+                        </div>
+                        <form id="incomeForm" class="form-grid income-form">
+                            <div class="form-group">
+                                <label for="incomeInput">Net Income (€)</label>
+                                <input type="number" id="incomeInput" step="0.01" value="2541.00" required>
+                            </div>
+                            <button type="submit" class="btn-primary">Update Income</button>
+                        </form>
+
+                        <div class="target-grid">
+                            <div class="target-box">
+                                <div class="target-label">Needs Target (50%)</div>
+                                <div class="target-value" id="needsTargetDisplay">€1,270.50</div>
+                            </div>
+                            <div class="target-box">
+                                <div class="target-label">Wants Target (30%)</div>
+                                <div class="target-value" id="wantsTargetDisplay">€762.30</div>
+                            </div>
+                            <div class="target-box">
+                                <div class="target-label">Savings Target (20%)</div>
+                                <div class="target-value" id="savingsTargetDisplay">€508.20</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- NEEDS TAB -->
+                <section id="tab-needs" class="tab-pane">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Needs Overview</h2>
+                        </div>
+
+                        <div>
+                            <div class="summary-stats">
+                                <span class="amount" id="needsSpent">€0.00</span>
+                                <span class="target" id="needsRemaining">Remaining: €1,270.50</span>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-bar blue" id="needsProgress" style="width: 0%;"></div>
+                            </div>
+                        </div>
+
+                        <form onsubmit="addEntry(event, 'needs')" class="form-grid">
+                            <div class="form-group">
+                                <label>Category</label>
+                                <!-- Using Input with Datalist to allow selection OR custom typing -->
+                                <input type="text" id="needsCat" list="needsOptions" placeholder="Select or type..."
+                                    required>
+                                <datalist id="needsOptions">
+                                    <option value="Rent">
+                                    <option value="Groceries">
+                                    <option value="Gas / Transportation">
+                                    <option value="Phone Bill">
+                                    <option value="Miscellaneous">
+                                </datalist>
+                            </div>
+                            <div class="form-group">
+                                <label>Amount (€)</label>
+                                <input type="number" id="needsAmt" step="0.01" min="0.01" placeholder="0.00" required>
+                            </div>
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label>Note (Optional)</label>
+                                <input type="text" id="needsNote" placeholder="e.g. Weekly shop">
+                            </div>
+                            <button type="submit" class="btn-primary">Add Expense</button>
+                        </form>
+
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Expense</th>
+                                        <th style="text-align: right;">Amount</th>
+                                        <th style="width: 40px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="needsTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- WANTS TAB -->
+                <section id="tab-wants" class="tab-pane">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Wants Overview</h2>
+                        </div>
+
+                        <div>
+                            <div class="summary-stats">
+                                <span class="amount" id="wantsSpent">€0.00</span>
+                                <span class="target" id="wantsRemaining">Remaining: €762.30</span>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-bar purple" id="wantsProgress" style="width: 0%;"></div>
+                            </div>
+                        </div>
+
+                        <form onsubmit="addEntry(event, 'wants')" class="form-grid">
+                            <div class="form-group">
+                                <label>Category</label>
+                                <input type="text" id="wantsCat" list="wantsOptions" placeholder="Select or type..."
+                                    required>
+                                <datalist id="wantsOptions">
+                                    <option value="Clothing">
+                                    <option value="Eating out">
+                                    <option value="Personal Care">
+                                    <option value="Hobbies">
+                                </datalist>
+                            </div>
+                            <div class="form-group">
+                                <label>Amount (€)</label>
+                                <input type="number" id="wantsAmt" step="0.01" min="0.01" placeholder="0.00" required>
+                            </div>
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label>Note (Optional)</label>
+                                <input type="text" id="wantsNote" placeholder="e.g. Dinner">
+                            </div>
+                            <button type="submit" class="btn-primary">Add Expense</button>
+                        </form>
+
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Expense</th>
+                                        <th style="text-align: right;">Amount</th>
+                                        <th style="width: 40px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="wantsTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SAVINGS TAB -->
+                <section id="tab-savings" class="tab-pane">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Savings & Investments Overview</h2>
+                        </div>
+
+                        <div>
+                            <div class="summary-stats">
+                                <span class="amount" id="savingsSpent">€0.00</span>
+                                <span class="target" id="savingsRemaining">Target Goal: €508.20</span>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-bar" id="savingsProgress" style="width: 0%;"></div>
+                            </div>
+                        </div>
+
+                        <form onsubmit="addEntry(event, 'savings')" class="form-grid">
+                            <div class="form-group">
+                                <label>Category</label>
+                                <input type="text" id="savingsCat" list="savingsOptions" placeholder="Select or type..."
+                                    required>
+                                <datalist id="savingsOptions">
+                                    <option value="Emergency Fund">
+                                    <option value="Investments / Stocks">
+                                    <option value="Retirement">
+                                    <option value="Other Savings">
+                                </datalist>
+                            </div>
+                            <div class="form-group">
+                                <label>Amount (€)</label>
+                                <input type="number" id="savingsAmt" step="0.01" min="0.01" placeholder="0.00" required>
+                            </div>
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label>Note (Optional)</label>
+                                <input type="text" id="savingsNote" placeholder="e.g. Monthly transfer">
+                            </div>
+                            <button type="submit" class="btn-primary">Add Savings</button>
+                        </form>
+
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Allocation</th>
+                                        <th style="text-align: right;">Amount</th>
+                                        <th style="width: 40px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="savingsTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- EXPORT TAB -->
+                <section id="tab-export" class="tab-pane">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Data Management</h2>
+                        </div>
+                        <p style="color: var(--color-fg-muted); font-size: 14px;">Transfer your logged data to Google
+                            Sheets or backup locally. All data is securely stored in your browser's local storage.</p>
+
+                        <div class="export-section">
+                            <button onclick="copyForSheets()">
+                                <svg width="16" height="16" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z">
+                                    </path>
+                                    <path fill-rule="evenodd"
+                                        d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z">
+                                    </path>
+                                </svg>
+                                Copy for Sheets
+                            </button>
+                            <button onclick="downloadCSV()">
+                                <svg width="16" height="16" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M7.47 10.78a.75.75 0 001.06 0l3.75-3.75a.75.75 0 00-1.06-1.06L8.75 8.44V1.75a.75.75 0 00-1.5 0v6.69L4.78 5.97a.75.75 0 00-1.06 1.06l3.75 3.75zM3.75 13a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5z">
+                                    </path>
+                                </svg>
+                                Download CSV
+                            </button>
+                            <button class="btn-danger" onclick="clearData()">
+                                <svg width="16" height="16" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M6.5 1.75a.25.25 0 01.25-.25h2.5a.25.25 0 01.25.25V3h-3V1.75zm4.5 0V3h2.25a.75.75 0 010 1.5H2.75a.75.75 0 010-1.5H5V1.75C5 .784 5.784 0 6.75 0h2.5C10.216 0 11 .784 11 1.75zM4.496 6.675a.75.75 0 10-1.492.15l.66 6.6A1.75 1.75 0 005.405 15h5.19c.9 0 1.652-.681 1.741-1.576l.66-6.6a.75.75 0 00-1.492-.149l-.66 6.6a.25.25 0 01-.249.225h-5.19a.25.25 0 01-.249-.225l-.66-6.6z">
+                                    </path>
+                                </svg>
+                                Delete All Data
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // State Management
+        let netIncome = parseFloat(localStorage.getItem('gh_budget_income')) || 2541.00;
+        let transactions = JSON.parse(localStorage.getItem('gh_budget_txs')) || [];
+        let overviewChart = null;
+
+        // Formatting Helpers
+        const currencyFormatter = new Intl.NumberFormat('en-DE', { style: 'currency', currency: 'EUR' });
+        const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const getTodayString = () => new Date().toISOString().split('T')[0];
+
+        // Initialize Application
+        function init() {
+            document.getElementById('incomeInput').value = netIncome.toFixed(2);
+            setupTabs();
+            initChart();
+            updateDashboard();
+        }
+
+        // Initialize Chart.js
+        function initChart() {
+            const ctx = document.getElementById('overviewChart').getContext('2d');
+            Chart.defaults.color = '#c9d1d9'; // Default text color
+            Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif';
+
+            overviewChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['NEEDS', 'SAVINGS & INVESTMENTS', 'WANTS', 'REMAINING'],
+                    datasets: [{
+                        data: [0, 0, 0, 100], // Placeholder data
+                        backgroundColor: [
+                            '#8b949e', // Gray for Needs
+                            '#e36209', // Orange for Savings
+                            '#2f81f7', // Blue for Wants
+                            'rgba(255, 255, 255, 0.05)' // Transparent for Remaining Income
+                        ],
+                        borderWidth: 1,
+                        borderColor: '#21262d'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20,
+                                font: { size: 12, weight: 'bold' }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += currencyFormatter.format(context.parsed);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Tab Navigation Logic
+        function setupTabs() {
+            const tabs = document.querySelectorAll('.UnderlineNav-item');
+            const panes = document.querySelectorAll('.tab-pane');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    panes.forEach(p => p.classList.remove('active'));
+                    const targetId = e.currentTarget.getAttribute('data-target');
+                    e.currentTarget.classList.add('active');
+                    document.getElementById(targetId).classList.add('active');
+                });
+            });
+        }
+
+        // Framework Update Logic
+        document.getElementById('incomeForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            netIncome = parseFloat(document.getElementById('incomeInput').value);
+            localStorage.setItem('gh_budget_income', netIncome);
+            updateDashboard();
+        });
+
+        // Update UI & Chart
+        function updateDashboard() {
+            const targets = { needs: netIncome * 0.50, wants: netIncome * 0.30, savings: netIncome * 0.20 };
+
+            document.getElementById('needsTargetDisplay').textContent = currencyFormatter.format(targets.needs);
+            document.getElementById('wantsTargetDisplay').textContent = currencyFormatter.format(targets.wants);
+            document.getElementById('savingsTargetDisplay').textContent = currencyFormatter.format(targets.savings);
+
+            const spent = { needs: 0, wants: 0, savings: 0 };
+            transactions.forEach(tx => {
+                if (spent[tx.type] !== undefined) spent[tx.type] += tx.amount;
+            });
+
+            // Update Chart Data dynamically
+            if (overviewChart) {
+                const totalSpent = spent.needs + spent.wants + spent.savings;
+                const remaining = Math.max(0, netIncome - totalSpent);
+                overviewChart.data.datasets[0].data = [spent.needs, spent.savings, spent.wants, remaining];
+                overviewChart.update();
+            }
+
+            // Update Progress Bars and Details
+            ['needs', 'wants', 'savings'].forEach(type => {
+                const totalSpent = spent[type];
+                const target = targets[type];
+                const remaining = target - totalSpent;
+                const percentage = Math.min((totalSpent / target) * 100, 100) || 0;
+
+                document.getElementById(`${type}Spent`).textContent = currencyFormatter.format(totalSpent);
+
+                const remainingEl = document.getElementById(`${type}Remaining`);
+                if (type === 'savings') {
+                    remainingEl.textContent = `Target: ${currencyFormatter.format(target)}`;
+                } else {
+                    if (remaining >= 0) {
+                        remainingEl.textContent = `Remaining: ${currencyFormatter.format(remaining)}`;
+                        remainingEl.className = 'target';
+                    } else {
+                        remainingEl.textContent = `Over Budget: ${currencyFormatter.format(Math.abs(remaining))}`;
+                        remainingEl.className = 'target status-danger';
+                    }
+                }
+
+                const progressBar = document.getElementById(`${type}Progress`);
+                progressBar.style.width = `${percentage}%`;
+
+                if (remaining < 0 && type !== 'savings') {
+                    progressBar.classList.add('over');
+                } else {
+                    progressBar.classList.remove('over');
+                }
+
+                renderTable(type);
+            });
+        }
+
+        // Add New Entry
+        function addEntry(e, type) {
+            e.preventDefault();
+            const catEl = document.getElementById(`${type}Cat`);
+            const amtEl = document.getElementById(`${type}Amt`);
+            const noteEl = document.getElementById(`${type}Note`);
+
+            if (!catEl.value || !amtEl.value) return;
+
+            transactions.push({
+                id: Date.now(),
+                date: getTodayString(),
+                type: type,
+                category: catEl.value.trim(), // Captures typed custom entries as well
+                amount: parseFloat(amtEl.value),
+                note: noteEl.value.trim()
+            });
+
+            saveData();
+
+            catEl.value = '';
+            amtEl.value = '';
+            noteEl.value = '';
+
+            updateDashboard();
+        }
+
+        // Delete Entry
+        function deleteEntry(id) {
+            transactions = transactions.filter(tx => tx.id !== id);
+            saveData();
+            updateDashboard();
+        }
+
+        // Render Data Tables
+        function renderTable(type) {
+            const tbody = document.getElementById(`${type}Table`);
+            tbody.innerHTML = '';
+
+            const typeTxs = transactions.filter(tx => tx.type === type).sort((a, b) => b.id - a.id);
+
+            if (typeTxs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="empty-state">No data available</td></tr>`;
+                return;
+            }
+
+            typeTxs.forEach(tx => {
+                const noteHtml = tx.note ? `<span class="note-text">${tx.note}</span>` : '';
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="white-space: nowrap;">${formatDate(tx.date)}</td>
+                        <td>
+                            <strong style="color: var(--color-fg-default);">${tx.category}</strong>
+                            ${noteHtml}
+                        </td>
+                        <td class="amount-col">${currencyFormatter.format(tx.amount)}</td>
+                        <td style="text-align: center;">
+                            <button class="delete-btn" onclick="deleteEntry(${tx.id})" title="Delete entry">
+                                <svg width="16" height="16" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.72 3.72a.75.75 0 011.06 0L8 6.94l3.22-3.22a.75.75 0 111.06 1.06L9.06 8l3.22 3.22a.75.75 0 11-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 01-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 010-1.06z"></path></svg>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Local Storage
+        function saveData() {
+            localStorage.setItem('gh_budget_txs', JSON.stringify(transactions));
+        }
+
+        // Data Management - Sheets Copy
+        function copyForSheets() {
+            if (transactions.length === 0) return alert("No data to copy.");
+
+            const totals = {};
+            transactions.forEach(tx => {
+                totals[tx.category] = (totals[tx.category] || 0) + tx.amount;
+            });
+
+            let text = "Category\tTotal Logged\n";
+            for (const [cat, amt] of Object.entries(totals)) {
+                text += `${cat}\t${amt.toFixed(2)}\n`;
+            }
+
+            navigator.clipboard.writeText(text)
+                .then(() => alert("Copied successfully! You can now paste this into Google Sheets."))
+                .catch(() => alert("Failed to copy to clipboard."));
+        }
+
+        // Data Management - CSV Download
+        function downloadCSV() {
+            if (transactions.length === 0) return alert("No data to download.");
+
+            let csv = "data:text/csv;charset=utf-8,Date,Type,Category,Amount,Note\n";
+            transactions.forEach(tx => {
+                const safeNote = tx.note ? `"${tx.note.replace(/"/g, '""')}"` : "";
+                csv += `${tx.date},${tx.type},${tx.category},${tx.amount},${safeNote}\n`;
+            });
+
+            const link = document.createElement("a");
+            link.href = encodeURI(csv);
+            link.download = `Budget_Export_${getTodayString()}.csv`;
+            link.click();
+        }
+
+        // Data Management - Reset
+        function clearData() {
+            if (confirm("Are you sure you want to delete all stored data? This action cannot be undone.")) {
+                transactions = [];
+                saveData();
+                updateDashboard();
+            }
+        }
+
+        // Boot Application
+        init();
+    </script>
+</body>
+
+</html>
