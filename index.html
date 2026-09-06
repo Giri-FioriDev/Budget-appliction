@@ -257,8 +257,14 @@
         .donut-card h3 {
             font-size: 0.95rem;
             color: #ffffff;
-            margin-bottom: 10px;
+            margin-bottom: 4px;
             text-align: center;
+        }
+
+        .donut-limit-label {
+            font-size: 0.8rem;
+            color: var(--color-fg-muted);
+            margin-bottom: 10px;
         }
 
         .mini-chart-container {
@@ -662,7 +668,8 @@
                         <!-- Limit Tracking Donut Chart -->
                         <div class="donut-grid">
                             <div class="donut-card">
-                                <h3>Groceries (Limit 150)</h3>
+                                <h3>Groceries</h3>
+                                <div class="donut-limit-label" id="groceriesLimitLabel">Limit: €150.00</div>
                                 <div class="mini-chart-container">
                                     <canvas id="groceriesDonut"></canvas>
                                 </div>
@@ -725,13 +732,15 @@
                         <!-- Limit Tracking Donut Charts for Wants -->
                         <div class="donut-grid">
                             <div class="donut-card">
-                                <h3>Clothing (Limit 100)</h3>
+                                <h3>Clothing</h3>
+                                <div class="donut-limit-label" id="clothingLimitLabel">Limit: €100.00</div>
                                 <div class="mini-chart-container">
                                     <canvas id="clothingDonut"></canvas>
                                 </div>
                             </div>
                             <div class="donut-card">
-                                <h3>Eating Out (Limit 100)</h3>
+                                <h3>Eating Out</h3>
+                                <div class="donut-limit-label" id="eatingOutLimitLabel">Limit: €100.00</div>
                                 <div class="mini-chart-container">
                                     <canvas id="eatingOutDonut"></canvas>
                                 </div>
@@ -1018,7 +1027,22 @@
                     labels: ['Spent', 'Remaining'],
                     datasets: [{ data: [0, 150], backgroundColor: ['#2f81f7', '#30363d'], borderWidth: 0 }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { display: false } } }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12 } },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const fmt = getFormatter();
+                                    return ` ${context.label}: ${fmt.format(context.raw)}`;
+                                }
+                            }
+                        }
+                    }
+                }
             });
 
             // 3. Clothing Limit Donut Chart
@@ -1029,7 +1053,22 @@
                     labels: ['Spent', 'Remaining'],
                     datasets: [{ data: [0, 100], backgroundColor: ['#bc8cff', '#30363d'], borderWidth: 0 }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { display: false } } }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12 } },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const fmt = getFormatter();
+                                    return ` ${context.label}: ${fmt.format(context.raw)}`;
+                                }
+                            }
+                        }
+                    }
+                }
             });
 
             // 4. Eating Out Limit Donut Chart
@@ -1040,7 +1079,22 @@
                     labels: ['Spent', 'Remaining'],
                     datasets: [{ data: [0, 100], backgroundColor: ['#bc8cff', '#30363d'], borderWidth: 0 }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { display: false } } }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12 } },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const fmt = getFormatter();
+                                    return ` ${context.label}: ${fmt.format(context.raw)}`;
+                                }
+                            }
+                        }
+                    }
+                }
             });
         }
 
@@ -1085,31 +1139,34 @@
                 overviewChart.update();
             }
 
-            // Update Groceries Donut
+            // Update Groceries Donut & Label
             if (groceriesDonut) {
-                const grocSpent = catTotals["Groceries"] || 0;
                 const limit = categoryLimits["Groceries"];
+                const grocSpent = catTotals["Groceries"] || 0;
                 const rem = Math.max(0, limit - grocSpent);
+                document.getElementById('groceriesLimitLabel').textContent = `Limit: ${fmt.format(limit)} (Spent: ${fmt.format(grocSpent)})`;
                 groceriesDonut.data.datasets[0].data = [grocSpent, rem];
                 groceriesDonut.data.datasets[0].backgroundColor = [grocSpent > limit ? '#f85149' : '#2f81f7', '#30363d'];
                 groceriesDonut.update();
             }
 
-            // Update Clothing Donut
+            // Update Clothing Donut & Label
             if (clothingDonut) {
-                const clothSpent = catTotals["Clothing"] || 0;
                 const limit = categoryLimits["Clothing"];
+                const clothSpent = catTotals["Clothing"] || 0;
                 const rem = Math.max(0, limit - clothSpent);
+                document.getElementById('clothingLimitLabel').textContent = `Limit: ${fmt.format(limit)} (Spent: ${fmt.format(clothSpent)})`;
                 clothingDonut.data.datasets[0].data = [clothSpent, rem];
                 clothingDonut.data.datasets[0].backgroundColor = [clothSpent > limit ? '#f85149' : '#bc8cff', '#30363d'];
                 clothingDonut.update();
             }
 
-            // Update Eating Out Donut
+            // Update Eating Out Donut & Label
             if (eatingOutDonut) {
-                const eatSpent = catTotals["Eating out"] || 0;
                 const limit = categoryLimits["Eating out"];
+                const eatSpent = catTotals["Eating out"] || 0;
                 const rem = Math.max(0, limit - eatSpent);
+                document.getElementById('eatingOutLimitLabel').textContent = `Limit: ${fmt.format(limit)} (Spent: ${fmt.format(eatSpent)})`;
                 eatingOutDonut.data.datasets[0].data = [eatSpent, rem];
                 eatingOutDonut.data.datasets[0].backgroundColor = [eatSpent > limit ? '#f85149' : '#bc8cff', '#30363d'];
                 eatingOutDonut.update();
