@@ -237,11 +237,34 @@
             align-items: center;
         }
 
-        .bar-chart-container {
+        .donut-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .donut-card {
+            background: rgba(22, 27, 34, 0.5);
+            padding: 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--color-border-default);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .donut-card h3 {
+            font-size: 0.95rem;
+            color: #ffffff;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .mini-chart-container {
             position: relative;
-            height: 220px;
+            height: 180px;
             width: 100%;
-            margin-top: 20px;
         }
 
         .summary-stats {
@@ -636,9 +659,14 @@
                             </table>
                         </div>
 
-                        <!-- Graphical Representation Bottom -->
-                        <div class="bar-chart-container">
-                            <canvas id="needsChart"></canvas>
+                        <!-- Limit Tracking Donut Chart -->
+                        <div class="donut-grid">
+                            <div class="donut-card">
+                                <h3>Groceries (Limit 150)</h3>
+                                <div class="mini-chart-container">
+                                    <canvas id="groceriesDonut"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -694,9 +722,20 @@
                             </table>
                         </div>
 
-                        <!-- Graphical Representation Bottom -->
-                        <div class="bar-chart-container">
-                            <canvas id="wantsChart"></canvas>
+                        <!-- Limit Tracking Donut Charts for Wants -->
+                        <div class="donut-grid">
+                            <div class="donut-card">
+                                <h3>Clothing (Limit 100)</h3>
+                                <div class="mini-chart-container">
+                                    <canvas id="clothingDonut"></canvas>
+                                </div>
+                            </div>
+                            <div class="donut-card">
+                                <h3>Eating Out (Limit 100)</h3>
+                                <div class="mini-chart-container">
+                                    <canvas id="eatingOutDonut"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -787,7 +826,9 @@
         import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-
+        // ==========================================
+        // PASTE YOUR COPIED FIREBASE CONFIG BELOW
+        // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyCMPNlhtA4iMb2_lNGTrMvVZ1d4Iyh8-9Q",
             authDomain: "budget-tracker-66cf5.firebaseapp.com",
@@ -810,12 +851,12 @@
         let netIncome = 0;
         let currentCurrency = 'EUR';
         let transactions = [];
-        let overviewChart, needsChart, wantsChart;
+        let overviewChart, groceriesDonut, clothingDonut, eatingOutDonut;
 
         const currencySymbols = { EUR: '€', USD: '$', GBP: '£', INR: '₹' };
         const categoryLimits = { "Groceries": 150, "Clothing": 100, "Eating out": 100 };
 
-        const getCurrentMonthKey = () => new Date().toISOString().slice(0, 7); // e.g. "2026-06"
+        const getCurrentMonthKey = () => new Date().toISOString().slice(0, 7);
         const getTodayString = () => new Date().toISOString().split('T')[0];
 
         function getFormatter() {
@@ -854,12 +895,11 @@
                 const data = userDoc.data();
                 currentCurrency = data.currency || 'EUR';
 
-                // Check if monthly income exists for this specific month
                 const monthKey = getCurrentMonthKey();
                 if (data.monthlyIncomes && data.monthlyIncomes[monthKey] !== undefined) {
                     netIncome = data.monthlyIncomes[monthKey];
                     document.getElementById('incomeInput').value = netIncome.toFixed(2);
-                    document.getElementById('incomeInput').disabled = true; // One-time per month lock
+                    document.getElementById('incomeInput').disabled = true;
                 } else {
                     netIncome = 0;
                     document.getElementById('incomeInput').value = '';
@@ -886,7 +926,6 @@
             document.querySelectorAll('.curr-symbol').forEach(el => el.textContent = sym);
         }
 
-        // --- SAVE CURRENCY SETTING ---
         document.getElementById('saveCurrencyBtn').addEventListener('click', async () => {
             currentCurrency = document.getElementById('currencySelect').value;
             updateCurrencySymbols();
@@ -895,7 +934,6 @@
             alert("Currency updated successfully!");
         });
 
-        // --- ONE-TIME MONTHLY INCOME LOGIC ---
         document.getElementById('incomeForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const val = parseFloat(document.getElementById('incomeInput').value);
@@ -916,7 +954,6 @@
             alert("Monthly income registered for this month!");
         });
 
-        // --- CLOUD SYNC LOGIC ---
         function listenToTransactions() {
             const txRef = collection(db, "users", currentUser.uid, "transactions");
             unsubscribeTxs = onSnapshot(txRef, (snapshot) => {
@@ -952,30 +989,58 @@
             await deleteDoc(doc(db, "users", currentUser.uid, "transactions", id));
         };
 
-        // --- UI & CHARTS LOGIC ---
+        // --- CHARTS INITIALIZATION ---
         function initCharts() {
             Chart.defaults.color = '#c9d1d9';
             Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif';
 
+            // 1. Overview Pie Chart
             const ctxOverview = document.getElementById('overviewChart').getContext('2d');
             overviewChart = new Chart(ctxOverview, {
+                type: 'pie',
+                data: {
+                    labels: ['NEEDS', 'SAVINGS', 'WANTS', 'REMAINING'],
+                    datasets: [{
+                        data: [0, 0, 0, 100],
+                        backgroundColor: ['#8b949e', '#e36209', '#2f81f7', 'rgba(255, 255, 255, 0.1)'],
+                        borderWidth: 1,
+                        borderColor: '#21262d'
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
+            });
+
+            // 2. Groceries Limit Donut Chart
+            const ctxGroceries = document.getElementById('groceriesDonut').getContext('2d');
+            groceriesDonut = new Chart(ctxGroceries, {
                 type: 'doughnut',
-                data: { labels: ['NEEDS', 'SAVINGS', 'WANTS', 'REMAINING'], datasets: [{ data: [0, 0, 0, 100], backgroundColor: ['#8b949e', '#e36209', '#2f81f7', 'rgba(255, 255, 255, 0.05)'], borderWidth: 1, borderColor: '#21262d' }] },
-                options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'top' } } }
+                data: {
+                    labels: ['Spent', 'Remaining'],
+                    datasets: [{ data: [0, 150], backgroundColor: ['#2f81f7', '#30363d'], borderWidth: 0 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { display: false } } }
             });
 
-            const ctxNeeds = document.getElementById('needsChart').getContext('2d');
-            needsChart = new Chart(ctxNeeds, {
-                type: 'bar',
-                data: { labels: ['Groceries (Limit 150)'], datasets: [{ label: 'Amount Spent', data: [0], backgroundColor: '#2f81f7', borderRadius: 4 }] },
-                options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', scales: { x: { suggestedMax: 150, grid: { color: '#30363d' } }, y: { grid: { display: false } } }, plugins: { legend: { display: false }, title: { display: true, text: 'Needs Target Tracking', color: '#8b949e' } } }
+            // 3. Clothing Limit Donut Chart
+            const ctxClothing = document.getElementById('clothingDonut').getContext('2d');
+            clothingDonut = new Chart(ctxClothing, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Spent', 'Remaining'],
+                    datasets: [{ data: [0, 100], backgroundColor: ['#bc8cff', '#30363d'], borderWidth: 0 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { display: false } } }
             });
 
-            const ctxWants = document.getElementById('wantsChart').getContext('2d');
-            wantsChart = new Chart(ctxWants, {
-                type: 'bar',
-                data: { labels: ['Clothing (Limit 100)', 'Eating out (Limit 100)'], datasets: [{ label: 'Amount Spent', data: [0, 0], backgroundColor: '#bc8cff', borderRadius: 4 }] },
-                options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', scales: { x: { suggestedMax: 100, grid: { color: '#30363d' } }, y: { grid: { display: false } } }, plugins: { legend: { display: false }, title: { display: true, text: 'Wants Target Tracking', color: '#8b949e' } } }
+            // 4. Eating Out Limit Donut Chart
+            const ctxEatingOut = document.getElementById('eatingOutDonut').getContext('2d');
+            eatingOutDonut = new Chart(ctxEatingOut, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Spent', 'Remaining'],
+                    datasets: [{ data: [0, 100], backgroundColor: ['#bc8cff', '#30363d'], borderWidth: 0 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { display: false } } }
             });
         }
 
@@ -1004,7 +1069,6 @@
             const spent = { needs: 0, wants: 0, savings: 0 };
             const catTotals = {};
 
-            // Filter transactions strictly for the current month
             const currentMonthPrefix = getCurrentMonthKey();
             const currentMonthTxs = transactions.filter(tx => tx.date && tx.date.startsWith(currentMonthPrefix));
 
@@ -1013,6 +1077,7 @@
                 catTotals[tx.category] = (catTotals[tx.category] || 0) + tx.amount;
             });
 
+            // Update Pie Chart
             if (overviewChart) {
                 const totalSpent = spent.needs + spent.wants + spent.savings;
                 const remaining = Math.max(0, netIncome - totalSpent);
@@ -1020,22 +1085,34 @@
                 overviewChart.update();
             }
 
-            if (needsChart) {
+            // Update Groceries Donut
+            if (groceriesDonut) {
                 const grocSpent = catTotals["Groceries"] || 0;
-                needsChart.data.datasets[0].data = [grocSpent];
-                needsChart.data.datasets[0].backgroundColor = grocSpent > categoryLimits["Groceries"] ? '#f85149' : '#2f81f7';
-                needsChart.update();
+                const limit = categoryLimits["Groceries"];
+                const rem = Math.max(0, limit - grocSpent);
+                groceriesDonut.data.datasets[0].data = [grocSpent, rem];
+                groceriesDonut.data.datasets[0].backgroundColor = [grocSpent > limit ? '#f85149' : '#2f81f7', '#30363d'];
+                groceriesDonut.update();
             }
 
-            if (wantsChart) {
+            // Update Clothing Donut
+            if (clothingDonut) {
                 const clothSpent = catTotals["Clothing"] || 0;
+                const limit = categoryLimits["Clothing"];
+                const rem = Math.max(0, limit - clothSpent);
+                clothingDonut.data.datasets[0].data = [clothSpent, rem];
+                clothingDonut.data.datasets[0].backgroundColor = [clothSpent > limit ? '#f85149' : '#bc8cff', '#30363d'];
+                clothingDonut.update();
+            }
+
+            // Update Eating Out Donut
+            if (eatingOutDonut) {
                 const eatSpent = catTotals["Eating out"] || 0;
-                wantsChart.data.datasets[0].data = [clothSpent, eatSpent];
-                wantsChart.data.datasets[0].backgroundColor = [
-                    clothSpent > categoryLimits["Clothing"] ? '#f85149' : '#bc8cff',
-                    eatSpent > categoryLimits["Eating out"] ? '#f85149' : '#bc8cff'
-                ];
-                wantsChart.update();
+                const limit = categoryLimits["Eating out"];
+                const rem = Math.max(0, limit - eatSpent);
+                eatingOutDonut.data.datasets[0].data = [eatSpent, rem];
+                eatingOutDonut.data.datasets[0].backgroundColor = [eatSpent > limit ? '#f85149' : '#bc8cff', '#30363d'];
+                eatingOutDonut.update();
             }
 
             ['needs', 'wants', 'savings'].forEach(type => {
