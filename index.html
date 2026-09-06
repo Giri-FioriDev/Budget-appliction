@@ -666,13 +666,20 @@
                             </table>
                         </div>
 
-                        <!-- Limit Tracking Donut Chart -->
+                        <!-- Limit Tracking Donut Charts for Needs (Groceries & Miscellaneous) -->
                         <div class="donut-grid">
                             <div class="donut-card">
                                 <h3>Groceries</h3>
                                 <div class="donut-limit-label" id="groceriesLimitLabel">Limit: €150.00</div>
                                 <div class="mini-chart-container">
                                     <canvas id="groceriesDonut"></canvas>
+                                </div>
+                            </div>
+                            <div class="donut-card">
+                                <h3>Miscellaneous</h3>
+                                <div class="donut-limit-label" id="miscellaneousLimitLabel">Limit: €60.00</div>
+                                <div class="mini-chart-container">
+                                    <canvas id="miscellaneousDonut"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -836,9 +843,6 @@
         import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // ==========================================
-        // PASTE YOUR COPIED FIREBASE CONFIG BELOW
-        // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyCMPNlhtA4iMb2_lNGTrMvVZ1d4Iyh8-9Q",
             authDomain: "budget-tracker-66cf5.firebaseapp.com",
@@ -860,12 +864,13 @@
         let netIncome = 0;
         let currentCurrency = 'EUR';
         let transactions = [];
-        let overviewChart, groceriesDonut, clothingDonut, eatingOutDonut;
+        let overviewChart, groceriesDonut, miscellaneousDonut, clothingDonut, eatingOutDonut;
 
         const currencySymbols = { EUR: '€', USD: '$', GBP: '£', INR: '₹' };
 
         const categoryLimits = {
             "groceries": 150,
+            "miscellaneous": 60,
             "clothing": 100,
             "eating out": 100
         };
@@ -1036,6 +1041,7 @@
             });
 
             groceriesDonut = new Chart(document.getElementById('groceriesDonut').getContext('2d'), createDonutConfig());
+            miscellaneousDonut = new Chart(document.getElementById('miscellaneousDonut').getContext('2d'), createDonutConfig());
             clothingDonut = new Chart(document.getElementById('clothingDonut').getContext('2d'), createDonutConfig());
             eatingOutDonut = new Chart(document.getElementById('eatingOutDonut').getContext('2d'), createDonutConfig());
         }
@@ -1089,6 +1095,16 @@
                 groceriesDonut.data.datasets[0].data = [grocSpent, rem];
                 groceriesDonut.data.datasets[0].backgroundColor = [grocSpent > limit ? '#f85149' : '#2f81f7', '#30363d'];
                 groceriesDonut.update();
+            }
+
+            if (miscellaneousDonut) {
+                const limit = categoryLimits["miscellaneous"];
+                const miscSpent = catTotals["miscellaneous"] || 0;
+                const rem = Math.max(0, limit - miscSpent);
+                document.getElementById('miscellaneousLimitLabel').textContent = `Limit: ${fmt.format(limit)} (Spent: ${fmt.format(miscSpent)})`;
+                miscellaneousDonut.data.datasets[0].data = [miscSpent, rem];
+                miscellaneousDonut.data.datasets[0].backgroundColor = [miscSpent > limit ? '#f85149' : '#2f81f7', '#30363d'];
+                miscellaneousDonut.update();
             }
 
             if (clothingDonut) {
