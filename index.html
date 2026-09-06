@@ -856,14 +856,19 @@
         let currentUser = null;
         let unsubscribeTxs = null;
 
-        // Shared State
         let netIncome = 0;
         let currentCurrency = 'EUR';
         let transactions = [];
         let overviewChart, groceriesDonut, clothingDonut, eatingOutDonut;
 
         const currencySymbols = { EUR: '€', USD: '$', GBP: '£', INR: '₹' };
-        const categoryLimits = { "Groceries": 150, "Clothing": 100, "Eating out": 100 };
+
+        // Lowercase keys to match user inputs robustly
+        const categoryLimits = {
+            "groceries": 150,
+            "clothing": 100,
+            "eating out": 100
+        };
 
         const getCurrentMonthKey = () => new Date().toISOString().slice(0, 7);
         const getTodayString = () => new Date().toISOString().split('T')[0];
@@ -872,7 +877,6 @@
             return new Intl.NumberFormat('en-DE', { style: 'currency', currency: currentCurrency });
         }
 
-        // --- AUTHENTICATION ---
         const loginScreen = document.getElementById('login-screen');
         const appContainer = document.getElementById('app-container');
 
@@ -998,12 +1002,10 @@
             await deleteDoc(doc(db, "users", currentUser.uid, "transactions", id));
         };
 
-        // --- CHARTS INITIALIZATION ---
         function initCharts() {
             Chart.defaults.color = '#c9d1d9';
             Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif';
 
-            // 1. Overview Pie Chart
             const ctxOverview = document.getElementById('overviewChart').getContext('2d');
             overviewChart = new Chart(ctxOverview, {
                 type: 'pie',
@@ -1019,83 +1021,23 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
             });
 
-            // 2. Groceries Limit Donut Chart
-            const ctxGroceries = document.getElementById('groceriesDonut').getContext('2d');
-            groceriesDonut = new Chart(ctxGroceries, {
+            const createDonutConfig = () => ({
                 type: 'doughnut',
-                data: {
-                    labels: ['Spent', 'Remaining'],
-                    datasets: [{ data: [0, 150], backgroundColor: ['#2f81f7', '#30363d'], borderWidth: 0 }]
-                },
+                data: { labels: ['Spent', 'Remaining'], datasets: [{ data: [0, 100], backgroundColor: ['#2f81f7', '#30363d'], borderWidth: 0 }] },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '70%',
+                    responsive: true, maintainAspectRatio: false, cutout: '70%',
                     plugins: {
                         legend: { position: 'bottom', labels: { boxWidth: 12 } },
                         tooltip: {
-                            callbacks: {
-                                label: function (context) {
-                                    const fmt = getFormatter();
-                                    return ` ${context.label}: ${fmt.format(context.raw)}`;
-                                }
-                            }
+                            callbacks: { label: (context) => ` ${context.label}: ${getFormatter().format(context.raw)}` }
                         }
                     }
                 }
             });
 
-            // 3. Clothing Limit Donut Chart
-            const ctxClothing = document.getElementById('clothingDonut').getContext('2d');
-            clothingDonut = new Chart(ctxClothing, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Spent', 'Remaining'],
-                    datasets: [{ data: [0, 100], backgroundColor: ['#bc8cff', '#30363d'], borderWidth: 0 }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '70%',
-                    plugins: {
-                        legend: { position: 'bottom', labels: { boxWidth: 12 } },
-                        tooltip: {
-                            callbacks: {
-                                label: function (context) {
-                                    const fmt = getFormatter();
-                                    return ` ${context.label}: ${fmt.format(context.raw)}`;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
-            // 4. Eating Out Limit Donut Chart
-            const ctxEatingOut = document.getElementById('eatingOutDonut').getContext('2d');
-            eatingOutDonut = new Chart(ctxEatingOut, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Spent', 'Remaining'],
-                    datasets: [{ data: [0, 100], backgroundColor: ['#bc8cff', '#30363d'], borderWidth: 0 }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '70%',
-                    plugins: {
-                        legend: { position: 'bottom', labels: { boxWidth: 12 } },
-                        tooltip: {
-                            callbacks: {
-                                label: function (context) {
-                                    const fmt = getFormatter();
-                                    return ` ${context.label}: ${fmt.format(context.raw)}`;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
+            groceriesDonut = new Chart(document.getElementById('groceriesDonut').getContext('2d'), createDonutConfig());
+            clothingDonut = new Chart(document.getElementById('clothingDonut').getContext('2d'), createDonutConfig());
+            eatingOutDonut = new Chart(document.getElementById('eatingOutDonut').getContext('2d'), createDonutConfig());
         }
 
         function setupTabs() {
@@ -1128,10 +1070,10 @@
 
             currentMonthTxs.forEach(tx => {
                 if (spent[tx.type] !== undefined) spent[tx.type] += tx.amount;
-                catTotals[tx.category] = (catTotals[tx.category] || 0) + tx.amount;
+                const normalizedCat = tx.category.toLowerCase().trim();
+                catTotals[normalizedCat] = (catTotals[normalizedCat] || 0) + tx.amount;
             });
 
-            // Update Pie Chart
             if (overviewChart) {
                 const totalSpent = spent.needs + spent.wants + spent.savings;
                 const remaining = Math.max(0, netIncome - totalSpent);
@@ -1139,10 +1081,10 @@
                 overviewChart.update();
             }
 
-            // Update Groceries Donut & Label
+            // Update Donut Charts with normalized category matching
             if (groceriesDonut) {
-                const limit = categoryLimits["Groceries"];
-                const grocSpent = catTotals["Groceries"] || 0;
+                const limit = categoryLimits["groceries"];
+                const grocSpent = catTotals["groceries"] || 0;
                 const rem = Math.max(0, limit - grocSpent);
                 document.getElementById('groceriesLimitLabel').textContent = `Limit: ${fmt.format(limit)} (Spent: ${fmt.format(grocSpent)})`;
                 groceriesDonut.data.datasets[0].data = [grocSpent, rem];
@@ -1150,10 +1092,9 @@
                 groceriesDonut.update();
             }
 
-            // Update Clothing Donut & Label
             if (clothingDonut) {
-                const limit = categoryLimits["Clothing"];
-                const clothSpent = catTotals["Clothing"] || 0;
+                const limit = categoryLimits["clothing"];
+                const clothSpent = catTotals["clothing"] || 0;
                 const rem = Math.max(0, limit - clothSpent);
                 document.getElementById('clothingLimitLabel').textContent = `Limit: ${fmt.format(limit)} (Spent: ${fmt.format(clothSpent)})`;
                 clothingDonut.data.datasets[0].data = [clothSpent, rem];
@@ -1161,10 +1102,9 @@
                 clothingDonut.update();
             }
 
-            // Update Eating Out Donut & Label
             if (eatingOutDonut) {
-                const limit = categoryLimits["Eating out"];
-                const eatSpent = catTotals["Eating out"] || 0;
+                const limit = categoryLimits["eating out"];
+                const eatSpent = catTotals["eating out"] || 0;
                 const rem = Math.max(0, limit - eatSpent);
                 document.getElementById('eatingOutLimitLabel').textContent = `Limit: ${fmt.format(limit)} (Spent: ${fmt.format(eatSpent)})`;
                 eatingOutDonut.data.datasets[0].data = [eatSpent, rem];
