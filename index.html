@@ -278,7 +278,7 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
 
         .summary-stats .amount {
@@ -289,13 +289,35 @@
         }
 
         .summary-stats .target {
-            color: var(--color-fg-default);
+            color: var(--color-success-fg);
             font-size: 0.85rem;
             font-weight: 500;
         }
 
         .status-danger {
             color: var(--color-danger-fg) !important;
+        }
+
+        /* Progress Bar Styles */
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background-color: var(--color-border-default);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background-color: var(--color-accent-fg);
+            transition: width 0.3s ease;
+            border-radius: 3px;
+        }
+
+        .progress-bar-fill.danger {
+            background-color: var(--color-danger-fg);
         }
 
         .form-grid {
@@ -626,6 +648,9 @@
                                 <span class="amount" id="needsSpent">0.00</span>
                                 <span class="target" id="needsRemaining">Remaining: 0.00</span>
                             </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" id="needsProgressBar"></div>
+                            </div>
                         </div>
 
                         <form onsubmit="addEntry(event, 'needs')" class="form-grid">
@@ -698,6 +723,9 @@
                                 <span class="amount" id="wantsSpent">0.00</span>
                                 <span class="target" id="wantsRemaining">Remaining: 0.00</span>
                             </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" id="wantsProgressBar"></div>
+                            </div>
                         </div>
 
                         <form onsubmit="addEntry(event, 'wants')" class="form-grid">
@@ -768,6 +796,9 @@
                             <div class="summary-stats">
                                 <span class="amount" id="savingsSpent">0.00</span>
                                 <span class="target" id="savingsRemaining">Target Goal: 0.00</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" id="savingsProgressBar"></div>
                             </div>
                         </div>
 
@@ -843,6 +874,9 @@
         import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
+        // ==========================================
+        // PASTE YOUR COPIED FIREBASE CONFIG BELOW
+        // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyCMPNlhtA4iMb2_lNGTrMvVZ1d4Iyh8-9Q",
             authDomain: "budget-tracker-66cf5.firebaseapp.com",
@@ -1135,15 +1169,25 @@
                 document.getElementById(`${type}Spent`).textContent = fmt.format(totalSpent);
                 const remainingEl = document.getElementById(`${type}Remaining`);
 
+                // Progress bar calculation
+                const progressEl = document.getElementById(`${type}ProgressBar`);
+                let percentage = target > 0 ? (totalSpent / target) * 100 : 0;
+                if (percentage > 100) percentage = 100;
+                progressEl.style.width = `${percentage}%`;
+
                 if (type === 'savings') {
                     remainingEl.textContent = `Target: ${fmt.format(target)}`;
+                    remainingEl.className = 'target';
+                    progressEl.className = 'progress-bar-fill';
                 } else {
                     if (remaining >= 0) {
                         remainingEl.textContent = `Remaining: ${fmt.format(remaining)}`;
-                        remainingEl.className = 'target';
+                        remainingEl.className = 'target'; // green via CSS variable
+                        progressEl.className = 'progress-bar-fill';
                     } else {
                         remainingEl.textContent = `Over Budget: ${fmt.format(Math.abs(remaining))}`;
                         remainingEl.className = 'target status-danger';
+                        progressEl.className = 'progress-bar-fill danger';
                     }
                 }
                 renderTable(type, currentMonthTxs);
