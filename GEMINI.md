@@ -83,9 +83,9 @@ The frontend application code in [`index.html`](file:///D:/budget%20app/Budget-a
 - **Application Shell (`#app-container`)**: Displayed upon successful user authentication. Includes:
   - Global Header with contextual title and "Sign Out" control.
   - Tab Navigation Bar (`.UnderlineNav`) supporting tab switching:
-    - **Overview**: 50/30/20 summary distribution chart, currency selector, monthly net income registration, and target cards.
-    - **Needs (50%)**: Expense logging form, date-sorted transaction log, spending progress bar, and sub-limit doughnut gauges for *Groceries* and *Miscellaneous*.
-    - **Wants (30%)**: Expense logging form, transaction log, spending progress bar, and sub-limit doughnut gauges for *Clothing* and *Eating Out*.
+    - **Overview**: Current Available Balance hero metric with income/spending breakdown, 50/30/20 summary distribution doughnut chart with balance center text, currency selector, monthly net income registration, and target cards (Available Balance, Needs, Wants, Savings).
+    - **Needs (50%)**: Expense logging form, date-sorted transaction log, spending progress bar, and sub-limit doughnut gauges for *Groceries* and *Miscellaneous* with bold typography, high-contrast badges, and center spent displays.
+    - **Wants (30%)**: Expense logging form, transaction log, spending progress bar, and sub-limit doughnut gauges for *Clothing* and *Eating Out* with bold typography and center spent displays.
     - **Savings (20%)**: Savings allocation logging form, progress bar towards the 20% target, and allocation history log.
     - **Data & Export**: Frictionless data interoperability actions.
 
@@ -122,9 +122,13 @@ sequenceDiagram
 ```
 
 ### 5.3 Chart Visualization Engine
-Integrated via Chart.js canvas elements:
-- **`overviewChart`** (`type: 'pie'`): Renders proportional breakdown of logged Needs, Savings, Wants, alongside unspent Remaining income.
-- **`groceriesDonut`**, **`miscellaneousDonut`**, **`clothingDonut`**, **`eatingOutDonut`** (`type: 'doughnut'`): Act as radial gauges measuring expenditure against preset budget limits. Dynamically switches fill palette from accent blue/purple to danger red (`#f85149`) when limits are breached.
+Integrated via Chart.js canvas elements and custom `donutCenterText` plugin:
+- **`overviewChart`** (`type: 'doughnut'`, `cutout: '70%'`): Renders proportional breakdown of logged Needs, Savings, Wants, alongside unspent Remaining income. Features enlarged 14px bold legend labels, 14px tooltips, and dynamic center text rendering the active Available Balance with color-coded status (`#3fb950` for available/positive, `#f85149` for over-budget).
+- **`groceriesDonut`**, **`miscellaneousDonut`**, **`clothingDonut`**, **`eatingOutDonut`** (`type: 'doughnut'`, `cutout: '68%'`): Act as radial gauges measuring expenditure against preset budget limits. Enhanced with:
+  - Enlarged 13px bold legend labels and 14px tooltips.
+  - Custom center text plugin displaying real-time logged expenditure (turning red `#f85149` if over limit).
+  - High-contrast pill badges (`.donut-limit-label`) displaying limit and spent values.
+  - Enlarged 1.15rem bold category headers.
 
 ---
 
