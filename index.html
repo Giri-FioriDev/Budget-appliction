@@ -18,6 +18,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
+            color-scheme: dark;
             --color-canvas-default: #0d1117;
             --color-canvas-subtle: #161b22;
             --color-border-default: #30363d;
@@ -330,14 +331,54 @@
             border: 1px solid var(--color-border-default);
         }
 
+        .entry-form {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .entry-form .btn-submit {
+            height: 38px;
+            width: 100%;
+        }
+
         @media (min-width: 640px) {
             .form-grid {
                 grid-template-columns: 2fr 1.5fr 2fr auto;
                 align-items: end;
             }
 
-            .income-form {
+            .income-form,
+            .currency-form {
                 grid-template-columns: 1fr auto;
+            }
+
+            .entry-form {
+                grid-template-columns: 160px 1.5fr 1fr;
+                grid-template-areas:
+                    "date cat amt"
+                    "note note btn";
+                align-items: end;
+            }
+
+            .form-group-date {
+                grid-area: date;
+            }
+
+            .form-group-cat {
+                grid-area: cat;
+            }
+
+            .form-group-amt {
+                grid-area: amt;
+            }
+
+            .form-group-note {
+                grid-area: note;
+            }
+
+            .entry-form .btn-submit {
+                grid-area: btn;
             }
         }
 
@@ -371,6 +412,62 @@
             outline: none;
             border-color: var(--color-accent-fg);
             box-shadow: 0 0 0 3px var(--color-accent-muted);
+        }
+
+        input[type="date"] {
+            color-scheme: dark;
+            font-family: var(--font-stack);
+            cursor: pointer;
+            height: 38px;
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            opacity: 0.85;
+            transition: var(--transition);
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator:hover {
+            opacity: 1;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .month-picker-container {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .month-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--color-fg-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .month-input {
+            width: auto;
+            min-width: 140px;
+            padding: 6px 10px;
+            font-size: 13px;
+            height: 34px;
+            background-color: var(--color-btn-bg);
+            border: 1px solid var(--color-border-default);
+            border-radius: var(--radius-md);
+            color: var(--color-fg-default);
+            cursor: pointer;
+            color-scheme: dark;
+        }
+
+        .month-input:hover {
+            border-color: #8b949e;
         }
 
         button {
@@ -564,8 +661,14 @@
                     <h1>Budget Overview</h1>
                     <p>Track your 50/30/20 financial framework effortlessly.</p>
                 </div>
-                <button id="logoutBtn"
-                    style="background: transparent; border: 1px solid var(--color-border-muted);">Sign Out</button>
+                <div class="header-actions">
+                    <div class="month-picker-container">
+                        <label for="selectedMonthInput" class="month-label">Active Month</label>
+                        <input type="month" id="selectedMonthInput" class="month-input">
+                    </div>
+                    <button id="logoutBtn"
+                        style="background: transparent; border: 1px solid var(--color-border-muted);">Sign Out</button>
+                </div>
             </header>
 
             <nav class="UnderlineNav">
@@ -595,7 +698,7 @@
                         </div>
 
                         <!-- Currency Selection Form -->
-                        <div class="form-grid" style="margin-bottom: 12px;">
+                        <div class="form-grid currency-form" style="margin-bottom: 12px;">
                             <div class="form-group">
                                 <label for="currencySelect">Preferred Currency</label>
                                 <select id="currencySelect">
@@ -653,9 +756,13 @@
                             </div>
                         </div>
 
-                        <form onsubmit="addEntry(event, 'needs')" class="form-grid">
-                            <div class="form-group">
-                                <label>Category</label>
+                        <form onsubmit="addEntry(event, 'needs')" class="form-grid entry-form">
+                            <div class="form-group form-group-date">
+                                <label for="needsDate">Date</label>
+                                <input type="date" id="needsDate" required>
+                            </div>
+                            <div class="form-group form-group-cat">
+                                <label for="needsCat">Category</label>
                                 <input type="text" id="needsCat" list="needsOptions" placeholder="Select or type..."
                                     required>
                                 <datalist id="needsOptions">
@@ -666,15 +773,15 @@
                                     <option value="Miscellaneous">
                                 </datalist>
                             </div>
-                            <div class="form-group">
-                                <label>Amount (<span class="curr-symbol">€</span>)</label>
+                            <div class="form-group form-group-amt">
+                                <label for="needsAmt">Amount (<span class="curr-symbol">€</span>)</label>
                                 <input type="number" id="needsAmt" step="0.01" min="0.01" placeholder="0.00" required>
                             </div>
-                            <div class="form-group" style="grid-column: span 2;">
-                                <label>Note (Optional)</label>
+                            <div class="form-group form-group-note">
+                                <label for="needsNote">Note (Optional)</label>
                                 <input type="text" id="needsNote" placeholder="e.g. Weekly shop">
                             </div>
-                            <button type="submit" class="btn-primary">Add Expense</button>
+                            <button type="submit" class="btn-primary btn-submit">Add Expense</button>
                         </form>
 
                         <div class="table-container">
@@ -728,9 +835,13 @@
                             </div>
                         </div>
 
-                        <form onsubmit="addEntry(event, 'wants')" class="form-grid">
-                            <div class="form-group">
-                                <label>Category</label>
+                        <form onsubmit="addEntry(event, 'wants')" class="form-grid entry-form">
+                            <div class="form-group form-group-date">
+                                <label for="wantsDate">Date</label>
+                                <input type="date" id="wantsDate" required>
+                            </div>
+                            <div class="form-group form-group-cat">
+                                <label for="wantsCat">Category</label>
                                 <input type="text" id="wantsCat" list="wantsOptions" placeholder="Select or type..."
                                     required>
                                 <datalist id="wantsOptions">
@@ -740,15 +851,15 @@
                                     <option value="Hobbies">
                                 </datalist>
                             </div>
-                            <div class="form-group">
-                                <label>Amount (<span class="curr-symbol">€</span>)</label>
+                            <div class="form-group form-group-amt">
+                                <label for="wantsAmt">Amount (<span class="curr-symbol">€</span>)</label>
                                 <input type="number" id="wantsAmt" step="0.01" min="0.01" placeholder="0.00" required>
                             </div>
-                            <div class="form-group" style="grid-column: span 2;">
-                                <label>Note (Optional)</label>
+                            <div class="form-group form-group-note">
+                                <label for="wantsNote">Note (Optional)</label>
                                 <input type="text" id="wantsNote" placeholder="e.g. Dinner">
                             </div>
-                            <button type="submit" class="btn-primary">Add Expense</button>
+                            <button type="submit" class="btn-primary btn-submit">Add Expense</button>
                         </form>
 
                         <div class="table-container">
@@ -802,9 +913,13 @@
                             </div>
                         </div>
 
-                        <form onsubmit="addEntry(event, 'savings')" class="form-grid">
-                            <div class="form-group">
-                                <label>Category</label>
+                        <form onsubmit="addEntry(event, 'savings')" class="form-grid entry-form">
+                            <div class="form-group form-group-date">
+                                <label for="savingsDate">Date</label>
+                                <input type="date" id="savingsDate" required>
+                            </div>
+                            <div class="form-group form-group-cat">
+                                <label for="savingsCat">Category</label>
                                 <input type="text" id="savingsCat" list="savingsOptions" placeholder="Select or type..."
                                     required>
                                 <datalist id="savingsOptions">
@@ -814,15 +929,15 @@
                                     <option value="Other Savings">
                                 </datalist>
                             </div>
-                            <div class="form-group">
-                                <label>Amount (<span class="curr-symbol">€</span>)</label>
+                            <div class="form-group form-group-amt">
+                                <label for="savingsAmt">Amount (<span class="curr-symbol">€</span>)</label>
                                 <input type="number" id="savingsAmt" step="0.01" min="0.01" placeholder="0.00" required>
                             </div>
-                            <div class="form-group" style="grid-column: span 2;">
-                                <label>Note (Optional)</label>
+                            <div class="form-group form-group-note">
+                                <label for="savingsNote">Note (Optional)</label>
                                 <input type="text" id="savingsNote" placeholder="e.g. Monthly transfer">
                             </div>
-                            <button type="submit" class="btn-primary">Add Savings</button>
+                            <button type="submit" class="btn-primary btn-submit">Add Savings</button>
                         </form>
 
                         <div class="table-container">
@@ -909,8 +1024,21 @@
             "eating out": 100
         };
 
-        const getCurrentMonthKey = () => new Date().toISOString().slice(0, 7);
-        const getTodayString = () => new Date().toISOString().split('T')[0];
+        const getCurrentMonthKey = () => {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        };
+
+        const getTodayString = () => {
+            const d = new Date();
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+
+        let selectedMonthKey = getCurrentMonthKey();
+        let userDataCache = null;
 
         function getFormatter() {
             return new Intl.NumberFormat('en-DE', { style: 'currency', currency: currentCurrency });
@@ -939,32 +1067,61 @@
             }
         });
 
+        function resetDateInputs() {
+            const today = getTodayString();
+            ['needs', 'wants', 'savings'].forEach(type => {
+                const el = document.getElementById(`${type}Date`);
+                if (el) el.value = today;
+            });
+        }
+
+        function setupDatePickers() {
+            ['needsDate', 'wantsDate', 'savingsDate', 'selectedMonthInput'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('click', () => {
+                        try { el.showPicker(); } catch (e) { }
+                    });
+                }
+            });
+        }
+
+        function updateIncomeForMonth() {
+            const monthlyIncomes = (userDataCache && userDataCache.monthlyIncomes) ? userDataCache.monthlyIncomes : {};
+            if (monthlyIncomes[selectedMonthKey] !== undefined) {
+                netIncome = monthlyIncomes[selectedMonthKey];
+                document.getElementById('incomeInput').value = netIncome.toFixed(2);
+                document.getElementById('incomeInput').disabled = true;
+            } else {
+                netIncome = 0;
+                document.getElementById('incomeInput').value = '';
+                document.getElementById('incomeInput').disabled = false;
+            }
+        }
+
         async function initializeUserData() {
             const userDocRef = doc(db, "users", currentUser.uid);
             const userDoc = await getDoc(userDocRef);
 
             if (userDoc.exists()) {
-                const data = userDoc.data();
-                currentCurrency = data.currency || 'EUR';
-
-                const monthKey = getCurrentMonthKey();
-                if (data.monthlyIncomes && data.monthlyIncomes[monthKey] !== undefined) {
-                    netIncome = data.monthlyIncomes[monthKey];
-                    document.getElementById('incomeInput').value = netIncome.toFixed(2);
-                    document.getElementById('incomeInput').disabled = true;
-                } else {
-                    netIncome = 0;
-                    document.getElementById('incomeInput').value = '';
-                    document.getElementById('incomeInput').disabled = false;
-                }
+                userDataCache = userDoc.data();
+                currentCurrency = userDataCache.currency || 'EUR';
             } else {
                 currentCurrency = 'EUR';
-                netIncome = 0;
-                await setDoc(userDocRef, { currency: 'EUR', monthlyIncomes: {} });
+                userDataCache = { currency: 'EUR', monthlyIncomes: {} };
+                await setDoc(userDocRef, userDataCache);
             }
 
             document.getElementById('currencySelect').value = currentCurrency;
             updateCurrencySymbols();
+
+            selectedMonthKey = getCurrentMonthKey();
+            const monthInput = document.getElementById('selectedMonthInput');
+            if (monthInput) monthInput.value = selectedMonthKey;
+
+            updateIncomeForMonth();
+            resetDateInputs();
+            setupDatePickers();
 
             if (!overviewChart) {
                 initCharts();
@@ -981,10 +1138,21 @@
         document.getElementById('saveCurrencyBtn').addEventListener('click', async () => {
             currentCurrency = document.getElementById('currencySelect').value;
             updateCurrencySymbols();
+            if (userDataCache) userDataCache.currency = currentCurrency;
             await setDoc(doc(db, "users", currentUser.uid), { currency: currentCurrency }, { merge: true });
             updateDashboard();
             alert("Currency updated successfully!");
         });
+
+        const monthSelectInput = document.getElementById('selectedMonthInput');
+        if (monthSelectInput) {
+            monthSelectInput.addEventListener('change', (e) => {
+                if (!e.target.value) return;
+                selectedMonthKey = e.target.value;
+                updateIncomeForMonth();
+                updateDashboard();
+            });
+        }
 
         document.getElementById('incomeForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -992,18 +1160,17 @@
             if (isNaN(val) || val <= 0) return;
 
             netIncome = val;
-            const monthKey = getCurrentMonthKey();
-
             const userDocRef = doc(db, "users", currentUser.uid);
             const userDoc = await getDoc(userDocRef);
             const existingIncomes = userDoc.exists() && userDoc.data().monthlyIncomes ? userDoc.data().monthlyIncomes : {};
 
-            existingIncomes[monthKey] = netIncome;
+            existingIncomes[selectedMonthKey] = netIncome;
+            if (userDataCache) userDataCache.monthlyIncomes = existingIncomes;
 
             await setDoc(userDocRef, { monthlyIncomes: existingIncomes }, { merge: true });
             document.getElementById('incomeInput').disabled = true;
             updateDashboard();
-            alert("Monthly income registered for this month!");
+            alert(`Monthly income registered for ${selectedMonthKey}!`);
         });
 
         function listenToTransactions() {
@@ -1019,13 +1186,16 @@
 
         window.addEntry = async function (e, type) {
             e.preventDefault();
+            const dateEl = document.getElementById(`${type}Date`);
             const catEl = document.getElementById(`${type}Cat`);
             const amtEl = document.getElementById(`${type}Amt`);
             const noteEl = document.getElementById(`${type}Note`);
             if (!catEl.value || !amtEl.value) return;
 
+            const selectedDate = (dateEl && dateEl.value) ? dateEl.value : getTodayString();
+
             const newTx = {
-                date: getTodayString(),
+                date: selectedDate,
                 type: type,
                 category: catEl.value.trim(),
                 amount: parseFloat(amtEl.value),
@@ -1033,7 +1203,22 @@
                 createdAt: new Date().getTime()
             };
 
-            catEl.value = ''; amtEl.value = ''; noteEl.value = '';
+            catEl.value = '';
+            amtEl.value = '';
+            noteEl.value = '';
+            if (dateEl) {
+                dateEl.value = getTodayString();
+            }
+
+            // If the transaction was added for a month different from current view, switch to that month
+            const txMonth = selectedDate.slice(0, 7);
+            if (txMonth && txMonth !== selectedMonthKey) {
+                selectedMonthKey = txMonth;
+                const mInput = document.getElementById('selectedMonthInput');
+                if (mInput) mInput.value = selectedMonthKey;
+                updateIncomeForMonth();
+            }
+
             await addDoc(collection(db, "users", currentUser.uid, "transactions"), newTx);
         };
 
@@ -1105,7 +1290,7 @@
             const spent = { needs: 0, wants: 0, savings: 0 };
             const catTotals = {};
 
-            const currentMonthPrefix = getCurrentMonthKey();
+            const currentMonthPrefix = selectedMonthKey;
             const currentMonthTxs = transactions.filter(tx => tx.date && tx.date.startsWith(currentMonthPrefix));
 
             currentMonthTxs.forEach(tx => {
@@ -1198,10 +1383,14 @@
             const fmt = getFormatter();
             const tbody = document.getElementById(`${type}Table`);
             tbody.innerHTML = '';
-            const typeTxs = currentMonthTxs.filter(tx => tx.type === type).sort((a, b) => b.createdAt - a.createdAt);
+            const typeTxs = currentMonthTxs.filter(tx => tx.type === type).sort((a, b) => {
+                const dateComp = (b.date || '').localeCompare(a.date || '');
+                if (dateComp !== 0) return dateComp;
+                return (b.createdAt || 0) - (a.createdAt || 0);
+            });
 
             if (typeTxs.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="empty-state">No data available for this month</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="empty-state">No data available for ${selectedMonthKey}</td></tr>`;
                 return;
             }
 
