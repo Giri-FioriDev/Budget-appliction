@@ -626,6 +626,200 @@
             height: 40px;
         }
 
+        /* Modal & Import Dropzone Styles */
+        .dropzone {
+            border: 2px dashed var(--color-border-default);
+            border-radius: var(--radius-lg);
+            padding: 36px 20px;
+            text-align: center;
+            background: rgba(13, 17, 23, 0.5);
+            transition: var(--transition);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .dropzone:hover,
+        .dropzone.dragover {
+            border-color: var(--color-accent-fg);
+            background: rgba(47, 129, 247, 0.08);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .modal-container {
+            background: rgba(22, 27, 34, 0.98);
+            border: 1px solid var(--color-border-default);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6);
+            width: 100%;
+            max-width: 960px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 20px 24px 16px;
+            border-bottom: 1px solid var(--color-border-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .modal-header h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .modal-subtitle {
+            font-size: 13px;
+            color: var(--color-fg-muted);
+        }
+
+        .modal-close-btn {
+            background: transparent;
+            border: none;
+            color: var(--color-fg-muted);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 4px 8px;
+            height: auto;
+            border-radius: var(--radius-md);
+        }
+
+        .modal-close-btn:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-stats {
+            padding: 12px 24px;
+            background: rgba(13, 17, 23, 0.6);
+            border-bottom: 1px solid var(--color-border-muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .stat-pill {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: var(--color-btn-bg);
+            border: 1px solid var(--color-border-default);
+            color: var(--color-fg-default);
+        }
+
+        .stat-pill.stat-needs {
+            border-color: rgba(139, 148, 158, 0.4);
+            color: #c9d1d9;
+        }
+
+        .stat-pill.stat-wants {
+            border-color: rgba(47, 129, 247, 0.4);
+            color: #58a6ff;
+        }
+
+        .stat-pill.stat-savings {
+            border-color: rgba(227, 98, 9, 0.4);
+            color: #f0883e;
+        }
+
+        .import-table-wrapper {
+            overflow-y: auto;
+            max-height: 52vh;
+            padding: 0;
+            background: rgba(13, 17, 23, 0.5);
+        }
+
+        .import-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .import-table th {
+            position: sticky;
+            top: 0;
+            background: #161b22;
+            z-index: 2;
+            padding: 10px 12px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--color-border-default);
+        }
+
+        .import-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--color-border-muted);
+            vertical-align: middle;
+        }
+
+        .import-table tr:hover td {
+            background-color: rgba(110, 118, 129, 0.08);
+        }
+
+        .import-table input[type="text"],
+        .import-table input[type="date"],
+        .import-table select {
+            padding: 4px 8px;
+            font-size: 12px;
+            height: 30px;
+            background: #0d1117;
+            border: 1px solid var(--color-border-default);
+            border-radius: var(--radius-md);
+            color: var(--color-fg-default);
+        }
+
+        .import-table input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--color-accent-fg);
+            cursor: pointer;
+        }
+
+        .duplicate-badge {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 6px;
+            background: rgba(248, 81, 73, 0.15);
+            color: var(--color-danger-fg);
+            border-radius: 10px;
+            margin-left: 6px;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--color-border-muted);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background: rgba(22, 27, 34, 0.95);
+        }
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -666,6 +860,13 @@
                         <label for="selectedMonthInput" class="month-label">Active Month</label>
                         <input type="month" id="selectedMonthInput" class="month-input">
                     </div>
+                    <button type="button" id="headerUploadBtn" class="btn-primary" style="height: 34px; gap: 6px;">
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M7.47 10.78a.75.75 0 0 0 1.06 0l3.75-3.75a.75.75 0 0 0-1.06-1.06L8.75 8.44V1.75a.75.75 0 0 0-1.5 0v6.69L4.78 5.97a.75.75 0 0 0-1.06 1.06l3.75 3.75ZM3.75 13a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5Z"/>
+                        </svg>
+                        Upload Report
+                    </button>
+                    <input type="file" id="paypalFileInput" accept=".csv,text/csv" style="display: none;">
                     <button id="logoutBtn"
                         style="background: transparent; border: 1px solid var(--color-border-muted);">Sign Out</button>
                 </div>
@@ -676,7 +877,7 @@
                 <button class="UnderlineNav-item" data-target="tab-needs">Needs (50%)</button>
                 <button class="UnderlineNav-item" data-target="tab-wants">Wants (30%)</button>
                 <button class="UnderlineNav-item" data-target="tab-savings">Savings (20%)</button>
-                <button class="UnderlineNav-item" data-target="tab-export">Data & Export</button>
+                <button class="UnderlineNav-item" data-target="tab-export">Data & Import/Export</button>
             </nav>
 
             <main class="dashboard">
@@ -956,8 +1157,26 @@
                     </div>
                 </section>
 
-                <!-- EXPORT TAB -->
+                <!-- DATA & IMPORT/EXPORT TAB -->
                 <section id="tab-export" class="tab-pane">
+                    <!-- Import Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Import Bank / PayPal Report</h2>
+                        </div>
+                        <p style="color: var(--color-fg-muted); font-size: 14px;">Upload your PayPal CSV export or bank statement. The application automatically extracts completed debit expenditures, categorizes them into Needs (50%), Wants (30%), or Savings (20%), and lets you review them before updating your budget.</p>
+
+                        <div class="dropzone" id="csvDropzone">
+                            <svg width="32" height="32" viewBox="0 0 16 16" fill="currentColor" style="color: var(--color-accent-fg); margin-bottom: 8px;">
+                                <path d="M7.47 10.78a.75.75 0 0 0 1.06 0l3.75-3.75a.75.75 0 0 0-1.06-1.06L8.75 8.44V1.75a.75.75 0 0 0-1.5 0v6.69L4.78 5.97a.75.75 0 0 0-1.06 1.06l3.75 3.75ZM3.75 13a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5Z"/>
+                            </svg>
+                            <p style="font-weight: 600; color: #ffffff; margin-bottom: 4px;">Drag and drop your PayPal CSV report here</p>
+                            <p style="font-size: 12px; color: var(--color-fg-muted); margin-bottom: 14px;">or browse from your device</p>
+                            <button type="button" class="btn-primary" onclick="document.getElementById('paypalFileInput').click()">Browse CSV File</button>
+                        </div>
+                    </div>
+
+                    <!-- Export Card -->
                     <div class="card">
                         <div class="card-header">
                             <h2>Data Export</h2>
@@ -976,6 +1195,52 @@
         </div>
     </div>
 
+    <!-- Review & Import Modal -->
+    <div id="importModal" class="modal-overlay" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div>
+                    <h2>Review Extracted Transactions</h2>
+                    <p class="modal-subtitle" id="importModalSubtitle">Verify categories and select transactions to import into your budget.</p>
+                </div>
+                <button type="button" class="modal-close-btn" id="closeImportModalBtn">✕</button>
+            </div>
+
+            <div class="modal-stats" id="importModalStats">
+                <span class="stat-pill" id="statTotalCount">0 selected</span>
+                <span class="stat-pill" id="statTotalAmount">Total: €0.00</span>
+                <span class="stat-pill stat-needs" id="statNeedsAmount">Needs: €0.00</span>
+                <span class="stat-pill stat-wants" id="statWantsAmount">Wants: €0.00</span>
+                <span class="stat-pill stat-savings" id="statSavingsAmount">Savings: €0.00</span>
+            </div>
+
+            <div class="import-table-wrapper">
+                <table class="import-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40px; text-align: center;">
+                                <input type="checkbox" id="selectAllImportTxs" checked title="Select / Deselect All">
+                            </th>
+                            <th style="width: 140px;">Date</th>
+                            <th>Merchant / Description</th>
+                            <th style="width: 95px; text-align: right;">Amount</th>
+                            <th style="width: 145px;">Bucket</th>
+                            <th style="width: 175px;">Category</th>
+                        </tr>
+                    </thead>
+                    <tbody id="importTableBody"></tbody>
+                </table>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="cancelImportBtn">Cancel</button>
+                <button type="button" class="btn-primary" id="confirmImportBtn">
+                    Import Selected (<span id="confirmImportCount">0</span>)
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -986,7 +1251,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, setDoc, getDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         // ==========================================
@@ -1422,6 +1687,443 @@
             transactions.forEach(tx => { csv += `${tx.date},${tx.type},${tx.category},${tx.amount},"${tx.note ? tx.note.replace(/"/g, '""') : ''}"\n`; });
             const link = document.createElement("a"); link.href = encodeURI(csv); link.download = `Budget_Export_${getTodayString()}.csv`; link.click();
         };
+
+        // ==========================================
+        // PAYPAL / BANK CSV IMPORT SYSTEM
+        // ==========================================
+        const categoryOptions = {
+            needs: ["Groceries", "Miscellaneous", "Gas / Transportation", "Phone Bill", "Rent"],
+            wants: ["Clothing", "Eating out", "Personal Care", "Hobbies"],
+            savings: ["Emergency Fund", "Investments / Stocks", "Retirement", "Other Savings"]
+        };
+
+        function categorizeMerchant(name) {
+            const n = (name || '').toLowerCase();
+            // Groceries (Needs)
+            if (/rewe|aldi|lidl|netto|edeka|penny|kaufland|spar|nammamarkt|supermarkt|lebensmittel|markt|fresh food/i.test(n)) {
+                return { type: 'needs', category: 'Groceries' };
+            }
+            // Clothing (Wants)
+            if (/c&a|h&m|new yorker|zara|uniqlo|primark|zalando|asos|clothing|kleidung/i.test(n)) {
+                return { type: 'wants', category: 'Clothing' };
+            }
+            // Eating out (Wants)
+            if (/baeckerei|bäckerei|cafe|café|bistro|burger|restaurant|pizza|sushi|gelateria|eis|bar|imbiss|döner|koez firat|backwerk|kaffee|susify/i.test(n)) {
+                return { type: 'wants', category: 'Eating out' };
+            }
+            // Gas / Transportation (Needs)
+            if (/bahn|db vertrieb|hvv|bvg|transport|taxi|uber|bolt|voi|tier|lime|flixbus|tankstelle|shell|aral|total/i.test(n)) {
+                return { type: 'needs', category: 'Gas / Transportation' };
+            }
+            // Personal Care (Wants)
+            if (/rossmann|dm-drogerie|dm drogerie|müller|douglas|apotheke|friseur|barber/i.test(n)) {
+                return { type: 'wants', category: 'Personal Care' };
+            }
+            // Hobbies (Wants)
+            if (/fit|fitness|gym|sport|creativer|kino|cinema|steam|playstation|nintendo/i.test(n)) {
+                return { type: 'wants', category: 'Hobbies' };
+            }
+            // Phone / Utilities (Needs)
+            if (/telekom|vodafone|o2|telefonica|strom|vattenfall/i.test(n)) {
+                return { type: 'needs', category: 'Phone Bill' };
+            }
+            // Miscellaneous (Needs)
+            return { type: 'needs', category: 'Miscellaneous' };
+        }
+
+        function parsePayPalCSV(text) {
+            const rows = [];
+            let row = [];
+            let inQuotes = false;
+            let field = '';
+
+            for (let i = 0; i < text.length; i++) {
+                const c = text[i];
+                const next = text[i + 1];
+
+                if (c === '"') {
+                    if (inQuotes && next === '"') {
+                        field += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (c === ',' && !inQuotes) {
+                    row.push(field);
+                    field = '';
+                } else if ((c === '\r' || c === '\n') && !inQuotes) {
+                    if (c === '\r' && next === '\n') i++;
+                    row.push(field);
+                    field = '';
+                    if (row.length > 1 || (row.length === 1 && row[0] !== '')) {
+                        rows.push(row);
+                    }
+                    row = [];
+                } else {
+                    field += c;
+                }
+            }
+            if (row.length > 0 || field !== '') {
+                row.push(field);
+                if (row.length > 1 || (row.length === 1 && row[0] !== '')) {
+                    rows.push(row);
+                }
+            }
+
+            if (rows.length < 2) return [];
+
+            const headers = rows[0].map(h => h.trim());
+            const dateIdx = headers.indexOf('Date');
+            const nameIdx = headers.indexOf('Name');
+            const typeIdx = headers.indexOf('Type');
+            const statusIdx = headers.indexOf('Status');
+            const grossIdx = headers.indexOf('Gross');
+            const balanceImpactIdx = headers.indexOf('Balance Impact');
+            const txnIdIdx = headers.indexOf('Transaction ID');
+
+            if (dateIdx === -1 || grossIdx === -1) {
+                throw new Error("Invalid CSV format: Missing 'Date' or 'Gross' columns.");
+            }
+
+            const parseDate = (dStr) => {
+                const trimmed = (dStr || '').trim();
+                const dmyMatch = trimmed.match(/^(\d{1,2})[\/\.](\d{1,2})[\/\.](\d{4})$/);
+                if (dmyMatch) {
+                    const [, d, m, y] = dmyMatch;
+                    return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+                }
+                if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return trimmed;
+                return trimmed;
+            };
+
+            const parseAmount = (amtStr) => {
+                if (!amtStr) return 0;
+                let s = amtStr.trim().replace(/['"$\s€£₹]/g, '');
+                if (s.includes(',') && !s.includes('.')) {
+                    s = s.replace(',', '.');
+                } else if (s.includes('.') && s.includes(',')) {
+                    if (s.lastIndexOf(',') > s.lastIndexOf('.')) {
+                        s = s.replace(/\./g, '').replace(',', '.');
+                    } else {
+                        s = s.replace(/,/g, '');
+                    }
+                }
+                const val = parseFloat(s);
+                return isNaN(val) ? 0 : Math.abs(val);
+            };
+
+            const results = [];
+            for (let i = 1; i < rows.length; i++) {
+                const r = rows[i];
+                const status = statusIdx !== -1 ? r[statusIdx] : 'Completed';
+                const impact = balanceImpactIdx !== -1 ? r[balanceImpactIdx] : 'Debit';
+                const type = typeIdx !== -1 ? r[typeIdx] : '';
+
+                const isCompleted = !status || status.trim().toLowerCase() === 'completed';
+                const isDebit = impact ? impact.trim().toLowerCase() === 'debit' : true;
+                const isNotInternalHold = !type.toLowerCase().includes('account hold');
+
+                if (isCompleted && isDebit && isNotInternalHold) {
+                    const rawAmt = r[grossIdx];
+                    const amount = parseAmount(rawAmt);
+                    if (amount > 0) {
+                        const name = nameIdx !== -1 ? r[nameIdx].trim() : 'PayPal Transaction';
+                        const catInfo = categorizeMerchant(name);
+                        results.push({
+                            date: parseDate(r[dateIdx]),
+                            rawDate: r[dateIdx],
+                            category: catInfo.category,
+                            type: catInfo.type,
+                            amount: amount,
+                            note: name,
+                            paypalTxId: txnIdIdx !== -1 ? r[txnIdIdx].trim() : ''
+                        });
+                    }
+                }
+            }
+            return results;
+        }
+
+        let currentImportItems = [];
+
+        function handleCSVFile(file) {
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const text = e.target.result;
+                    const parsed = parsePayPalCSV(text);
+                    if (parsed.length === 0) {
+                        alert("No eligible debit transactions found in this CSV.");
+                        return;
+                    }
+                    openImportModal(parsed);
+                } catch (err) {
+                    alert("Failed to parse CSV file: " + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function openImportModal(items) {
+            currentImportItems = items.map((item, idx) => {
+                const isDuplicate = transactions.some(tx =>
+                    (item.paypalTxId && tx.paypalTxId === item.paypalTxId) ||
+                    (tx.date === item.date && Math.abs(tx.amount - item.amount) < 0.001 && tx.note === item.note)
+                );
+                return {
+                    ...item,
+                    id: idx,
+                    selected: !isDuplicate,
+                    isDuplicate: isDuplicate
+                };
+            });
+
+            renderImportModal();
+            document.getElementById('importModal').style.display = 'flex';
+        }
+
+        function closeImportModal() {
+            document.getElementById('importModal').style.display = 'none';
+            const fInput = document.getElementById('paypalFileInput');
+            if (fInput) fInput.value = '';
+        }
+
+        function renderImportModal() {
+            const tbody = document.getElementById('importTableBody');
+            tbody.innerHTML = '';
+            const fmt = getFormatter();
+
+            const duplicateCount = currentImportItems.filter(i => i.isDuplicate).length;
+            const subtitleEl = document.getElementById('importModalSubtitle');
+            if (duplicateCount > 0) {
+                subtitleEl.textContent = `Found ${currentImportItems.length} transactions (${currentImportItems.length - duplicateCount} new, ${duplicateCount} already imported).`;
+            } else {
+                subtitleEl.textContent = `Found ${currentImportItems.length} transactions. Verify or adjust categories before importing.`;
+            }
+
+            currentImportItems.forEach((item) => {
+                const tr = document.createElement('tr');
+                if (item.isDuplicate) tr.style.opacity = '0.7';
+
+                const typeSelect = document.createElement('select');
+                typeSelect.className = 'import-type-select';
+                [
+                    { val: 'needs', label: 'Needs (50%)' },
+                    { val: 'wants', label: 'Wants (30%)' },
+                    { val: 'savings', label: 'Savings (20%)' }
+                ].forEach(opt => {
+                    const o = document.createElement('option');
+                    o.value = opt.val;
+                    o.textContent = opt.label;
+                    if (opt.val === item.type) o.selected = true;
+                    typeSelect.appendChild(o);
+                });
+
+                const catSelect = document.createElement('select');
+                catSelect.className = 'import-cat-select';
+                function populateCats(type, selectedCat) {
+                    catSelect.innerHTML = '';
+                    (categoryOptions[type] || []).forEach(cat => {
+                        const o = document.createElement('option');
+                        o.value = cat;
+                        o.textContent = cat;
+                        if (cat === selectedCat) o.selected = true;
+                        catSelect.appendChild(o);
+                    });
+                }
+                populateCats(item.type, item.category);
+
+                typeSelect.addEventListener('change', (e) => {
+                    item.type = e.target.value;
+                    item.category = (categoryOptions[item.type] || [])[0] || 'Miscellaneous';
+                    populateCats(item.type, item.category);
+                    updateImportStats();
+                });
+
+                catSelect.addEventListener('change', (e) => {
+                    item.category = e.target.value;
+                    updateImportStats();
+                });
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = item.selected;
+                checkbox.addEventListener('change', (e) => {
+                    item.selected = e.target.checked;
+                    updateImportStats();
+                });
+
+                const dateInput = document.createElement('input');
+                dateInput.type = 'date';
+                dateInput.value = item.date;
+                dateInput.addEventListener('change', (e) => {
+                    item.date = e.target.value;
+                });
+
+                const noteInput = document.createElement('input');
+                noteInput.type = 'text';
+                noteInput.value = item.note;
+                noteInput.style.width = '100%';
+                noteInput.addEventListener('change', (e) => {
+                    item.note = e.target.value;
+                });
+
+                const tdCheck = document.createElement('td');
+                tdCheck.style.textAlign = 'center';
+                tdCheck.appendChild(checkbox);
+
+                const tdDate = document.createElement('td');
+                tdDate.appendChild(dateInput);
+
+                const tdNote = document.createElement('td');
+                tdNote.appendChild(noteInput);
+                if (item.isDuplicate) {
+                    const dupBadge = document.createElement('span');
+                    dupBadge.className = 'duplicate-badge';
+                    dupBadge.textContent = 'Imported';
+                    tdNote.appendChild(dupBadge);
+                }
+
+                const tdAmt = document.createElement('td');
+                tdAmt.className = 'amount-col';
+                tdAmt.textContent = fmt.format(item.amount);
+
+                const tdType = document.createElement('td');
+                tdType.appendChild(typeSelect);
+
+                const tdCat = document.createElement('td');
+                tdCat.appendChild(catSelect);
+
+                tr.appendChild(tdCheck);
+                tr.appendChild(tdDate);
+                tr.appendChild(tdNote);
+                tr.appendChild(tdAmt);
+                tr.appendChild(tdType);
+                tr.appendChild(tdCat);
+
+                tbody.appendChild(tr);
+            });
+
+            updateImportStats();
+        }
+
+        function updateImportStats() {
+            const selected = currentImportItems.filter(i => i.selected);
+            let total = 0, needs = 0, wants = 0, savings = 0;
+            selected.forEach(i => {
+                total += i.amount;
+                if (i.type === 'needs') needs += i.amount;
+                else if (i.type === 'wants') wants += i.amount;
+                else if (i.type === 'savings') savings += i.amount;
+            });
+
+            const fmt = getFormatter();
+            document.getElementById('statTotalCount').textContent = `${selected.length} of ${currentImportItems.length} selected`;
+            document.getElementById('statTotalAmount').textContent = `Total: ${fmt.format(total)}`;
+            document.getElementById('statNeedsAmount').textContent = `Needs: ${fmt.format(needs)}`;
+            document.getElementById('statWantsAmount').textContent = `Wants: ${fmt.format(wants)}`;
+            document.getElementById('statSavingsAmount').textContent = `Savings: ${fmt.format(savings)}`;
+            document.getElementById('confirmImportCount').textContent = selected.length;
+
+            const allChecked = currentImportItems.length > 0 && currentImportItems.every(i => i.selected);
+            document.getElementById('selectAllImportTxs').checked = allChecked;
+            document.getElementById('confirmImportBtn').disabled = selected.length === 0;
+        }
+
+        const fileInput = document.getElementById('paypalFileInput');
+        if (fileInput) {
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files && e.target.files[0]) {
+                    handleCSVFile(e.target.files[0]);
+                }
+            });
+        }
+
+        const headerUploadBtn = document.getElementById('headerUploadBtn');
+        if (headerUploadBtn) {
+            headerUploadBtn.addEventListener('click', () => {
+                fileInput.click();
+            });
+        }
+
+        const dropzone = document.getElementById('csvDropzone');
+        if (dropzone) {
+            ['dragenter', 'dragover'].forEach(name => {
+                dropzone.addEventListener(name, (e) => {
+                    e.preventDefault();
+                    dropzone.classList.add('dragover');
+                });
+            });
+            ['dragleave', 'drop'].forEach(name => {
+                dropzone.addEventListener(name, (e) => {
+                    e.preventDefault();
+                    dropzone.classList.remove('dragover');
+                });
+            });
+            dropzone.addEventListener('drop', (e) => {
+                if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    handleCSVFile(e.dataTransfer.files[0]);
+                }
+            });
+        }
+
+        document.getElementById('closeImportModalBtn').addEventListener('click', closeImportModal);
+        document.getElementById('cancelImportBtn').addEventListener('click', closeImportModal);
+
+        document.getElementById('selectAllImportTxs').addEventListener('change', (e) => {
+            const isChecked = e.target.checked;
+            currentImportItems.forEach(i => i.selected = isChecked);
+            renderImportModal();
+        });
+
+        document.getElementById('confirmImportBtn').addEventListener('click', async () => {
+            const toImport = currentImportItems.filter(i => i.selected);
+            if (toImport.length === 0) return;
+
+            const btn = document.getElementById('confirmImportBtn');
+            btn.disabled = true;
+            btn.textContent = "Importing...";
+
+            try {
+                const batch = writeBatch(db);
+                const txCol = collection(db, "users", currentUser.uid, "transactions");
+
+                toImport.forEach(item => {
+                    const newDoc = doc(txCol);
+                    batch.set(newDoc, {
+                        date: item.date,
+                        type: item.type,
+                        category: item.category,
+                        amount: item.amount,
+                        note: item.note,
+                        paypalTxId: item.paypalTxId || '',
+                        createdAt: Date.now()
+                    });
+                });
+
+                await batch.commit();
+
+                // Switch view to the month of the imported transactions
+                if (toImport[0] && toImport[0].date) {
+                    const importedMonth = toImport[0].date.slice(0, 7);
+                    if (importedMonth && importedMonth !== selectedMonthKey) {
+                        selectedMonthKey = importedMonth;
+                        const mInput = document.getElementById('selectedMonthInput');
+                        if (mInput) mInput.value = selectedMonthKey;
+                        updateIncomeForMonth();
+                    }
+                }
+
+                closeImportModal();
+                alert(`Successfully imported ${toImport.length} transactions into ${selectedMonthKey}!`);
+            } catch (err) {
+                alert("Import failed: " + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Import Selected";
+            }
+        });
     </script>
 </body>
 

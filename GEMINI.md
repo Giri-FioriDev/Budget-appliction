@@ -207,12 +207,17 @@ When $\text{Spent}_{\text{cat}} > \text{Limit}_{\text{cat}}$, gauge segments upd
 
 ---
 
-## 8. Data Portability & Export Subsystem
+## 8. Data Portability: Import & Export Subsystem
 
-The application provides zero-dependency data export operations executed client-side:
+The application provides zero-dependency data interoperability executed entirely client-side:
 
 ```mermaid
 flowchart LR
+    File["PayPal CSV Report"] --> Parser["parsePayPalCSV()"]
+    Parser --> Categorizer["categorizeMerchant()"]
+    Categorizer --> Modal["Review & Import Modal"]
+    Modal --> FirestoreBatch["Firestore writeBatch()"]
+    
     Transactions[(transactions array)] --> CopyFn["copyForSheets()"]
     Transactions --> CSVFn["downloadCSV()"]
     
@@ -221,11 +226,17 @@ flowchart LR
     Blob --> Download["Anchor <a> click download"]
 ```
 
-1. **Copy for Sheets (`copyForSheets`)**:
+1. **PayPal Statement Import (`parsePayPalCSV` & `handleCSVFile`)**:
+   - Parses RFC-4180 standard PayPal statement exports directly in the browser via `FileReader`.
+   - Filters out non-expenditure records (authorization holds, memos, bank account funding deposits) to extract only settled, completed debit payments.
+   - Automatically parses European comma amounts (e.g. `"-6,87"` -> `6.87`) and international date formats (`DD/MM/YYYY`, `YYYY-MM-DD`).
+   - Runs a keyword rule engine (`categorizeMerchant`) to pre-assign transactions to appropriate buckets (Needs, Wants, Savings) and categories (Groceries, Dining, Clothing, Transportation, Personal Care, Hobbies, Utilities).
+   - Opens an interactive Review Modal displaying statistics, individual edit inputs, duplicate detection, and a batch import trigger (`writeBatch`) committing directly to Cloud Firestore.
+2. **Copy for Sheets (`copyForSheets`)**:
    - Aggregates all logged transactions by category name.
    - Builds a Tab-Separated Value (TSV) payload (`Category\tTotal Logged\n`).
    - Copies directly to system clipboard using `navigator.clipboard.writeText`, formatted for paste into Google Sheets or Microsoft Excel.
-2. **Download CSV (`downloadCSV`)**:
+3. **Download CSV (`downloadCSV`)**:
    - Generates RFC-compliant CSV formatted text: `Date,Type,Category,Amount,Note`.
    - Encodes special characters and escapes quotes in notes.
    - Triggers browser download via a synthetic `<a download="Budget_Export_YYYY-MM-DD.csv">` element.
