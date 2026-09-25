@@ -261,9 +261,12 @@ flowchart LR
 
 ## 10. Security Architecture & Considerations
 
-### 10.1 Authentication & Secrets
-- Firebase configuration (`apiKey`, `authDomain`, `projectId`, etc.) is embedded in client code in [`index.html`](file:///D:/budget%20app/Budget-appliction/Budget-appliction/index.html). In Firebase client architecture, these identifiers are non-confidential public keys.
-- Real security is enforced via **Cloud Firestore Security Rules**.
+### 10.1 Authentication & Secrets Protection
+- **Decoupled Configuration**: To protect private project credentials in a public GitHub repository, Firebase configuration is completely decoupled from [`index.html`](file:///D:/budget%20app/Budget-appliction/Budget-appliction/index.html).
+  - Credentials are loaded from [`firebase-config.js`](file:///D:/budget%20app/Budget-appliction/Budget-appliction/firebase-config.js), which is strictly ignored by Git via [`.gitignore`](file:///D:/budget%20app/Budget-appliction/Budget-appliction/.gitignore).
+  - An in-app configuration modal allows users to connect their Firebase project dynamically, securely storing credentials in the browser's `localStorage`.
+- **Google Cloud API Key Restrictions**: To prevent unauthorized domain usage of the API key, restrict the key in the Google Cloud Console under *APIs & Services > Credentials* to specific authorized HTTP referrers (e.g., `https://<username>.github.io/*`, `http://localhost:*`).
+- **Database Authorization**: Actual database security is enforced via **Cloud Firestore Security Rules**.
 
 ### 10.2 Recommended Cloud Firestore Security Rules
 To safeguard user data against unauthorized read/write access across tenant boundaries, Firestore security rules must enforce ownership validation:

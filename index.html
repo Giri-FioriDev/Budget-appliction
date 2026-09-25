@@ -16,6 +16,8 @@
     <meta name="apple-mobile-web-app-title" content="Budget">
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Load gitignored Firebase configuration if available -->
+    <script src="firebase-config.js"></script>
     <style>
         :root {
             color-scheme: dark;
@@ -1000,6 +1002,10 @@
         <button id="loginBtn" class="btn-primary" style="height: 48px; padding: 0 30px; font-size: 16px;">
             Sign in with Google
         </button>
+        <button type="button" id="loginConfigBtn"
+            style="background: transparent; border: none; color: var(--color-fg-muted); font-size: 13px; cursor: pointer; text-decoration: underline; margin-top: 18px;">
+            ⚙️ Configure Firebase Connection
+        </button>
     </div>
 
     <!-- Main Application UI -->
@@ -1018,7 +1024,8 @@
                     </div>
                     <button type="button" id="headerUploadBtn" class="btn-primary" style="height: 34px; gap: 6px;">
                         <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-                            <path d="M7.47 10.78a.75.75 0 0 0 1.06 0l3.75-3.75a.75.75 0 0 0-1.06-1.06L8.75 8.44V1.75a.75.75 0 0 0-1.5 0v6.69L4.78 5.97a.75.75 0 0 0-1.06 1.06l3.75 3.75ZM3.75 13a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5Z"/>
+                            <path
+                                d="M7.47 10.78a.75.75 0 0 0 1.06 0l3.75-3.75a.75.75 0 0 0-1.06-1.06L8.75 8.44V1.75a.75.75 0 0 0-1.5 0v6.69L4.78 5.97a.75.75 0 0 0-1.06 1.06l3.75 3.75ZM3.75 13a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5Z" />
                         </svg>
                         Upload Report
                     </button>
@@ -1191,14 +1198,16 @@
                         <div class="donut-grid">
                             <div class="donut-card">
                                 <h3>Groceries</h3>
-                                <div class="donut-limit-label" id="groceriesLimitLabel">Limit: <span class="limit-val">€150.00</span></div>
+                                <div class="donut-limit-label" id="groceriesLimitLabel">Limit: <span
+                                        class="limit-val">€150.00</span></div>
                                 <div class="mini-chart-container">
                                     <canvas id="groceriesDonut"></canvas>
                                 </div>
                             </div>
                             <div class="donut-card">
                                 <h3>Miscellaneous</h3>
-                                <div class="donut-limit-label" id="miscellaneousLimitLabel">Limit: <span class="limit-val">€60.00</span></div>
+                                <div class="donut-limit-label" id="miscellaneousLimitLabel">Limit: <span
+                                        class="limit-val">€60.00</span></div>
                                 <div class="mini-chart-container">
                                     <canvas id="miscellaneousDonut"></canvas>
                                 </div>
@@ -1269,14 +1278,16 @@
                         <div class="donut-grid">
                             <div class="donut-card">
                                 <h3>Clothing</h3>
-                                <div class="donut-limit-label" id="clothingLimitLabel">Limit: <span class="limit-val">€100.00</span></div>
+                                <div class="donut-limit-label" id="clothingLimitLabel">Limit: <span
+                                        class="limit-val">€100.00</span></div>
                                 <div class="mini-chart-container">
                                     <canvas id="clothingDonut"></canvas>
                                 </div>
                             </div>
                             <div class="donut-card">
                                 <h3>Eating Out</h3>
-                                <div class="donut-limit-label" id="eatingOutLimitLabel">Limit: <span class="limit-val">€100.00</span></div>
+                                <div class="donut-limit-label" id="eatingOutLimitLabel">Limit: <span
+                                        class="limit-val">€100.00</span></div>
                                 <div class="mini-chart-container">
                                     <canvas id="eatingOutDonut"></canvas>
                                 </div>
@@ -1352,15 +1363,23 @@
                         <div class="card-header">
                             <h2>Import Bank / PayPal Report</h2>
                         </div>
-                        <p style="color: var(--color-fg-muted); font-size: 14px;">Upload your PayPal CSV export or bank statement. The application automatically extracts completed debit expenditures, categorizes them into Needs (50%), Wants (30%), or Savings (20%), and lets you review them before updating your budget.</p>
+                        <p style="color: var(--color-fg-muted); font-size: 14px;">Upload your PayPal CSV export or bank
+                            statement. The application automatically extracts completed debit expenditures, categorizes
+                            them into Needs (50%), Wants (30%), or Savings (20%), and lets you review them before
+                            updating your budget.</p>
 
                         <div class="dropzone" id="csvDropzone">
-                            <svg width="32" height="32" viewBox="0 0 16 16" fill="currentColor" style="color: var(--color-accent-fg); margin-bottom: 8px;">
-                                <path d="M7.47 10.78a.75.75 0 0 0 1.06 0l3.75-3.75a.75.75 0 0 0-1.06-1.06L8.75 8.44V1.75a.75.75 0 0 0-1.5 0v6.69L4.78 5.97a.75.75 0 0 0-1.06 1.06l3.75 3.75ZM3.75 13a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5Z"/>
+                            <svg width="32" height="32" viewBox="0 0 16 16" fill="currentColor"
+                                style="color: var(--color-accent-fg); margin-bottom: 8px;">
+                                <path
+                                    d="M7.47 10.78a.75.75 0 0 0 1.06 0l3.75-3.75a.75.75 0 0 0-1.06-1.06L8.75 8.44V1.75a.75.75 0 0 0-1.5 0v6.69L4.78 5.97a.75.75 0 0 0-1.06 1.06l3.75 3.75ZM3.75 13a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5Z" />
                             </svg>
-                            <p style="font-weight: 600; color: #ffffff; margin-bottom: 4px;">Drag and drop your PayPal CSV report here</p>
-                            <p style="font-size: 12px; color: var(--color-fg-muted); margin-bottom: 14px;">or browse from your device</p>
-                            <button type="button" class="btn-primary" onclick="document.getElementById('paypalFileInput').click()">Browse CSV File</button>
+                            <p style="font-weight: 600; color: #ffffff; margin-bottom: 4px;">Drag and drop your PayPal
+                                CSV report here</p>
+                            <p style="font-size: 12px; color: var(--color-fg-muted); margin-bottom: 14px;">or browse
+                                from your device</p>
+                            <button type="button" class="btn-primary"
+                                onclick="document.getElementById('paypalFileInput').click()">Browse CSV File</button>
                         </div>
                     </div>
 
@@ -1377,6 +1396,23 @@
                             <button onclick="downloadCSV()">Download CSV</button>
                         </div>
                     </div>
+
+                    <!-- Firebase Project Connection Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Firebase Project Connection</h2>
+                        </div>
+                        <p style="color: var(--color-fg-muted); font-size: 14px;">
+                            Connected Project: <strong id="connectedProjectId"
+                                style="color: var(--color-accent-fg);">-</strong>
+                        </p>
+                        <p style="color: var(--color-fg-muted); font-size: 13px;">
+                            Your Firebase credentials are kept private and never committed to GitHub.
+                        </p>
+                        <div class="export-section">
+                            <button type="button" id="tabConfigBtn">Manage Firebase Configuration</button>
+                        </div>
+                    </div>
                 </section>
 
             </main>
@@ -1389,7 +1425,8 @@
             <div class="modal-header">
                 <div>
                     <h2>Review Extracted Transactions</h2>
-                    <p class="modal-subtitle" id="importModalSubtitle">Verify categories and select transactions to import into your budget.</p>
+                    <p class="modal-subtitle" id="importModalSubtitle">Verify categories and select transactions to
+                        import into your budget.</p>
                 </div>
                 <button type="button" class="modal-close-btn" id="closeImportModalBtn">✕</button>
             </div>
@@ -1429,6 +1466,46 @@
         </div>
     </div>
 
+    <!-- Firebase Configuration Modal -->
+    <div id="firebaseConfigModal" class="modal-overlay" style="display: none;">
+        <div class="modal-container" style="max-width: 620px;">
+            <div class="modal-header">
+                <div>
+                    <h2>Firebase Configuration</h2>
+                    <p class="modal-subtitle">Credentials are stored locally in your browser and never committed to
+                        GitHub.</p>
+                </div>
+                <button type="button" class="modal-close-btn" id="closeConfigModalBtn">✕</button>
+            </div>
+            <div style="padding: 24px; display: flex; flex-direction: column; gap: 16px;">
+                <p style="font-size: 13px; color: var(--color-fg-muted); line-height: 1.5;">
+                    To keep your repository public and safe, Firebase project credentials are not hardcoded. Paste your
+                    Firebase web app configuration below (from your Firebase Console):
+                </p>
+                <div class="form-group">
+                    <label for="firebaseConfigInput">Firebase Config (JavaScript Object or JSON)</label>
+                    <textarea id="firebaseConfigInput" rows="7"
+                        style="font-family: monospace; font-size: 13px; resize: vertical;" placeholder='const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "your-app.firebaseapp.com",
+  projectId: "your-app",
+  storageBucket: "your-app.firebasestorage.app",
+  messagingSenderId: "...",
+  appId: "..."
+};'></textarea>
+                </div>
+                <div id="configErrorMsg"
+                    style="display: none; color: var(--color-danger-fg); font-size: 13px; font-weight: 500;"></div>
+                <div style="display: flex; gap: 12px; justify-content: flex-end; align-items: center; margin-top: 8px;">
+                    <button type="button" id="clearConfigBtn" class="btn-danger" style="margin-right: auto;">Clear
+                        Stored Config</button>
+                    <button type="button" id="cancelConfigBtn">Cancel</button>
+                    <button type="button" id="saveConfigBtn" class="btn-primary">Save & Connect</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -1443,22 +1520,127 @@
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         // ==========================================
-        // PASTE YOUR COPIED FIREBASE CONFIG BELOW
+        // DYNAMIC FIREBASE CONFIGURATION & INITIALIZATION
+        // Kept private from public Git repositories
         // ==========================================
-        const firebaseConfig = {
-            apiKey: "AIzaSyCMPNlhtA4iMb2_lNGTrMvVZ1d4Iyh8-9Q",
-            authDomain: "budget-tracker-66cf5.firebaseapp.com",
-            projectId: "budget-tracker-66cf5",
-            storageBucket: "budget-tracker-66cf5.firebasestorage.app",
-            messagingSenderId: "885351461202",
-            appId: "1:885351461202:web:04c6fe80866c0924e20a8b",
-            measurementId: "G-KE8JCPB4EC"
-        };
+        function resolveFirebaseConfig() {
+            // 1. Check window.firebaseConfig (loaded from gitignored firebase-config.js)
+            if (window.firebaseConfig && window.firebaseConfig.apiKey && !window.firebaseConfig.apiKey.includes('YOUR_')) {
+                return window.firebaseConfig;
+            }
+            // 2. Check localStorage (saved by user in browser)
+            try {
+                const stored = localStorage.getItem('budget_firebase_config');
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    if (parsed && parsed.apiKey && !parsed.apiKey.includes('YOUR_')) {
+                        return parsed;
+                    }
+                }
+            } catch (e) {
+                console.error('Error reading stored Firebase config', e);
+            }
+            return null;
+        }
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
+        function parsePastedConfig(text) {
+            if (!text || !text.trim()) return null;
+            const trimmed = text.trim();
+            try {
+                const obj = JSON.parse(trimmed);
+                if (obj && obj.apiKey && obj.projectId) return obj;
+            } catch (e) { }
+
+            const keys = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId', 'measurementId'];
+            const result = {};
+            for (const key of keys) {
+                const regex = new RegExp(`${key}\\s*:\\s*["']([^"']+)["']`, 'i');
+                const match = trimmed.match(regex);
+                if (match && match[1]) {
+                    result[key] = match[1].trim();
+                }
+            }
+
+            if (result.apiKey && result.projectId) {
+                return result;
+            }
+            return null;
+        }
+
+        const configModal = document.getElementById('firebaseConfigModal');
+        const configInput = document.getElementById('firebaseConfigInput');
+        const configError = document.getElementById('configErrorMsg');
+        const closeConfigBtn = document.getElementById('closeConfigModalBtn');
+        const cancelConfigBtn = document.getElementById('cancelConfigBtn');
+        const saveConfigBtn = document.getElementById('saveConfigBtn');
+        const clearConfigBtn = document.getElementById('clearConfigBtn');
+
+        function showConfigModal(isMandatory = false) {
+            configError.style.display = 'none';
+            configError.textContent = '';
+            if (isMandatory) {
+                closeConfigBtn.style.display = 'none';
+                cancelConfigBtn.style.display = 'none';
+            } else {
+                closeConfigBtn.style.display = 'block';
+                cancelConfigBtn.style.display = 'inline-flex';
+            }
+            const currentCfg = resolveFirebaseConfig();
+            if (currentCfg) {
+                configInput.value = JSON.stringify(currentCfg, null, 2);
+            } else {
+                configInput.value = '';
+            }
+            configModal.style.display = 'flex';
+        }
+
+        function hideConfigModal() {
+            configModal.style.display = 'none';
+        }
+
+        if (closeConfigBtn) closeConfigBtn.addEventListener('click', hideConfigModal);
+        if (cancelConfigBtn) cancelConfigBtn.addEventListener('click', hideConfigModal);
+
+        if (saveConfigBtn) {
+            saveConfigBtn.addEventListener('click', () => {
+                const parsed = parsePastedConfig(configInput.value);
+                if (!parsed || !parsed.apiKey || !parsed.projectId) {
+                    configError.textContent = 'Invalid configuration. Please make sure to include apiKey and projectId.';
+                    configError.style.display = 'block';
+                    return;
+                }
+                localStorage.setItem('budget_firebase_config', JSON.stringify(parsed));
+                window.location.reload();
+            });
+        }
+
+        if (clearConfigBtn) {
+            clearConfigBtn.addEventListener('click', () => {
+                const hasLocal = !!localStorage.getItem('budget_firebase_config');
+                if (hasLocal) {
+                    localStorage.removeItem('budget_firebase_config');
+                    alert('Stored Firebase configuration cleared.');
+                    window.location.reload();
+                } else if (window.firebaseConfig && window.firebaseConfig.apiKey) {
+                    alert('Configuration is currently active via local "firebase-config.js". You can edit or remove that file to disconnect.');
+                } else {
+                    alert('No stored configuration found.');
+                }
+            });
+        }
+
+        const loginConfigBtn = document.getElementById('loginConfigBtn');
+        if (loginConfigBtn) loginConfigBtn.addEventListener('click', () => showConfigModal(false));
+
+        const tabConfigBtn = document.getElementById('tabConfigBtn');
+        if (tabConfigBtn) tabConfigBtn.addEventListener('click', () => showConfigModal(false));
+
+        const firebaseConfig = resolveFirebaseConfig();
+
+        let app = null;
+        let db = null;
+        let auth = null;
+        let provider = null;
 
         let currentUser = null;
         let unsubscribeTxs = null;
@@ -1500,25 +1682,47 @@
         const loginScreen = document.getElementById('login-screen');
         const appContainer = document.getElementById('app-container');
 
-        document.getElementById('loginBtn').addEventListener('click', () => {
-            signInWithPopup(auth, provider).catch(err => alert("Login failed: " + err.message));
-        });
+        if (!firebaseConfig) {
+            // No configuration present: Prompt user
+            loginScreen.style.display = 'none';
+            appContainer.style.display = 'none';
+            showConfigModal(true);
+        } else {
+            try {
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                provider = new GoogleAuthProvider();
 
-        document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
+                const projEl = document.getElementById('connectedProjectId');
+                if (projEl) projEl.textContent = firebaseConfig.projectId || 'Connected';
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                currentUser = user;
-                loginScreen.style.display = 'none';
-                appContainer.style.display = 'flex';
-                await initializeUserData();
-            } else {
-                currentUser = null;
-                loginScreen.style.display = 'flex';
-                appContainer.style.display = 'none';
-                if (unsubscribeTxs) unsubscribeTxs();
+                document.getElementById('loginBtn').addEventListener('click', () => {
+                    signInWithPopup(auth, provider).catch(err => alert("Login failed: " + err.message));
+                });
+
+                document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
+
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        currentUser = user;
+                        loginScreen.style.display = 'none';
+                        appContainer.style.display = 'flex';
+                        await initializeUserData();
+                    } else {
+                        currentUser = null;
+                        loginScreen.style.display = 'flex';
+                        appContainer.style.display = 'none';
+                        if (unsubscribeTxs) unsubscribeTxs();
+                    }
+                });
+            } catch (err) {
+                console.error("Firebase initialization failed:", err);
+                configError.textContent = "Initialization failed: " + err.message;
+                configError.style.display = 'block';
+                showConfigModal(true);
             }
-        });
+        }
 
         function resetDateInputs() {
             const today = getTodayString();
