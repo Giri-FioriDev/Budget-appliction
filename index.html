@@ -58,10 +58,10 @@
             min-height: 100vh;
             overflow-x: hidden;
             background-image:
-                linear-gradient(to right, rgba(13, 17, 23, 1) 35%, rgba(13, 17, 23, 0.85) 60%, transparent 100%),
+                linear-gradient(180deg, rgba(13, 17, 23, 0.94) 0%, rgba(13, 17, 23, 0.98) 100%),
                 url('image_c221eb.png');
-            background-position: left center, right top;
-            background-size: 100% 100%, auto 100vh;
+            background-position: center center;
+            background-size: cover;
             background-repeat: no-repeat;
             background-attachment: fixed;
         }
@@ -69,10 +69,10 @@
         @media (max-width: 1024px) {
             body {
                 background-image:
-                    linear-gradient(to bottom, rgba(13, 17, 23, 0.95) 0%, rgba(13, 17, 23, 0.7) 100%),
+                    linear-gradient(180deg, rgba(13, 17, 23, 0.95) 0%, rgba(13, 17, 23, 0.98) 100%),
                     url('image_c221eb.png');
-                background-position: center, center;
-                background-size: 100% 100%, cover;
+                background-position: center center;
+                background-size: cover;
             }
         }
 
@@ -83,25 +83,26 @@
         }
 
         .app-container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: clamp(20px, 4vw, 60px);
+            padding: clamp(20px, 3.5vw, 48px);
             display: flex;
-            justify-content: flex-start;
+            justify-content: center;
         }
 
         .content-column {
             width: 100%;
-            max-width: 750px;
+            max-width: 1060px;
         }
 
         @media (max-width: 1024px) {
             .app-container {
                 justify-content: center;
+                padding: clamp(14px, 3vw, 24px);
             }
 
             .content-column {
-                max-width: 900px;
+                max-width: 100%;
             }
         }
 
@@ -700,10 +701,31 @@
 
         .table-container {
             overflow-x: auto;
-            max-height: 250px;
+            overflow-y: auto;
+            max-height: 630px;
             border-radius: var(--radius-md);
             border: 1px solid var(--color-border-default);
             background: rgba(13, 17, 23, 0.83);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .table-container::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: rgba(13, 17, 23, 0.5);
+            border-radius: var(--radius-sm);
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: rgba(110, 118, 129, 0.35);
+            border-radius: var(--radius-sm);
+        }
+
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(110, 118, 129, 0.6);
         }
 
         table {
@@ -716,15 +738,16 @@
         thead {
             position: sticky;
             top: 0;
-            background-color: rgba(22, 27, 34, 0.95);
+            background-color: rgba(22, 27, 34, 0.98);
             backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--color-border-default);
-            z-index: 1;
+            z-index: 2;
         }
 
         th,
         td {
-            padding: 12px 16px;
+            padding: 10px 14px;
             border-bottom: 1px solid var(--color-border-muted);
         }
 
@@ -758,6 +781,44 @@
             font-size: 14px;
         }
 
+        .actions-cell {
+            text-align: right;
+            white-space: nowrap;
+            padding-right: 12px;
+        }
+
+        .action-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--color-fg-muted);
+            padding: 4px 6px;
+            height: auto;
+            font-size: 13px;
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .action-btn.edit-btn:hover {
+            background: rgba(47, 129, 247, 0.15);
+            color: var(--color-accent-fg);
+            border-color: rgba(47, 129, 247, 0.35);
+        }
+
+        .action-btn.delete-btn {
+            color: var(--color-fg-muted);
+        }
+
+        .action-btn.delete-btn:hover {
+            background: rgba(248, 81, 73, 0.15);
+            color: var(--color-danger-fg);
+            border-color: rgba(248, 81, 73, 0.35);
+        }
+
         .delete-btn {
             background: transparent;
             border: none;
@@ -770,6 +831,27 @@
             background: transparent;
             color: var(--color-danger-fg);
             border: none;
+        }
+
+        @media (max-width: 640px) {
+            .table-container {
+                max-height: 590px;
+            }
+
+            th,
+            td {
+                padding: 8px 10px;
+                font-size: 13px;
+            }
+
+            th {
+                font-size: 11px;
+            }
+
+            .action-btn {
+                padding: 3px 5px;
+                font-size: 12px;
+            }
         }
 
         .export-section {
@@ -1187,7 +1269,7 @@
                                         <th>Date</th>
                                         <th>Expense</th>
                                         <th style="text-align: right;">Amount</th>
-                                        <th style="width: 40px;"></th>
+                                        <th style="width: 75px; text-align: right;">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="needsTable"></tbody>
@@ -1267,7 +1349,7 @@
                                         <th>Date</th>
                                         <th>Expense</th>
                                         <th style="text-align: right;">Amount</th>
-                                        <th style="width: 40px;"></th>
+                                        <th style="width: 75px; text-align: right;">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="wantsTable"></tbody>
@@ -1347,7 +1429,7 @@
                                         <th>Date</th>
                                         <th>Allocation</th>
                                         <th style="text-align: right;">Amount</th>
-                                        <th style="width: 40px;"></th>
+                                        <th style="width: 75px; text-align: right;">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="savingsTable"></tbody>
@@ -1503,6 +1585,58 @@
                     <button type="button" id="saveConfigBtn" class="btn-primary">Save & Connect</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Edit Record Modal -->
+    <div id="editRecordModal" class="modal-overlay" style="display: none;">
+        <div class="modal-container" style="max-width: 520px;">
+            <div class="modal-header">
+                <div>
+                    <h2>Edit Transaction</h2>
+                    <p class="modal-subtitle">Update date, expense detail, bucket, amount, or notes.</p>
+                </div>
+                <button type="button" class="modal-close-btn" id="closeEditModalBtn" onclick="closeEditModal()">✕</button>
+            </div>
+            <form id="editRecordForm" style="display: flex; flex-direction: column;">
+                <input type="hidden" id="editRecordId">
+                <div style="padding: 20px 24px; display: flex; flex-direction: column; gap: 14px;">
+                    <div class="form-group">
+                        <label for="editRecordDate">Date</label>
+                        <input type="date" id="editRecordDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editRecordType">Budget Framework Bucket</label>
+                        <select id="editRecordType" required>
+                            <option value="needs">Needs (50%)</option>
+                            <option value="wants">Wants (30%)</option>
+                            <option value="savings">Savings (20%)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editRecordCat">Category / Expense Detail</label>
+                        <input type="text" id="editRecordCat" list="editCategoryOptions" placeholder="Select or type..." required>
+                        <datalist id="editCategoryOptions"></datalist>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editRecordAmt">Amount (<span class="curr-symbol">€</span>)</label>
+                        <input type="number" id="editRecordAmt" step="0.01" min="0.01" placeholder="0.00" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editRecordNote">Note (Optional)</label>
+                        <input type="text" id="editRecordNote" placeholder="Additional details or description">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" id="cancelEditModalBtn" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="btn-primary" id="saveEditRecordBtn">Save Changes</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -1733,7 +1867,7 @@
         }
 
         function setupDatePickers() {
-            ['needsDate', 'wantsDate', 'savingsDate', 'selectedMonthInput'].forEach(id => {
+            ['needsDate', 'wantsDate', 'savingsDate', 'selectedMonthInput', 'editRecordDate'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
                     el.addEventListener('click', () => {
@@ -2246,6 +2380,36 @@
             });
         }
 
+        function formatDisplayDate(dateStr) {
+            if (!dateStr || typeof dateStr !== 'string') return '';
+            if (dateStr.includes('.')) return dateStr;
+            const parts = dateStr.split(/[-/]/);
+            if (parts.length === 3) {
+                if (parts[0].length === 4) {
+                    // YYYY-MM-DD
+                    const y = parts[0];
+                    const m = parts[1].padStart(2, '0');
+                    const d = parts[2].padStart(2, '0');
+                    return `${d}.${m}.${y}`;
+                }
+                if (parts[2].length === 4) {
+                    // DD-MM-YYYY or MM-DD-YYYY
+                    const d = parts[0].padStart(2, '0');
+                    const m = parts[1].padStart(2, '0');
+                    const y = parts[2];
+                    return `${d}.${m}.${y}`;
+                }
+            }
+            return dateStr;
+        }
+        window.formatDisplayDate = formatDisplayDate;
+
+        const categoryOptions = {
+            needs: ["Groceries", "Miscellaneous", "Gas / Transportation", "Phone Bill", "Rent"],
+            wants: ["Clothing", "Eating out", "Personal Care", "Hobbies"],
+            savings: ["Emergency Fund", "Investments / Stocks", "Retirement", "Other Savings"]
+        };
+
         function renderTable(type, currentMonthTxs) {
             const fmt = getFormatter();
             const tbody = document.getElementById(`${type}Table`);
@@ -2265,14 +2429,123 @@
                 const noteHtml = tx.note ? `<span class="note-text">${tx.note}</span>` : '';
                 tbody.innerHTML += `
                     <tr>
-                        <td style="white-space: nowrap;">${tx.date}</td>
+                        <td style="white-space: nowrap;">${formatDisplayDate(tx.date)}</td>
                         <td><strong style="color: var(--color-fg-default);">${tx.category}</strong>${noteHtml}</td>
                         <td class="amount-col">${fmt.format(tx.amount)}</td>
-                        <td style="text-align: center;"><button class="delete-btn" onclick="deleteEntry('${tx.id}')">✕</button></td>
+                        <td class="actions-cell">
+                            <button type="button" class="action-btn edit-btn" onclick="openEditModal('${tx.id}')" title="Edit entry" aria-label="Edit entry">✏️</button>
+                            <button type="button" class="action-btn delete-btn" onclick="deleteEntry('${tx.id}')" title="Delete entry" aria-label="Delete entry">✕</button>
+                        </td>
                     </tr>
                 `;
             });
         }
+
+        window.openEditModal = function (id) {
+            const tx = transactions.find(t => t.id === id);
+            if (!tx) return;
+
+            document.getElementById('editRecordId').value = tx.id;
+            document.getElementById('editRecordDate').value = tx.date || getTodayString();
+            document.getElementById('editRecordType').value = tx.type || 'needs';
+
+            updateEditCategoryOptions(tx.type || 'needs');
+            document.getElementById('editRecordCat').value = tx.category || '';
+            document.getElementById('editRecordAmt').value = tx.amount;
+            document.getElementById('editRecordNote').value = tx.note || '';
+
+            const modal = document.getElementById('editRecordModal');
+            if (modal) modal.style.display = 'flex';
+        };
+
+        window.closeEditModal = function () {
+            const modal = document.getElementById('editRecordModal');
+            if (modal) modal.style.display = 'none';
+        };
+
+        function updateEditCategoryOptions(type) {
+            const datalist = document.getElementById('editCategoryOptions');
+            if (!datalist) return;
+            datalist.innerHTML = '';
+            const cats = categoryOptions[type] || [];
+            cats.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c;
+                datalist.appendChild(opt);
+            });
+        }
+
+        const editTypeSelect = document.getElementById('editRecordType');
+        if (editTypeSelect) {
+            editTypeSelect.addEventListener('change', (e) => {
+                updateEditCategoryOptions(e.target.value);
+            });
+        }
+
+        const editRecordForm = document.getElementById('editRecordForm');
+        if (editRecordForm) {
+            editRecordForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const id = document.getElementById('editRecordId').value;
+                const date = document.getElementById('editRecordDate').value;
+                const type = document.getElementById('editRecordType').value;
+                const category = document.getElementById('editRecordCat').value.trim();
+                const amount = parseFloat(document.getElementById('editRecordAmt').value);
+                const note = document.getElementById('editRecordNote').value.trim();
+
+                if (!id || !category || isNaN(amount) || amount <= 0 || !date) {
+                    alert("Please provide a valid date, category, and amount.");
+                    return;
+                }
+
+                const saveBtn = document.getElementById('saveEditRecordBtn');
+                if (saveBtn) {
+                    saveBtn.disabled = true;
+                    saveBtn.textContent = 'Saving...';
+                }
+
+                try {
+                    await setDoc(doc(db, "users", currentUser.uid, "transactions", id), {
+                        date,
+                        type,
+                        category,
+                        amount,
+                        note
+                    }, { merge: true });
+
+                    const newMonth = date.slice(0, 7);
+                    if (newMonth && newMonth !== selectedMonthKey) {
+                        selectedMonthKey = newMonth;
+                        const mInput = document.getElementById('selectedMonthInput');
+                        if (mInput) mInput.value = selectedMonthKey;
+                        updateIncomeForMonth();
+                    }
+
+                    closeEditModal();
+                } catch (err) {
+                    alert("Failed to update transaction: " + err.message);
+                } finally {
+                    if (saveBtn) {
+                        saveBtn.disabled = false;
+                        saveBtn.textContent = 'Save Changes';
+                    }
+                }
+            });
+        }
+
+        const editModalEl = document.getElementById('editRecordModal');
+        if (editModalEl) {
+            editModalEl.addEventListener('click', (e) => {
+                if (e.target.id === 'editRecordModal') closeEditModal();
+            });
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeEditModal();
+                if (typeof closeImportModal === 'function') closeImportModal();
+            }
+        });
 
         window.copyForSheets = function () {
             if (transactions.length === 0) return alert("No data to copy.");
@@ -2286,18 +2559,13 @@
         window.downloadCSV = function () {
             if (transactions.length === 0) return alert("No data to download.");
             let csv = "data:text/csv;charset=utf-8,Date,Type,Category,Amount,Note\n";
-            transactions.forEach(tx => { csv += `${tx.date},${tx.type},${tx.category},${tx.amount},"${tx.note ? tx.note.replace(/"/g, '""') : ''}"\n`; });
+            transactions.forEach(tx => { csv += `${formatDisplayDate(tx.date)},${tx.type},${tx.category},${tx.amount},"${tx.note ? tx.note.replace(/"/g, '""') : ''}"\n`; });
             const link = document.createElement("a"); link.href = encodeURI(csv); link.download = `Budget_Export_${getTodayString()}.csv`; link.click();
         };
 
         // ==========================================
         // PAYPAL / BANK CSV IMPORT SYSTEM
         // ==========================================
-        const categoryOptions = {
-            needs: ["Groceries", "Miscellaneous", "Gas / Transportation", "Phone Bill", "Rent"],
-            wants: ["Clothing", "Eating out", "Personal Care", "Hobbies"],
-            savings: ["Emergency Fund", "Investments / Stocks", "Retirement", "Other Savings"]
-        };
 
         function categorizeMerchant(name) {
             const n = (name || '').toLowerCase();

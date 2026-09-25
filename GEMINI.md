@@ -84,10 +84,12 @@ The frontend application code in [`index.html`](file:///D:/budget%20app/Budget-a
   - Global Header with contextual title and "Sign Out" control.
   - Tab Navigation Bar (`.UnderlineNav`) supporting tab switching:
     - **Overview**: Current Available Balance hero metric with income/spending breakdown, 50/30/20 summary distribution doughnut chart with balance center text, currency selector, monthly net income registration, and target cards (Available Balance, Needs, Wants, Savings).
-    - **Needs (50%)**: Expense logging form, date-sorted transaction log, spending progress bar, and sub-limit doughnut gauges for *Groceries* and *Miscellaneous* with bold typography, high-contrast badges, and center spent displays.
-    - **Wants (30%)**: Expense logging form, transaction log, spending progress bar, and sub-limit doughnut gauges for *Clothing* and *Eating Out* with bold typography and center spent displays.
-    - **Savings (20%)**: Savings allocation logging form, progress bar towards the 20% target, and allocation history log.
+    - **Needs (50%)**: Expense logging form, date-sorted transaction log (`dd.mm.yyyy` format with inline `✏️` edit and `✕` delete actions), 15-row scrollable container, spending progress bar, and sub-limit doughnut gauges for *Groceries* and *Miscellaneous* with bold typography, high-contrast badges, and center spent displays.
+    - **Wants (30%)**: Expense logging form, transaction log (`dd.mm.yyyy` format with inline `✏️` edit and `✕` delete actions), 15-row scrollable container, spending progress bar, and sub-limit doughnut gauges for *Clothing* and *Eating Out* with bold typography and center spent displays.
+    - **Savings (20%)**: Savings allocation logging form, progress bar towards the 20% target, and allocation history log with inline edit and delete actions.
     - **Data & Export**: Frictionless data interoperability actions.
+  - **Edit Record Modal (`#editRecordModal`)**: Allows users to modify existing logged expenditures or savings (date, budget bucket/type, category/detail, amount, and notes) with live Firestore document merging (`setDoc(..., { merge: true })`).
+  - **Dynamic Layout & Viewport Optimization**: Centered desktop shell (`max-width: 1060px`) eliminating right-side empty space, paired with mobile table containers showing 15 rows with smooth touch scrolling (`overflow-y: auto`).
 
 ### 5.2 Application State & Controller
 The script uses an event-driven, reactive pattern anchored around user authentication state:
