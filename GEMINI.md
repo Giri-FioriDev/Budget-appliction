@@ -87,8 +87,10 @@ The frontend application code in [`index.html`](file:///D:/budget%20app/Budget-a
     - **Needs (50%)**: Expense logging form, date-sorted transaction log (`dd.mm.yyyy` format with inline `✏️` edit and `✕` delete actions), 15-row scrollable container, spending progress bar, and sub-limit doughnut gauges for *Groceries* and *Miscellaneous* with bold typography, high-contrast badges, and center spent displays.
     - **Wants (30%)**: Expense logging form, transaction log (`dd.mm.yyyy` format with inline `✏️` edit and `✕` delete actions), 15-row scrollable container, spending progress bar, and sub-limit doughnut gauges for *Clothing* and *Eating Out* with bold typography and center spent displays.
     - **Savings (20%)**: Savings allocation logging form, progress bar towards the 20% target, and allocation history log with inline edit and delete actions.
+    - **Trips & Splits**: Dedicated group travel and shared expense tracking interface. Enables dynamic member management, shared cost logging with configurable "Who Paid" and "Split Among" participation, real-time simplified settlement plan solving minimal debt payments, individual member spending breakdown cards (paid, fair share, net balance), and trip data export.
     - **Data & Export**: Frictionless data interoperability actions.
   - **Edit Record Modal (`#editRecordModal`)**: Allows users to modify existing logged expenditures or savings (date, budget bucket/type, category/detail, amount, and notes) with live Firestore document merging (`setDoc(..., { merge: true })`).
+  - **Edit Trip Expense Modal (`#editTripExpenseModal`)**: Enables modifying existing logged trip expenditures (date, amount, description, category, payer, and participating split members).
   - **Dynamic Layout & Viewport Optimization**: Centered desktop shell (`max-width: 1060px`) eliminating right-side empty space, paired with mobile table containers showing 15 rows with smooth touch scrolling (`overflow-y: auto`).
 
 ### 5.2 Application State & Controller
@@ -111,13 +113,14 @@ sequenceDiagram
         Auth-->>App: User { uid, email }
         App->>App: Hide login, Show #app-container
         App->>DB: getDoc(doc(db, "users", uid))
-        DB-->>App: User preferences (currency, monthlyIncomes)
-        App->>App: Initialize Charts & Tabs
+        DB-->>App: User preferences (currency, monthlyIncomes, tripMembers, tripName)
+        App->>App: Initialize Charts, Tabs, & Trip State
         App->>DB: onSnapshot(collection(db, "users", uid, "transactions"))
+        App->>DB: onSnapshot(collection(db, "users", uid, "tripExpenses"))
         loop Real-Time Sync
-            DB-->>App: QuerySnapshot (transactions)
-            App->>App: Filter transactions for current YYYY-MM
-            App->>App: Calculate category totals & budget remaining
+            DB-->>App: QuerySnapshot (transactions / tripExpenses)
+            App->>App: Recalculate 50/30/20 budgets & category limits
+            App->>App: Solve minimal trip settlements & member breakdowns
             App->>App: Update Progress Bars, Tables, & Chart.js Canvas
         end
     end
@@ -143,11 +146,14 @@ All persistent application state is stored within Cloud Firestore organized unde
 ```mermaid
 erDiagram
     USERS ||--o{ TRANSACTIONS : contains
+    USERS ||--o{ TRIP_EXPENSES : contains
 
     USERS {
         string uid PK "Firebase Authentication UID"
         string currency "Active currency ISO code (EUR, USD, GBP, INR)"
         map monthlyIncomes "Key: YYYY-MM, Value: float"
+        array tripMembers "List of trip participant names"
+        string tripName "Active trip label"
     }
 
     TRANSACTIONS {
@@ -159,18 +165,32 @@ erDiagram
         string note "User-provided description or note"
         number createdAt "Unix millisecond timestamp"
     }
+
+    TRIP_EXPENSES {
+        string id PK "Auto-generated Firestore Document ID"
+        string date "Date string in YYYY-MM-DD format"
+        string title "Expense description"
+        string category "Travel category"
+        float amount "Monetary value"
+        string paidBy "Member who paid out of pocket"
+        array splitAmong "Members sharing this expense"
+        string note "Optional details or booking reference"
+        number createdAt "Unix millisecond timestamp"
+    }
 ```
 
 ### 6.2 Data Model Definitions
 
 #### Document: `/users/{uid}`
-Stores account-level configuration and historical monthly income commitments.
+Stores account-level configuration, historical monthly incomes, and trip settings.
 - `currency`: String (defaults to `'EUR'`). Supported options: `'EUR'`, `'USD'`, `'GBP'`, `'INR'`.
 - `monthlyIncomes`: Map of `<string, number>` where key is `YYYY-MM` (e.g., `"2026-09"`) and value is the net monthly income (e.g., `3200.00`).
   > **Design Decision**: Monthly income is keyed by month (`getCurrentMonthKey()`). Once submitted for a month, the input field is locked (`disabled = true`) to prevent accidental mid-month baseline shifts.
+- `tripMembers`: Array of strings representing active trip members (defaults to `["You", "Alex", "Sam"]`).
+- `tripName`: String label for the active group trip (defaults to `"Vacation Trip"`).
 
 #### Subcollection: `/users/{uid}/transactions/{txId}`
-Stores individual transactions logged by the user.
+Stores individual personal budget transactions logged by the user.
 - `id`: Firestore auto-generated string identifier.
 - `date`: `YYYY-MM-DD` string defaulted to the current date with support for user-specified past dates for logging missed expenditures.
 - `type`: Category bucket string: `"needs"`, `"wants"`, or `"savings"`.
@@ -178,6 +198,18 @@ Stores individual transactions logged by the user.
 - `amount`: Floating-point numeric value.
 - `note`: Optional string descriptor.
 - `createdAt`: Integer timestamp (`new Date().getTime()`) used for client-side reverse-chronological sorting.
+
+#### Subcollection: `/users/{uid}/tripExpenses/{expId}`
+Stores shared trip and travel expenses logged by the user or on behalf of members.
+- `id`: Firestore auto-generated string identifier.
+- `date`: `YYYY-MM-DD` string.
+- `title`: String expense title (e.g., `"Villa Rental"`, `"Group Dinner"`, `"Fuel"`).
+- `category`: Category string (`"Food & Dining"`, `"Accommodation"`, `"Transportation"`, etc.).
+- `amount`: Floating-point numeric value.
+- `paidBy`: Name of the participant who paid.
+- `splitAmong`: Array of member names sharing the expense.
+- `note`: Optional string notes or booking links.
+- `createdAt`: Integer timestamp for ordering.
 
 ---
 
@@ -210,6 +242,21 @@ Specific essential and discretionary items have dedicated monthly caps configure
 | **Eating Out** | Wants | €100.00 | `#eatingOutDonut` |
 
 When $\text{Spent}_{\text{cat}} > \text{Limit}_{\text{cat}}$, gauge segments update to red (`#f85149`) to visually flag overspending.
+
+### 7.4 Trip Expense Splitting & Greedy Debt Minimization
+For group trips and shared travels, expenditures involve multi-person cost allocations.
+
+1. **Individual Totals**:
+   For each participant $p$:
+   $$\text{Paid}_p = \sum_{e \in E \land e.\text{paidBy} = p} e.\text{amount}$$
+   $$\text{Share}_p = \sum_{e \in E \land p \in e.\text{splitAmong}} \frac{e.\text{amount}}{|e.\text{splitAmong}|}$$
+   $$\text{Net}_p = \text{Paid}_p - \text{Share}_p$$
+
+2. **Greedy Debt Minimization**:
+   - Participants with $\text{Net}_p > 0$ are designated **Creditors** (owed money).
+   - Participants with $\text{Net}_p < 0$ are designated **Debtors** (owe money).
+   - Sorted in descending order of outstanding amounts.
+   - In each step, the largest debtor pays the minimum of their debt and the largest creditor's credit $\min(\text{debt}_j, \text{credit}_i)$, terminating when all balances reach zero. This minimizes the total number of inter-person cash settlements.
 
 ---
 

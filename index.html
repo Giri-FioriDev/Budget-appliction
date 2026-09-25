@@ -152,10 +152,16 @@
         .UnderlineNav {
             display: flex;
             overflow-x: auto;
-            border-bottom: 1px solid var(--color-border-muted);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             gap: 8px;
             margin-bottom: 30px;
             scrollbar-width: none;
+            background: rgba(13, 17, 23, 0.52);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 4px 6px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .UnderlineNav::-webkit-scrollbar {
@@ -212,18 +218,18 @@
             gap: 24px;
         }
 
-        /* 83% Opacity applied to all tab elements/cards */
+        /* Frosted Glassmorphism with adjusted opacity so background shows through */
         .card {
-            background-color: rgba(13, 17, 23, 0.83);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: rgba(13, 17, 23, 0.60);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: var(--radius-lg);
             padding: 24px;
             display: flex;
             flex-direction: column;
             gap: 20px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
         }
 
         .card-header h2 {
@@ -252,10 +258,12 @@
         }
 
         .donut-card {
-            background: rgba(22, 27, 34, 0.83);
+            background: rgba(22, 27, 34, 0.58);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             padding: 20px 16px;
             border-radius: var(--radius-lg);
-            border: 1px solid var(--color-border-default);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -312,8 +320,10 @@
 
         /* Balance Hero Card in Overview */
         .balance-hero-card {
-            background: linear-gradient(135deg, rgba(22, 27, 34, 0.95), rgba(13, 17, 23, 0.9));
-            border: 1px solid rgba(47, 129, 247, 0.35);
+            background: linear-gradient(135deg, rgba(22, 27, 34, 0.70), rgba(13, 17, 23, 0.58));
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(47, 129, 247, 0.4);
             position: relative;
             overflow: hidden;
         }
@@ -486,10 +496,12 @@
             display: grid;
             grid-template-columns: 1fr;
             gap: 12px;
-            background: rgba(22, 27, 34, 0.83);
+            background: rgba(22, 27, 34, 0.55);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             padding: 16px;
             border-radius: var(--radius-md);
-            border: 1px solid var(--color-border-default);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .entry-form {
@@ -559,7 +571,9 @@
         select {
             width: 100%;
             padding: 8px 12px;
-            background-color: rgba(13, 17, 23, 0.83);
+            background-color: rgba(13, 17, 23, 0.65);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             border: 1px solid var(--color-border-default);
             border-radius: var(--radius-md);
             color: var(--color-fg-default);
@@ -682,10 +696,12 @@
         }
 
         .target-box {
-            background: rgba(22, 27, 34, 0.83);
+            background: rgba(22, 27, 34, 0.58);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             padding: 20px;
             border-radius: var(--radius-md);
-            border: 1px solid var(--color-border-default);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .target-label {
@@ -706,8 +722,10 @@
             overflow-y: auto;
             max-height: 630px;
             border-radius: var(--radius-md);
-            border: 1px solid var(--color-border-default);
-            background: rgba(13, 17, 23, 0.83);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(13, 17, 23, 0.55);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             -webkit-overflow-scrolling: touch;
         }
 
@@ -866,6 +884,296 @@
             flex: 1;
             min-width: 180px;
             height: 40px;
+        }
+
+        /* ==========================================
+           TRIP & SPLIT STYLES
+           ========================================== */
+        .member-chips-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .member-chip {
+            background: rgba(33, 38, 45, 0.7);
+            border: 1px solid var(--color-border-default);
+            color: var(--color-fg-default);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+        }
+
+        .member-chip.you {
+            border-color: rgba(47, 129, 247, 0.5);
+            background: rgba(47, 129, 247, 0.15);
+            color: #58a6ff;
+            font-weight: 600;
+        }
+
+        .member-chip .remove-member-btn {
+            background: transparent;
+            border: none;
+            color: var(--color-fg-muted);
+            cursor: pointer;
+            font-size: 11px;
+            padding: 2px 4px;
+            height: auto;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .member-chip .remove-member-btn:hover {
+            color: var(--color-danger-fg);
+            background: rgba(248, 81, 73, 0.15);
+        }
+
+        .split-box {
+            background: rgba(13, 17, 23, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            grid-column: 1 / -1;
+        }
+
+        .split-box-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .split-members-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .split-checkbox-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            background: rgba(22, 27, 34, 0.7);
+            padding: 5px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--color-border-default);
+            user-select: none;
+            transition: var(--transition);
+        }
+
+        .split-checkbox-label:hover {
+            border-color: var(--color-accent-fg);
+        }
+
+        .split-checkbox-label input[type="checkbox"] {
+            width: 15px;
+            height: 15px;
+            accent-color: var(--color-accent-fg);
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .split-preview-banner {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--color-accent-fg);
+            background: rgba(47, 129, 247, 0.12);
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(47, 129, 247, 0.25);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .settlement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 12px;
+        }
+
+        .settlement-card {
+            background: rgba(13, 17, 23, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .settlement-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            gap: 8px;
+        }
+
+        .settlement-party {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            font-size: 13.5px;
+            color: #ffffff;
+            white-space: nowrap;
+        }
+
+        .avatar-badge {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: var(--color-btn-bg);
+            border: 1px solid var(--color-border-default);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--color-fg-default);
+        }
+
+        .avatar-badge.debtor {
+            background: rgba(248, 81, 73, 0.2);
+            color: #ff7b72;
+            border-color: rgba(248, 81, 73, 0.4);
+        }
+
+        .avatar-badge.creditor {
+            background: rgba(63, 185, 80, 0.2);
+            color: #56d364;
+            border-color: rgba(63, 185, 80, 0.4);
+        }
+
+        .settlement-middle {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            flex: 1;
+            padding: 0 6px;
+        }
+
+        .settlement-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--color-fg-muted);
+            font-weight: 600;
+        }
+
+        .settlement-amount-pill {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--color-accent-fg);
+            background: rgba(47, 129, 247, 0.12);
+            padding: 2px 8px;
+            border-radius: 12px;
+            border: 1px solid rgba(47, 129, 247, 0.3);
+            white-space: nowrap;
+        }
+
+        .settlement-arrow-icon {
+            font-size: 12px;
+            color: var(--color-fg-muted);
+        }
+
+        .breakdown-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 14px;
+        }
+
+        .person-breakdown-card {
+            background: rgba(22, 27, 34, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: var(--transition);
+        }
+
+        .person-breakdown-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .person-name {
+            font-weight: 700;
+            font-size: 14px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .person-stats-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--color-fg-muted);
+        }
+
+        .person-stats-val {
+            font-weight: 600;
+            color: var(--color-fg-default);
+        }
+
+        .person-net-badge {
+            font-weight: 700;
+            font-size: 12px;
+            padding: 5px 8px;
+            border-radius: 6px;
+            text-align: center;
+            margin-top: 4px;
+        }
+
+        .person-net-badge.creditor {
+            background: rgba(63, 185, 80, 0.15);
+            border: 1px solid rgba(63, 185, 80, 0.3);
+            color: var(--color-success-fg);
+        }
+
+        .person-net-badge.debtor {
+            background: rgba(248, 81, 73, 0.15);
+            border: 1px solid rgba(248, 81, 73, 0.3);
+            color: var(--color-danger-fg);
+        }
+
+        .person-net-badge.settled {
+            background: rgba(139, 148, 158, 0.15);
+            border: 1px solid rgba(139, 148, 158, 0.3);
+            color: var(--color-fg-muted);
+        }
+
+        .badge-cat {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 7px;
+            border-radius: 10px;
+            background: rgba(110, 118, 129, 0.2);
+            color: var(--color-fg-muted);
+            margin-top: 3px;
         }
 
         /* Modal & Import Dropzone Styles */
@@ -1124,6 +1432,7 @@
                 <button class="UnderlineNav-item" data-target="tab-needs">Needs (50%)</button>
                 <button class="UnderlineNav-item" data-target="tab-wants">Wants (30%)</button>
                 <button class="UnderlineNav-item" data-target="tab-savings">Savings (20%)</button>
+                <button class="UnderlineNav-item" data-target="tab-trips">Trips & Splits</button>
                 <button class="UnderlineNav-item" data-target="tab-export">Data & Import/Export</button>
             </nav>
 
@@ -1440,6 +1749,163 @@
                     </div>
                 </section>
 
+                <!-- TRIPS & SPLITS TAB -->
+                <section id="tab-trips" class="tab-pane">
+                    <!-- Trip Overview Hero Card -->
+                    <div class="card balance-hero-card">
+                        <div class="balance-hero-header">
+                            <div>
+                                <div class="balance-hero-label" style="display: flex; align-items: center; gap: 8px;">
+                                    <span>Active Trip</span>
+                                    <button type="button" id="renameTripBtn" onclick="promptRenameTrip()" style="background: transparent; border: none; color: var(--color-fg-muted); cursor: pointer; padding: 0 4px; font-size: 12px; height: auto;" title="Rename Trip">✏️ Rename</button>
+                                </div>
+                                <div class="balance-hero-amount" id="tripTitleDisplay" style="font-size: 1.85rem; color: #ffffff;">Vacation Trip</div>
+                            </div>
+                            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                                <div class="balance-hero-badge" id="tripUserNetBadge">
+                                    <span class="status-indicator"></span>
+                                    <span id="tripUserNetText">All Settled</span>
+                                </div>
+                                <button type="button" class="btn-primary" onclick="copyTripSettlementPlan()" style="height: 34px; font-size: 12px; gap: 6px;">
+                                    📋 Copy Settlement Plan
+                                </button>
+                            </div>
+                        </div>
+                        <div class="balance-hero-breakdown">
+                            <div class="balance-breakdown-item">
+                                <span class="breakdown-label">Total Trip Cost</span>
+                                <span class="breakdown-value" id="tripTotalCostDisplay">€0.00</span>
+                            </div>
+                            <div class="balance-breakdown-item">
+                                <span class="breakdown-label">You Paid (Out of Pocket)</span>
+                                <span class="breakdown-value" id="tripUserPaidDisplay">€0.00</span>
+                            </div>
+                            <div class="balance-breakdown-item">
+                                <span class="breakdown-label">Your Fair Share</span>
+                                <span class="breakdown-value" id="tripUserShareDisplay">€0.00</span>
+                            </div>
+                            <div class="balance-breakdown-item">
+                                <span class="breakdown-label">Your Net Balance</span>
+                                <span class="breakdown-value" id="tripUserBalanceDisplay">€0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Trip Members Card -->
+                    <div class="card">
+                        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                            <h2>Trip Members</h2>
+                            <span style="font-size: 12px; color: var(--color-fg-muted); font-weight: normal;">People sharing trip expenses</span>
+                        </div>
+                        <div class="member-chips-container" id="tripMembersChipsList"></div>
+                        <form id="addTripMemberForm" onsubmit="addTripMember(event)" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px;">
+                            <input type="text" id="newMemberInput" placeholder="Add person name (e.g. Alex, Maria, Bob)..." required style="flex: 1; min-width: 180px; max-width: 320px; height: 34px;">
+                            <button type="submit" class="btn-primary" style="height: 34px; white-space: nowrap;">+ Add Member</button>
+                        </form>
+                    </div>
+
+                    <!-- Add Trip Expense Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Add Trip Expense</h2>
+                        </div>
+                        <form id="addTripExpenseForm" onsubmit="addTripExpenseEntry(event)" class="form-grid" style="grid-template-columns: 1fr;">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+                                <div class="form-group">
+                                    <label for="tripExpDate">Date</label>
+                                    <input type="date" id="tripExpDate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="tripExpTitle">Expense Description</label>
+                                    <input type="text" id="tripExpTitle" placeholder="e.g. Airbnb, Dinner, Car Rental, Ferry" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="tripExpAmount">Amount (<span class="curr-symbol">€</span>)</label>
+                                    <input type="number" id="tripExpAmount" step="0.01" min="0.01" placeholder="0.00" required oninput="updateSplitPreview()">
+                                </div>
+                                <div class="form-group">
+                                    <label for="tripExpCategory">Category</label>
+                                    <select id="tripExpCategory">
+                                        <option value="Food & Dining">🍽️ Food & Dining</option>
+                                        <option value="Accommodation">🏨 Accommodation</option>
+                                        <option value="Transportation">🚗 Transportation</option>
+                                        <option value="Activities & Entertainment">🎟️ Activities & Entertainment</option>
+                                        <option value="Groceries & Drinks">🛒 Groceries & Drinks</option>
+                                        <option value="Shopping">🛍️ Shopping</option>
+                                        <option value="General / Other">📦 General / Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="tripExpPaidBy">Paid By (Who Paid?)</label>
+                                    <select id="tripExpPaidBy" required></select>
+                                </div>
+                            </div>
+
+                            <!-- Dedicated Split Section -->
+                            <div class="split-box">
+                                <div class="split-box-header">
+                                    <label style="font-weight: 600; font-size: 13px;">Split Among (Select Who Shares This Cost)</label>
+                                    <div style="display: flex; gap: 6px;">
+                                        <button type="button" onclick="selectAllSplitMembers(true)" style="padding: 2px 8px; font-size: 11px; height: 24px;">Select All</button>
+                                        <button type="button" onclick="selectAllSplitMembers(false)" style="padding: 2px 8px; font-size: 11px; height: 24px;">Deselect All</button>
+                                    </div>
+                                </div>
+                                <div id="splitMembersCheckboxes" class="split-members-list"></div>
+                                <div id="splitCalculationPreview" class="split-preview-banner">
+                                    Select members and enter an amount to view per-person share
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="tripExpNote">Note (Optional)</label>
+                                <input type="text" id="tripExpNote" placeholder="e.g. Shared booking link or details">
+                            </div>
+
+                            <button type="submit" class="btn-primary" style="height: 38px;">+ Save Trip Expense</button>
+                        </form>
+                    </div>
+
+                    <!-- Who Owes Whom: Settlement Plan Card -->
+                    <div class="card">
+                        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                            <h2>Settlement Plan (Who Owes Whom)</h2>
+                            <span style="font-size: 12px; color: var(--color-fg-muted); font-weight: normal;">Minimal transfers to settle all balances</span>
+                        </div>
+                        <div id="tripSettlementList" class="settlement-grid"></div>
+                    </div>
+
+                    <!-- Individual Member Spending & Balances Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Member Spending Breakdown</h2>
+                        </div>
+                        <div id="tripMemberBreakdownGrid" class="breakdown-grid"></div>
+                    </div>
+
+                    <!-- Trip Expense History Table -->
+                    <div class="card">
+                        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                            <h2>Trip Expense Log</h2>
+                            <button type="button" id="exportTripCsvBtn" onclick="downloadTripCSV()" style="height: 28px; font-size: 12px; padding: 2px 10px;">Download Trip CSV</button>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Expense</th>
+                                        <th>Paid By</th>
+                                        <th>Split With</th>
+                                        <th style="text-align: right;">Total Amount</th>
+                                        <th style="width: 75px; text-align: right;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tripExpensesTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
                 <!-- DATA & IMPORT/EXPORT TAB -->
                 <section id="tab-export" class="tab-pane">
                     <!-- Import Card -->
@@ -1642,6 +2108,81 @@
         </div>
     </div>
 
+    <!-- Edit Trip Expense Modal -->
+    <div id="editTripExpenseModal" class="modal-overlay" style="display: none;">
+        <div class="modal-container" style="max-width: 560px;">
+            <div class="modal-header">
+                <div>
+                    <h2>Edit Trip Expense</h2>
+                    <p class="modal-subtitle">Modify amount, who paid, or the split distribution.</p>
+                </div>
+                <button type="button" class="modal-close-btn" onclick="closeEditTripExpenseModal()">✕</button>
+            </div>
+            <form id="editTripExpenseForm" onsubmit="saveEditedTripExpense(event)" style="display: flex; flex-direction: column;">
+                <input type="hidden" id="editTripExpId">
+                <div style="padding: 20px 24px; display: flex; flex-direction: column; gap: 14px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div class="form-group">
+                            <label for="editTripExpDate">Date</label>
+                            <input type="date" id="editTripExpDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editTripExpAmount">Amount (<span class="curr-symbol">€</span>)</label>
+                            <input type="number" id="editTripExpAmount" step="0.01" min="0.01" required oninput="updateEditSplitPreview()">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editTripExpTitle">Description</label>
+                        <input type="text" id="editTripExpTitle" required>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div class="form-group">
+                            <label for="editTripExpCategory">Category</label>
+                            <select id="editTripExpCategory">
+                                <option value="Food & Dining">🍽️ Food & Dining</option>
+                                <option value="Accommodation">🏨 Accommodation</option>
+                                <option value="Transportation">🚗 Transportation</option>
+                                <option value="Activities & Entertainment">🎟️ Activities & Entertainment</option>
+                                <option value="Groceries & Drinks">🛒 Groceries & Drinks</option>
+                                <option value="Shopping">🛍️ Shopping</option>
+                                <option value="General / Other">📦 General / Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editTripExpPaidBy">Paid By</label>
+                            <select id="editTripExpPaidBy" required></select>
+                        </div>
+                    </div>
+
+                    <!-- Split Section in Edit Modal -->
+                    <div class="split-box">
+                        <div class="split-box-header">
+                            <label style="font-weight: 600; font-size: 13px;">Split Among</label>
+                            <div style="display: flex; gap: 6px;">
+                                <button type="button" onclick="selectAllEditSplitMembers(true)" style="padding: 2px 8px; font-size: 11px; height: 24px;">Select All</button>
+                                <button type="button" onclick="selectAllEditSplitMembers(false)" style="padding: 2px 8px; font-size: 11px; height: 24px;">Deselect All</button>
+                            </div>
+                        </div>
+                        <div id="editSplitMembersCheckboxes" class="split-members-list"></div>
+                        <div id="editSplitCalculationPreview" class="split-preview-banner"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editTripExpNote">Note (Optional)</label>
+                        <input type="text" id="editTripExpNote">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" onclick="closeEditTripExpenseModal()">Cancel</button>
+                    <button type="submit" class="btn-primary" id="saveEditTripExpBtn">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -1780,10 +2321,14 @@
 
         let currentUser = null;
         let unsubscribeTxs = null;
+        let unsubscribeTrips = null;
 
         let netIncome = 0;
         let currentCurrency = 'EUR';
         let transactions = [];
+        let tripMembers = ["You", "Alex", "Sam"];
+        let tripExpenses = [];
+        let tripName = "Vacation Trip";
         let overviewChart, groceriesDonut, miscellaneousDonut, clothingDonut, eatingOutDonut;
 
         const currencySymbols = { EUR: '€', USD: '$', GBP: '£', INR: '₹' };
@@ -1850,6 +2395,7 @@
                         loginScreen.style.display = 'flex';
                         appContainer.style.display = 'none';
                         if (unsubscribeTxs) unsubscribeTxs();
+                        if (unsubscribeTrips) unsubscribeTrips();
                     }
                 });
             } catch (err) {
@@ -1866,10 +2412,12 @@
                 const el = document.getElementById(`${type}Date`);
                 if (el) el.value = today;
             });
+            const tripDateEl = document.getElementById('tripExpDate');
+            if (tripDateEl) tripDateEl.value = today;
         }
 
         function setupDatePickers() {
-            ['needsDate', 'wantsDate', 'savingsDate', 'selectedMonthInput', 'editRecordDate'].forEach(id => {
+            ['needsDate', 'wantsDate', 'savingsDate', 'selectedMonthInput', 'editRecordDate', 'tripExpDate', 'editTripExpDate'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
                     el.addEventListener('click', () => {
@@ -1901,7 +2449,7 @@
                 currentCurrency = userDataCache.currency || 'EUR';
             } else {
                 currentCurrency = 'EUR';
-                userDataCache = { currency: 'EUR', monthlyIncomes: {} };
+                userDataCache = { currency: 'EUR', monthlyIncomes: {}, tripMembers: ["You", "Alex", "Sam"], tripName: "Vacation Trip" };
                 await setDoc(userDocRef, userDataCache);
             }
 
@@ -1916,11 +2464,22 @@
             resetDateInputs();
             setupDatePickers();
 
+            // Trips & Splits State Initialization
+            tripMembers = (userDataCache && Array.isArray(userDataCache.tripMembers) && userDataCache.tripMembers.length > 0)
+                ? userDataCache.tripMembers
+                : ["You", "Alex", "Sam"];
+            tripName = (userDataCache && userDataCache.tripName) ? userDataCache.tripName : "Vacation Trip";
+            const tripTitleEl = document.getElementById('tripTitleDisplay');
+            if (tripTitleEl) tripTitleEl.textContent = tripName;
+
+            renderTripMembers();
+
             if (!overviewChart) {
                 initCharts();
                 setupTabs();
             }
             listenToTransactions();
+            listenToTripExpenses();
         }
 
         function updateCurrencySymbols() {
@@ -1934,6 +2493,7 @@
             if (userDataCache) userDataCache.currency = currentCurrency;
             await setDoc(doc(db, "users", currentUser.uid), { currency: currentCurrency }, { merge: true });
             updateDashboard();
+            updateTripDashboard();
             alert("Currency updated successfully!");
         });
 
@@ -2542,10 +3102,18 @@
             });
         }
 
+        const editTripModalEl = document.getElementById('editTripExpenseModal');
+        if (editTripModalEl) {
+            editTripModalEl.addEventListener('click', (e) => {
+                if (e.target.id === 'editTripExpenseModal') closeEditTripExpenseModal();
+            });
+        }
+
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeEditModal();
                 if (typeof closeImportModal === 'function') closeImportModal();
+                if (typeof closeEditTripExpenseModal === 'function') closeEditTripExpenseModal();
             }
         });
 
@@ -2996,6 +3564,772 @@
                 btn.textContent = "Import Selected";
             }
         });
+
+        // ==========================================
+        // TRIPS & SPLITS MANAGEMENT SYSTEM
+        // ==========================================
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function promptRenameTrip() {
+            const current = tripName || "Vacation Trip";
+            const newName = prompt("Enter Trip / Group Name:", current);
+            if (newName && newName.trim() && newName.trim() !== current) {
+                tripName = newName.trim();
+                const titleEl = document.getElementById('tripTitleDisplay');
+                if (titleEl) titleEl.textContent = tripName;
+                if (userDataCache) userDataCache.tripName = tripName;
+                if (currentUser) {
+                    setDoc(doc(db, "users", currentUser.uid), { tripName: tripName }, { merge: true }).catch(err => {
+                        console.error("Failed to save trip name:", err);
+                    });
+                }
+            }
+        }
+        window.promptRenameTrip = promptRenameTrip;
+
+        function renderTripMembers() {
+            // Render chips
+            const chipsContainer = document.getElementById('tripMembersChipsList');
+            if (chipsContainer) {
+                chipsContainer.innerHTML = '';
+                tripMembers.forEach(member => {
+                    const chip = document.createElement('div');
+                    chip.className = 'member-chip';
+
+                    const nameSpan = document.createElement('span');
+                    nameSpan.textContent = member;
+                    chip.appendChild(nameSpan);
+
+                    if (member.toLowerCase() === 'you') {
+                        const youBadge = document.createElement('span');
+                        youBadge.className = 'you-badge';
+                        youBadge.textContent = 'Account Owner';
+                        chip.appendChild(youBadge);
+                    } else {
+                        const removeBtn = document.createElement('button');
+                        removeBtn.type = 'button';
+                        removeBtn.className = 'remove-chip-btn';
+                        removeBtn.title = `Remove ${member}`;
+                        removeBtn.innerHTML = '✕';
+                        removeBtn.addEventListener('click', () => removeTripMember(member));
+                        chip.appendChild(removeBtn);
+                    }
+                    chipsContainer.appendChild(chip);
+                });
+            }
+
+            // Populate "Paid By" selects for both main form and edit modal
+            const paidBySelect = document.getElementById('tripExpPaidBy');
+            const editPaidBySelect = document.getElementById('editTripExpPaidBy');
+
+            [paidBySelect, editPaidBySelect].forEach(select => {
+                if (!select) return;
+                const prevVal = select.value;
+                select.innerHTML = '';
+                tripMembers.forEach(m => {
+                    const opt = document.createElement('option');
+                    opt.value = m;
+                    opt.textContent = m.toLowerCase() === 'you' ? 'You (Me)' : m;
+                    select.appendChild(opt);
+                });
+                if (prevVal && tripMembers.includes(prevVal)) {
+                    select.value = prevVal;
+                } else if (tripMembers.includes('You')) {
+                    select.value = 'You';
+                }
+            });
+
+            // Populate Split Among checkboxes for add form
+            const splitContainer = document.getElementById('splitMembersCheckboxes');
+            if (splitContainer) {
+                const existingChecked = Array.from(splitContainer.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+                const hadPrevious = existingChecked.length > 0;
+                splitContainer.innerHTML = '';
+
+                tripMembers.forEach(m => {
+                    const label = document.createElement('label');
+                    label.className = 'split-checkbox-label';
+
+                    const cb = document.createElement('input');
+                    cb.type = 'checkbox';
+                    cb.className = 'split-member-checkbox';
+                    cb.value = m;
+                    cb.checked = hadPrevious ? existingChecked.includes(m) : true;
+                    cb.addEventListener('change', updateSplitPreview);
+
+                    const span = document.createElement('span');
+                    span.textContent = m;
+
+                    label.appendChild(cb);
+                    label.appendChild(span);
+                    splitContainer.appendChild(label);
+                });
+            }
+
+            updateSplitPreview();
+        }
+        window.renderTripMembers = renderTripMembers;
+
+        async function addTripMember(e) {
+            e.preventDefault();
+            const input = document.getElementById('newMemberInput');
+            if (!input) return;
+            const name = input.value.trim();
+            if (!name) return;
+
+            if (tripMembers.some(m => m.toLowerCase() === name.toLowerCase())) {
+                alert(`Member "${name}" already exists in trip members.`);
+                return;
+            }
+
+            tripMembers.push(name);
+            input.value = '';
+
+            if (userDataCache) userDataCache.tripMembers = tripMembers;
+            try {
+                if (currentUser) {
+                    await setDoc(doc(db, "users", currentUser.uid), { tripMembers: tripMembers }, { merge: true });
+                }
+                renderTripMembers();
+                updateTripDashboard();
+            } catch (err) {
+                alert("Failed to save new member: " + err.message);
+            }
+        }
+        window.addTripMember = addTripMember;
+
+        async function removeTripMember(name) {
+            if (name.toLowerCase() === 'you') {
+                alert('Cannot remove "You" because it represents your account.');
+                return;
+            }
+
+            const isUsed = tripExpenses.some(exp => exp.paidBy === name || (Array.isArray(exp.splitAmong) && exp.splitAmong.includes(name)));
+            if (isUsed) {
+                const proceed = confirm(`"${name}" is currently recorded in one or more trip expenses. Removing them may affect balances and settlements. Are you sure you want to remove ${name}?`);
+                if (!proceed) return;
+            } else {
+                const proceed = confirm(`Remove "${name}" from trip members?`);
+                if (!proceed) return;
+            }
+
+            tripMembers = tripMembers.filter(m => m !== name);
+            if (userDataCache) userDataCache.tripMembers = tripMembers;
+
+            try {
+                if (currentUser) {
+                    await setDoc(doc(db, "users", currentUser.uid), { tripMembers: tripMembers }, { merge: true });
+                }
+                renderTripMembers();
+                updateTripDashboard();
+            } catch (err) {
+                alert("Failed to remove member: " + err.message);
+            }
+        }
+        window.removeTripMember = removeTripMember;
+
+        function selectAllSplitMembers(selectAll) {
+            const splitContainer = document.getElementById('splitMembersCheckboxes');
+            if (!splitContainer) return;
+            const checkboxes = splitContainer.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = selectAll);
+            updateSplitPreview();
+        }
+        window.selectAllSplitMembers = selectAllSplitMembers;
+
+        function updateSplitPreview() {
+            const amtInput = document.getElementById('tripExpAmount');
+            const previewEl = document.getElementById('splitCalculationPreview');
+            if (!amtInput || !previewEl) return;
+
+            const amt = parseFloat(amtInput.value);
+            const splitContainer = document.getElementById('splitMembersCheckboxes');
+            const checked = splitContainer ? Array.from(splitContainer.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value) : [];
+
+            const fmt = getFormatter();
+            if (!isNaN(amt) && amt > 0 && checked.length > 0) {
+                const perPerson = amt / checked.length;
+                previewEl.textContent = `${fmt.format(perPerson)} per person (${checked.length} ${checked.length === 1 ? 'person' : 'people'} sharing)`;
+                previewEl.style.color = 'var(--color-accent-fg)';
+            } else if (checked.length === 0) {
+                previewEl.textContent = '⚠️ Please select at least one person to split among.';
+                previewEl.style.color = 'var(--color-danger-fg)';
+            } else {
+                previewEl.textContent = 'Select members and enter an amount to view per-person share';
+                previewEl.style.color = 'var(--color-fg-muted)';
+            }
+        }
+        window.updateSplitPreview = updateSplitPreview;
+
+        function selectAllEditSplitMembers(selectAll) {
+            const splitContainer = document.getElementById('editSplitMembersCheckboxes');
+            if (!splitContainer) return;
+            const checkboxes = splitContainer.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = selectAll);
+            updateEditSplitPreview();
+        }
+        window.selectAllEditSplitMembers = selectAllEditSplitMembers;
+
+        function updateEditSplitPreview() {
+            const amtInput = document.getElementById('editTripExpAmount');
+            const previewEl = document.getElementById('editSplitCalculationPreview');
+            if (!amtInput || !previewEl) return;
+
+            const amt = parseFloat(amtInput.value);
+            const splitContainer = document.getElementById('editSplitMembersCheckboxes');
+            const checked = splitContainer ? Array.from(splitContainer.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value) : [];
+
+            const fmt = getFormatter();
+            if (!isNaN(amt) && amt > 0 && checked.length > 0) {
+                const perPerson = amt / checked.length;
+                previewEl.textContent = `${fmt.format(perPerson)} per person (${checked.length} ${checked.length === 1 ? 'person' : 'people'} sharing)`;
+                previewEl.style.color = 'var(--color-accent-fg)';
+            } else if (checked.length === 0) {
+                previewEl.textContent = '⚠️ Please select at least one person to split among.';
+                previewEl.style.color = 'var(--color-danger-fg)';
+            } else {
+                previewEl.textContent = 'Select members and enter an amount to view per-person share';
+                previewEl.style.color = 'var(--color-fg-muted)';
+            }
+        }
+        window.updateEditSplitPreview = updateEditSplitPreview;
+
+        async function addTripExpenseEntry(e) {
+            e.preventDefault();
+            const dateEl = document.getElementById('tripExpDate');
+            const titleEl = document.getElementById('tripExpTitle');
+            const amtEl = document.getElementById('tripExpAmount');
+            const catEl = document.getElementById('tripExpCategory');
+            const paidByEl = document.getElementById('tripExpPaidBy');
+            const noteEl = document.getElementById('tripExpNote');
+            const splitContainer = document.getElementById('splitMembersCheckboxes');
+
+            const splitAmong = splitContainer
+                ? Array.from(splitContainer.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value)
+                : [];
+
+            if (splitAmong.length === 0) {
+                alert("Please select at least one member to split the expense with.");
+                return;
+            }
+
+            const amount = parseFloat(amtEl.value);
+            if (isNaN(amount) || amount <= 0) {
+                alert("Please enter a valid amount.");
+                return;
+            }
+
+            const newExp = {
+                date: (dateEl && dateEl.value) ? dateEl.value : getTodayString(),
+                title: titleEl.value.trim(),
+                amount: amount,
+                category: catEl.value,
+                paidBy: paidByEl.value || 'You',
+                splitAmong: splitAmong,
+                note: noteEl.value.trim(),
+                createdAt: Date.now()
+            };
+
+            try {
+                await addDoc(collection(db, "users", currentUser.uid, "tripExpenses"), newExp);
+                titleEl.value = '';
+                amtEl.value = '';
+                noteEl.value = '';
+                if (dateEl) dateEl.value = getTodayString();
+                selectAllSplitMembers(true);
+            } catch (err) {
+                alert("Failed to add trip expense: " + err.message);
+            }
+        }
+        window.addTripExpenseEntry = addTripExpenseEntry;
+
+        async function deleteTripExpense(id) {
+            if (!confirm("Are you sure you want to delete this trip expense?")) return;
+            try {
+                await deleteDoc(doc(db, "users", currentUser.uid, "tripExpenses", id));
+            } catch (err) {
+                alert("Failed to delete trip expense: " + err.message);
+            }
+        }
+        window.deleteTripExpense = deleteTripExpense;
+
+        function calculateSettlements(members, expenses) {
+            const paid = {};
+            const share = {};
+            members.forEach(m => {
+                paid[m] = 0;
+                share[m] = 0;
+            });
+
+            expenses.forEach(exp => {
+                const amt = parseFloat(exp.amount) || 0;
+                const payer = exp.paidBy;
+                if (paid[payer] !== undefined) {
+                    paid[payer] += amt;
+                } else {
+                    paid[payer] = amt;
+                }
+
+                const splitList = (exp.splitAmong && exp.splitAmong.length > 0) ? exp.splitAmong : members;
+                const perPerson = amt / splitList.length;
+
+                splitList.forEach(m => {
+                    if (share[m] !== undefined) {
+                        share[m] += perPerson;
+                    } else {
+                        share[m] = perPerson;
+                    }
+                });
+            });
+
+            const net = {};
+            const creditors = [];
+            const debtors = [];
+
+            const allPeople = Array.from(new Set([...members, ...Object.keys(paid), ...Object.keys(share)]));
+            allPeople.forEach(m => {
+                const p = paid[m] || 0;
+                const s = share[m] || 0;
+                const diff = Math.round((p - s) * 100) / 100;
+                net[m] = diff;
+                if (diff > 0.009) {
+                    creditors.push({ name: m, amount: diff });
+                } else if (diff < -0.009) {
+                    debtors.push({ name: m, amount: -diff });
+                }
+            });
+
+            creditors.sort((a, b) => b.amount - a.amount);
+            debtors.sort((a, b) => b.amount - a.amount);
+
+            const settlements = [];
+            let i = 0;
+            let j = 0;
+
+            while (i < creditors.length && j < debtors.length) {
+                const c = creditors[i];
+                const d = debtors[j];
+                const settleAmt = Math.round(Math.min(c.amount, d.amount) * 100) / 100;
+
+                if (settleAmt > 0.009) {
+                    settlements.push({
+                        from: d.name,
+                        to: c.name,
+                        amount: settleAmt
+                    });
+                }
+
+                c.amount = Math.round((c.amount - settleAmt) * 100) / 100;
+                d.amount = Math.round((d.amount - settleAmt) * 100) / 100;
+
+                if (c.amount < 0.01) i++;
+                if (d.amount < 0.01) j++;
+            }
+
+            return {
+                paid,
+                share,
+                net,
+                settlements,
+                allPeople
+            };
+        }
+        window.calculateSettlements = calculateSettlements;
+
+        function updateTripDashboard() {
+            const fmt = getFormatter();
+
+            // 1. Total Trip Cost
+            const totalTripCost = tripExpenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
+            const totalCostEl = document.getElementById('tripTotalCostDisplay');
+            if (totalCostEl) totalCostEl.textContent = fmt.format(totalTripCost);
+
+            // 2. Compute settlements & per-person breakdown
+            const calc = calculateSettlements(tripMembers, tripExpenses);
+            const { paid, share, net, settlements, allPeople } = calc;
+
+            // 3. Current User's ("You") Overview Metrics
+            const userPaid = paid['You'] || 0;
+            const userShare = share['You'] || 0;
+            const userNet = net['You'] || 0;
+
+            const uPaidEl = document.getElementById('tripUserPaidDisplay');
+            const uShareEl = document.getElementById('tripUserShareDisplay');
+            const uBalEl = document.getElementById('tripUserBalanceDisplay');
+            const uBadge = document.getElementById('tripUserNetBadge');
+            const uText = document.getElementById('tripUserNetText');
+
+            if (uPaidEl) uPaidEl.textContent = fmt.format(userPaid);
+            if (uShareEl) uShareEl.textContent = fmt.format(userShare);
+            if (uBalEl) {
+                if (userNet > 0.009) {
+                    uBalEl.textContent = `+${fmt.format(userNet)}`;
+                    uBalEl.className = 'breakdown-value status-success';
+                } else if (userNet < -0.009) {
+                    uBalEl.textContent = `-${fmt.format(Math.abs(userNet))}`;
+                    uBalEl.className = 'breakdown-value status-danger';
+                } else {
+                    uBalEl.textContent = fmt.format(0);
+                    uBalEl.className = 'breakdown-value';
+                }
+            }
+
+            if (uBadge && uText) {
+                if (userNet > 0.009) {
+                    uText.textContent = `To Receive ${fmt.format(userNet)}`;
+                    uBadge.className = 'balance-hero-badge status-success';
+                } else if (userNet < -0.009) {
+                    uText.textContent = `You Owe ${fmt.format(Math.abs(userNet))}`;
+                    uBadge.className = 'balance-hero-badge status-danger';
+                } else {
+                    uText.textContent = 'All Settled';
+                    uBadge.className = 'balance-hero-badge neutral';
+                }
+            }
+
+            // 4. Render Settlement Plan (Who Owes Whom)
+            const settlementContainer = document.getElementById('tripSettlementList');
+            if (settlementContainer) {
+                settlementContainer.innerHTML = '';
+                if (settlements.length === 0) {
+                    const emptyCard = document.createElement('div');
+                    emptyCard.className = 'empty-settlement';
+                    emptyCard.innerHTML = tripExpenses.length === 0
+                        ? '<span>No trip expenses logged yet. Add expenses above to calculate splits!</span>'
+                        : '<span>🎉 Everything is perfectly settled! Nobody owes anything.</span>';
+                    settlementContainer.appendChild(emptyCard);
+                } else {
+                    settlements.forEach(s => {
+                        const card = document.createElement('div');
+                        card.className = 'settlement-card';
+
+                        const isFromUser = s.from.toLowerCase() === 'you';
+                        const isToUser = s.to.toLowerCase() === 'you';
+
+                        card.innerHTML = `
+                            <div class="settlement-flow">
+                                <span class="settle-person ${isFromUser ? 'you-highlight' : ''}">${escapeHtml(s.from)}</span>
+                                <span class="settle-arrow">owes →</span>
+                                <span class="settle-person ${isToUser ? 'you-highlight' : ''}">${escapeHtml(s.to)}</span>
+                            </div>
+                            <div class="settle-amount">${fmt.format(s.amount)}</div>
+                        `;
+                        settlementContainer.appendChild(card);
+                    });
+                }
+            }
+
+            // 5. Render Individual Member Breakdown Cards
+            const breakdownGrid = document.getElementById('tripMemberBreakdownGrid');
+            if (breakdownGrid) {
+                breakdownGrid.innerHTML = '';
+                const sortedPeople = [...allPeople].sort((a, b) => {
+                    if (a.toLowerCase() === 'you') return -1;
+                    if (b.toLowerCase() === 'you') return 1;
+                    return a.localeCompare(b);
+                });
+
+                sortedPeople.forEach(person => {
+                    const pPaid = paid[person] || 0;
+                    const pShare = share[person] || 0;
+                    const pNet = net[person] || 0;
+                    const isYou = person.toLowerCase() === 'you';
+
+                    const card = document.createElement('div');
+                    card.className = 'person-breakdown-card';
+
+                    const initial = person.charAt(0).toUpperCase();
+                    let netBadgeHtml = '';
+                    if (pNet > 0.009) {
+                        netBadgeHtml = `<span class="person-net-pill net-positive">+${fmt.format(pNet)}</span>`;
+                    } else if (pNet < -0.009) {
+                        netBadgeHtml = `<span class="person-net-pill net-negative">-${fmt.format(Math.abs(pNet))}</span>`;
+                    } else {
+                        netBadgeHtml = `<span class="person-net-pill net-zero">Settled</span>`;
+                    }
+
+                    card.innerHTML = `
+                        <div class="person-card-header">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div class="avatar-badge ${isYou ? 'you-avatar' : ''}">${initial}</div>
+                                <span class="person-card-name">${escapeHtml(person)}${isYou ? ' <span style="font-size: 11px; color: var(--color-accent-fg);">(You)</span>' : ''}</span>
+                            </div>
+                            ${netBadgeHtml}
+                        </div>
+                        <div class="person-stat-row">
+                            <span class="person-stat-label">Paid out of pocket:</span>
+                            <span class="person-stat-value">${fmt.format(pPaid)}</span>
+                        </div>
+                        <div class="person-stat-row">
+                            <span class="person-stat-label">Fair Share:</span>
+                            <span class="person-stat-value">${fmt.format(pShare)}</span>
+                        </div>
+                        <div class="person-stat-row" style="margin-top: 4px; padding-top: 6px; border-top: 1px solid var(--color-border-subtle);">
+                            <span class="person-stat-label" style="font-weight: 600;">Net Balance:</span>
+                            <span class="person-stat-value ${pNet > 0.009 ? 'status-success' : (pNet < -0.009 ? 'status-danger' : '')}" style="font-weight: 600;">
+                                ${pNet > 0.009 ? '+' + fmt.format(pNet) : (pNet < -0.009 ? '-' + fmt.format(Math.abs(pNet)) : fmt.format(0))}
+                            </span>
+                        </div>
+                    `;
+                    breakdownGrid.appendChild(card);
+                });
+            }
+
+            // 6. Render Trip Expense Log Table
+            const tbody = document.getElementById('tripExpensesTableBody');
+            if (tbody) {
+                tbody.innerHTML = '';
+                if (tripExpenses.length === 0) {
+                    const emptyTr = document.createElement('tr');
+                    emptyTr.innerHTML = `<td colspan="6" style="text-align: center; color: var(--color-fg-muted); padding: 24px;">No trip expenses logged yet.</td>`;
+                    tbody.appendChild(emptyTr);
+                } else {
+                    const sorted = [...tripExpenses].sort((a, b) => {
+                        const da = a.date || '';
+                        const db = b.date || '';
+                        if (da !== db) return db.localeCompare(da);
+                        return (b.createdAt || 0) - (a.createdAt || 0);
+                    });
+
+                    sorted.forEach(exp => {
+                        const tr = document.createElement('tr');
+                        const displayDate = formatDisplayDate(exp.date);
+                        const splitList = Array.isArray(exp.splitAmong) ? exp.splitAmong : [];
+                        const isAll = tripMembers.length > 0 && splitList.length === tripMembers.length && tripMembers.every(m => splitList.includes(m));
+                        const splitBadge = isAll ? `All (${splitList.length})` : (splitList.join(', ') || 'None');
+
+                        tr.innerHTML = `
+                            <td>${displayDate}</td>
+                            <td>
+                                <div><strong>${escapeHtml(exp.title || 'Expense')}</strong></div>
+                                <div style="font-size: 11px; color: var(--color-fg-muted); display: flex; gap: 6px; align-items: center; margin-top: 2px;">
+                                    <span class="category-badge">${escapeHtml(exp.category || 'General')}</span>
+                                    ${exp.note ? `<span style="font-style: italic;">${escapeHtml(exp.note)}</span>` : ''}
+                                </div>
+                            </td>
+                            <td>
+                                <span class="paid-by-pill ${exp.paidBy?.toLowerCase() === 'you' ? 'you-paid' : ''}">${escapeHtml(exp.paidBy || 'You')}</span>
+                            </td>
+                            <td>
+                                <span style="font-size: 12px; color: var(--color-fg-muted);">${escapeHtml(splitBadge)}</span>
+                            </td>
+                            <td style="text-align: right; font-weight: 600;">
+                                ${fmt.format(exp.amount || 0)}
+                            </td>
+                            <td style="text-align: right; white-space: nowrap;">
+                                <button type="button" class="btn-action edit" title="Edit Expense" onclick="openEditTripExpenseModal('${exp.id}')">✏️</button>
+                                <button type="button" class="btn-action delete" title="Delete Expense" onclick="deleteTripExpense('${exp.id}')">✕</button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+            }
+        }
+        window.updateTripDashboard = updateTripDashboard;
+
+        function listenToTripExpenses() {
+            if (unsubscribeTrips) unsubscribeTrips();
+            const colRef = collection(db, "users", currentUser.uid, "tripExpenses");
+            unsubscribeTrips = onSnapshot(colRef, (snapshot) => {
+                tripExpenses = [];
+                snapshot.forEach(docSnap => {
+                    tripExpenses.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                updateTripDashboard();
+            }, (err) => {
+                console.error("Trip expenses snapshot error:", err);
+            });
+        }
+
+        function copyTripSettlementPlan() {
+            if (tripExpenses.length === 0) {
+                alert("No trip expenses to summarize.");
+                return;
+            }
+            const fmt = getFormatter();
+            const calc = calculateSettlements(tripMembers, tripExpenses);
+            const { paid, share, net, settlements, allPeople } = calc;
+            const totalTripCost = tripExpenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
+
+            let text = `✈️ TRIP EXPENSE SUMMARY: ${tripName || 'Vacation Trip'}\n`;
+            text += `Total Trip Cost: ${fmt.format(totalTripCost)}\n`;
+            text += `Currency: ${currentCurrency}\n`;
+            text += `-------------------------------------------\n`;
+            text += `INDIVIDUAL SPENDING BREAKDOWN:\n`;
+
+            allPeople.forEach(p => {
+                const pPaid = paid[p] || 0;
+                const pShare = share[p] || 0;
+                const pNet = net[p] || 0;
+                const netStr = pNet > 0 ? `+${fmt.format(pNet)} (Gets back)` : (pNet < 0 ? `-${fmt.format(Math.abs(pNet))} (Owes)` : `Settled`);
+                text += `• ${p}: Paid ${fmt.format(pPaid)} | Share ${fmt.format(pShare)} | Net: ${netStr}\n`;
+            });
+
+            text += `-------------------------------------------\n`;
+            text += `SETTLEMENT PLAN (WHO OWES WHOM):\n`;
+            if (settlements.length === 0) {
+                text += `All balances are settled! Nobody owes anything.\n`;
+            } else {
+                settlements.forEach((s, idx) => {
+                    text += `${idx + 1}. ${s.from} pays ${s.to} ${fmt.format(s.amount)}\n`;
+                });
+            }
+            text += `-------------------------------------------\n`;
+
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Trip settlement summary copied to clipboard!");
+            }).catch(() => {
+                alert("Failed to copy to clipboard.");
+            });
+        }
+        window.copyTripSettlementPlan = copyTripSettlementPlan;
+
+        function downloadTripCSV() {
+            if (tripExpenses.length === 0) {
+                alert("No trip expenses to download.");
+                return;
+            }
+            let csv = "data:text/csv;charset=utf-8,Date,Expense,Category,Amount,Paid By,Split Among,Note\n";
+            tripExpenses.forEach(tx => {
+                const splitStr = Array.isArray(tx.splitAmong) ? tx.splitAmong.join('; ') : '';
+                const noteStr = tx.note ? tx.note.replace(/"/g, '""') : '';
+                const titleStr = tx.title ? tx.title.replace(/"/g, '""') : '';
+                csv += `${formatDisplayDate(tx.date)},"${titleStr}","${tx.category || ''}",${tx.amount},"${tx.paidBy || ''}","${splitStr}","${noteStr}"\n`;
+            });
+            const link = document.createElement("a");
+            link.href = encodeURI(csv);
+            link.download = `Trip_Expenses_${(tripName || 'Vacation').replace(/\s+/g, '_')}_${getTodayString()}.csv`;
+            link.click();
+        }
+        window.downloadTripCSV = downloadTripCSV;
+
+        function openEditTripExpenseModal(id) {
+            const exp = tripExpenses.find(e => e.id === id);
+            if (!exp) return;
+
+            document.getElementById('editTripExpId').value = exp.id;
+            document.getElementById('editTripExpDate').value = exp.date || getTodayString();
+            document.getElementById('editTripExpAmount').value = exp.amount || '';
+            document.getElementById('editTripExpTitle').value = exp.title || '';
+            document.getElementById('editTripExpCategory').value = exp.category || 'Food & Dining';
+
+            // Populate Paid By in edit modal
+            const editPaidBySelect = document.getElementById('editTripExpPaidBy');
+            editPaidBySelect.innerHTML = '';
+            tripMembers.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m;
+                opt.textContent = m.toLowerCase() === 'you' ? 'You (Me)' : m;
+                editPaidBySelect.appendChild(opt);
+            });
+            if (exp.paidBy && !tripMembers.includes(exp.paidBy)) {
+                const opt = document.createElement('option');
+                opt.value = exp.paidBy;
+                opt.textContent = exp.paidBy;
+                editPaidBySelect.appendChild(opt);
+            }
+            editPaidBySelect.value = exp.paidBy || 'You';
+
+            // Populate checkboxes in edit modal
+            const editSplitContainer = document.getElementById('editSplitMembersCheckboxes');
+            editSplitContainer.innerHTML = '';
+
+            const allSplitChoices = Array.from(new Set([...tripMembers, ...(exp.splitAmong || [])]));
+            allSplitChoices.forEach(m => {
+                const label = document.createElement('label');
+                label.className = 'split-checkbox-label';
+
+                const cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.className = 'split-member-checkbox';
+                cb.value = m;
+                cb.checked = Array.isArray(exp.splitAmong) ? exp.splitAmong.includes(m) : true;
+                cb.addEventListener('change', updateEditSplitPreview);
+
+                const span = document.createElement('span');
+                span.textContent = m;
+
+                label.appendChild(cb);
+                label.appendChild(span);
+                editSplitContainer.appendChild(label);
+            });
+
+            document.getElementById('editTripExpNote').value = exp.note || '';
+
+            updateEditSplitPreview();
+            document.getElementById('editTripExpenseModal').style.display = 'flex';
+        }
+        window.openEditTripExpenseModal = openEditTripExpenseModal;
+
+        function closeEditTripExpenseModal() {
+            const modal = document.getElementById('editTripExpenseModal');
+            if (modal) modal.style.display = 'none';
+        }
+        window.closeEditTripExpenseModal = closeEditTripExpenseModal;
+
+        async function saveEditedTripExpense(e) {
+            e.preventDefault();
+            const id = document.getElementById('editTripExpId').value;
+            const date = document.getElementById('editTripExpDate').value;
+            const title = document.getElementById('editTripExpTitle').value.trim();
+            const amount = parseFloat(document.getElementById('editTripExpAmount').value);
+            const category = document.getElementById('editTripExpCategory').value;
+            const paidBy = document.getElementById('editTripExpPaidBy').value;
+            const note = document.getElementById('editTripExpNote').value.trim();
+
+            const splitContainer = document.getElementById('editSplitMembersCheckboxes');
+            const splitAmong = splitContainer
+                ? Array.from(splitContainer.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value)
+                : [];
+
+            if (splitAmong.length === 0) {
+                alert("Please select at least one member to split the expense with.");
+                return;
+            }
+
+            if (isNaN(amount) || amount <= 0) {
+                alert("Please enter a valid amount.");
+                return;
+            }
+
+            const saveBtn = document.getElementById('saveEditTripExpBtn');
+            if (saveBtn) {
+                saveBtn.disabled = true;
+                saveBtn.textContent = 'Saving...';
+            }
+
+            try {
+                await setDoc(doc(db, "users", currentUser.uid, "tripExpenses", id), {
+                    date,
+                    title,
+                    amount,
+                    category,
+                    paidBy,
+                    splitAmong,
+                    note
+                }, { merge: true });
+
+                closeEditTripExpenseModal();
+            } catch (err) {
+                alert("Failed to update trip expense: " + err.message);
+            } finally {
+                if (saveBtn) {
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = 'Save Changes';
+                }
+            }
+        }
+        window.saveEditedTripExpense = saveEditedTripExpense;
     </script>
 </body>
 
