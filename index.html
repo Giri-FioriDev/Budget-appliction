@@ -1381,6 +1381,362 @@
                 transform: translateY(0);
             }
         }
+
+        /* Amount Input with Calculator Trigger */
+        .input-calc-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .input-calc-group input {
+            width: 100%;
+            padding-right: 40px !important;
+        }
+
+        .input-calc-group input[type="number"]::-webkit-outer-spin-button,
+        .input-calc-group input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .input-calc-group input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .btn-calc-trigger {
+            position: absolute;
+            right: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            color: var(--color-fg-muted);
+            border-radius: var(--radius-md);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.3, 0, 0.5, 1);
+            padding: 0;
+            z-index: 2;
+        }
+
+        .btn-calc-trigger:hover {
+            color: var(--color-accent-fg);
+            background: rgba(47, 129, 247, 0.15);
+            box-shadow: 0 0 8px rgba(47, 129, 247, 0.2);
+        }
+
+        .btn-calc-trigger:active {
+            transform: translateY(-50%) scale(0.92);
+        }
+
+        .btn-calc-trigger svg {
+            width: 17px;
+            height: 17px;
+            pointer-events: none;
+        }
+
+        /* Amount Calculator Modal */
+        .calc-modal-overlay {
+            z-index: 1200;
+        }
+
+        .calc-modal-container {
+            max-width: 380px;
+            width: 95%;
+            border: 1px solid rgba(48, 54, 61, 0.9);
+            background: rgba(22, 27, 34, 0.97);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 16px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.08);
+            overflow: hidden;
+            animation: calcPopIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes calcPopIn {
+            from {
+                opacity: 0;
+                transform: scale(0.93) translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .calc-modal-header {
+            padding: 16px 20px 12px;
+            border-bottom: 1px solid var(--color-border-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(13, 17, 23, 0.45);
+        }
+
+        .calc-header-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .calc-header-title-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .calc-badge-icon {
+            font-size: 1.15rem;
+            line-height: 1;
+        }
+
+        .calc-target-badge {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--color-accent-fg);
+            background: rgba(47, 129, 247, 0.12);
+            border: 1px solid rgba(47, 129, 247, 0.3);
+            padding: 1px 8px;
+            border-radius: 12px;
+            width: fit-content;
+            letter-spacing: 0.2px;
+        }
+
+        .calc-modal-body {
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .calc-screen {
+            background: rgba(13, 17, 23, 0.95);
+            border: 1px solid var(--color-border-default);
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+        }
+
+        .calc-expression-row {
+            width: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .calc-expression-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: var(--color-fg-muted);
+            font-size: 14px;
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+            text-align: right;
+            padding: 0;
+            margin: 0;
+            outline: none;
+            box-shadow: none;
+        }
+
+        .calc-expression-input:focus {
+            box-shadow: none;
+            border: none;
+        }
+
+        .calc-result-row {
+            display: flex;
+            justify-content: flex-end;
+            align-items: baseline;
+            gap: 6px;
+            overflow: hidden;
+        }
+
+        .calc-currency-prefix {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--color-fg-muted);
+        }
+
+        .calc-result {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+            font-feature-settings: "tnum";
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .calc-presets-row {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 2px;
+            scrollbar-width: none;
+        }
+
+        .calc-presets-row::-webkit-scrollbar {
+            display: none;
+        }
+
+        .calc-preset-btn {
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            background: rgba(56, 139, 253, 0.1);
+            border: 1px solid rgba(56, 139, 253, 0.25);
+            color: #79c0ff;
+            border-radius: 14px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            flex-shrink: 0;
+        }
+
+        .calc-preset-btn:hover {
+            background: rgba(56, 139, 253, 0.2);
+            border-color: #58a6ff;
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        .calc-keypad {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .calc-key-btn {
+            height: 44px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.12s ease;
+            border: 1px solid transparent;
+        }
+
+        .calc-key-btn:active {
+            transform: scale(0.95);
+        }
+
+        .calc-key-num {
+            background: #21262d;
+            border-color: rgba(240, 246, 252, 0.1);
+            color: #f0f6fc;
+        }
+
+        .calc-key-num:hover {
+            background: #30363d;
+            border-color: rgba(240, 246, 252, 0.2);
+        }
+
+        .calc-key-op {
+            background: rgba(47, 129, 247, 0.12);
+            border-color: rgba(47, 129, 247, 0.35);
+            color: #58a6ff;
+        }
+
+        .calc-key-op:hover {
+            background: rgba(47, 129, 247, 0.25);
+            color: #ffffff;
+        }
+
+        .calc-key-func {
+            background: #161b22;
+            border-color: #30363d;
+            color: #8b949e;
+        }
+
+        .calc-key-func:hover {
+            background: #21262d;
+            color: #c9d1d9;
+        }
+
+        .calc-key-clear {
+            background: rgba(248, 81, 73, 0.12);
+            border-color: rgba(248, 81, 73, 0.35);
+            color: #f85149;
+        }
+
+        .calc-key-clear:hover {
+            background: rgba(248, 81, 73, 0.25);
+            color: #ff7b72;
+        }
+
+        .calc-modal-footer {
+            padding: 14px 20px 16px;
+            border-top: 1px solid var(--color-border-muted);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            background: rgba(13, 17, 23, 0.45);
+        }
+
+        .calc-footer-btn-cancel {
+            background: #21262d;
+            border: 1px solid var(--color-border-default);
+            color: var(--color-fg-muted);
+            padding: 8px 14px;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .calc-footer-btn-cancel:hover {
+            background: #30363d;
+            color: var(--color-fg-default);
+        }
+
+        .calc-footer-btn-apply {
+            background: linear-gradient(180deg, #2ea043 0%, #238636 100%);
+            border: 1px solid rgba(240, 246, 252, 0.1);
+            color: #ffffff;
+            padding: 8px 18px;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 6px rgba(35, 134, 54, 0.4);
+            transition: var(--transition);
+        }
+
+        .calc-footer-btn-apply:hover {
+            background: linear-gradient(180deg, #3fb950 0%, #2ea043 100%);
+            box-shadow: 0 4px 12px rgba(35, 134, 54, 0.5);
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 480px) {
+            .calc-modal-overlay {
+                align-items: flex-end;
+                padding: 0;
+            }
+            .calc-modal-container {
+                max-width: 100%;
+                border-bottom-left-radius: 0;
+                border-bottom-right-radius: 0;
+            }
+        }
     </style>
 </head>
 
@@ -1501,8 +1857,24 @@
                         <form id="incomeForm" class="form-grid income-form">
                             <div class="form-group">
                                 <label for="incomeInput">Monthly Net Income (<span class="curr-symbol">€</span>)</label>
-                                <input type="number" id="incomeInput" step="0.01"
-                                    placeholder="Enter once for this month" required>
+                                <div class="input-calc-group">
+                                    <input type="number" id="incomeInput" step="0.01"
+                                        placeholder="Enter once for this month" required title="Click 🧮 or double-click to calculate">
+                                    <button type="button" class="btn-calc-trigger" onclick="openAmountCalculator('incomeInput', 'Monthly Net Income')" title="Open Calculator" aria-label="Open Calculator">
+                                        <svg class="calc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                                            <line x1="8" y1="6" x2="16" y2="6"></line>
+                                            <line x1="16" y1="14" x2="16" y2="18"></line>
+                                            <path d="M16 10h.01"></path>
+                                            <path d="M12 10h.01"></path>
+                                            <path d="M8 10h.01"></path>
+                                            <path d="M12 14h.01"></path>
+                                            <path d="M8 14h.01"></path>
+                                            <path d="M12 18h.01"></path>
+                                            <path d="M8 18h.01"></path>
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                             <button type="submit" class="btn-primary">Set Monthly Income</button>
                         </form>
@@ -1564,7 +1936,23 @@
                             </div>
                             <div class="form-group form-group-amt">
                                 <label for="needsAmt">Amount (<span class="curr-symbol">€</span>)</label>
-                                <input type="number" id="needsAmt" step="0.01" min="0.01" placeholder="0.00" required>
+                                <div class="input-calc-group">
+                                    <input type="number" id="needsAmt" step="0.01" min="0.01" placeholder="0.00" required title="Click 🧮 or double-click to calculate">
+                                    <button type="button" class="btn-calc-trigger" onclick="openAmountCalculator('needsAmt', 'Needs Expense')" title="Open Calculator" aria-label="Open Calculator">
+                                        <svg class="calc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                                            <line x1="8" y1="6" x2="16" y2="6"></line>
+                                            <line x1="16" y1="14" x2="16" y2="18"></line>
+                                            <path d="M16 10h.01"></path>
+                                            <path d="M12 10h.01"></path>
+                                            <path d="M8 10h.01"></path>
+                                            <path d="M12 14h.01"></path>
+                                            <path d="M8 14h.01"></path>
+                                            <path d="M12 18h.01"></path>
+                                            <path d="M8 18h.01"></path>
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                             <div class="form-group form-group-note">
                                 <label for="needsNote">Note (Optional)</label>
@@ -1644,7 +2032,23 @@
                             </div>
                             <div class="form-group form-group-amt">
                                 <label for="wantsAmt">Amount (<span class="curr-symbol">€</span>)</label>
-                                <input type="number" id="wantsAmt" step="0.01" min="0.01" placeholder="0.00" required>
+                                <div class="input-calc-group">
+                                    <input type="number" id="wantsAmt" step="0.01" min="0.01" placeholder="0.00" required title="Click 🧮 or double-click to calculate">
+                                    <button type="button" class="btn-calc-trigger" onclick="openAmountCalculator('wantsAmt', 'Wants Expense')" title="Open Calculator" aria-label="Open Calculator">
+                                        <svg class="calc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                                            <line x1="8" y1="6" x2="16" y2="6"></line>
+                                            <line x1="16" y1="14" x2="16" y2="18"></line>
+                                            <path d="M16 10h.01"></path>
+                                            <path d="M12 10h.01"></path>
+                                            <path d="M8 10h.01"></path>
+                                            <path d="M12 14h.01"></path>
+                                            <path d="M8 14h.01"></path>
+                                            <path d="M12 18h.01"></path>
+                                            <path d="M8 18h.01"></path>
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                             <div class="form-group form-group-note">
                                 <label for="wantsNote">Note (Optional)</label>
@@ -1724,7 +2128,23 @@
                             </div>
                             <div class="form-group form-group-amt">
                                 <label for="savingsAmt">Amount (<span class="curr-symbol">€</span>)</label>
-                                <input type="number" id="savingsAmt" step="0.01" min="0.01" placeholder="0.00" required>
+                                <div class="input-calc-group">
+                                    <input type="number" id="savingsAmt" step="0.01" min="0.01" placeholder="0.00" required title="Click 🧮 or double-click to calculate">
+                                    <button type="button" class="btn-calc-trigger" onclick="openAmountCalculator('savingsAmt', 'Savings Allocation')" title="Open Calculator" aria-label="Open Calculator">
+                                        <svg class="calc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                                            <line x1="8" y1="6" x2="16" y2="6"></line>
+                                            <line x1="16" y1="14" x2="16" y2="18"></line>
+                                            <path d="M16 10h.01"></path>
+                                            <path d="M12 10h.01"></path>
+                                            <path d="M8 10h.01"></path>
+                                            <path d="M12 14h.01"></path>
+                                            <path d="M8 14h.01"></path>
+                                            <path d="M12 18h.01"></path>
+                                            <path d="M8 18h.01"></path>
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                             <div class="form-group form-group-note">
                                 <label for="savingsNote">Note (Optional)</label>
@@ -1821,7 +2241,23 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="tripExpAmount">Amount (<span class="curr-symbol">€</span>)</label>
-                                    <input type="number" id="tripExpAmount" step="0.01" min="0.01" placeholder="0.00" required oninput="updateSplitPreview()">
+                                    <div class="input-calc-group">
+                                        <input type="number" id="tripExpAmount" step="0.01" min="0.01" placeholder="0.00" required oninput="updateSplitPreview()" title="Click 🧮 or double-click to calculate">
+                                        <button type="button" class="btn-calc-trigger" onclick="openAmountCalculator('tripExpAmount', 'Trip Expense')" title="Open Calculator" aria-label="Open Calculator">
+                                            <svg class="calc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                                                <line x1="8" y1="6" x2="16" y2="6"></line>
+                                                <line x1="16" y1="14" x2="16" y2="18"></line>
+                                                <path d="M16 10h.01"></path>
+                                                <path d="M12 10h.01"></path>
+                                                <path d="M8 10h.01"></path>
+                                                <path d="M12 14h.01"></path>
+                                                <path d="M8 14h.01"></path>
+                                                <path d="M12 18h.01"></path>
+                                                <path d="M8 18h.01"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="tripExpCategory">Category</label>
@@ -2091,7 +2527,23 @@
 
                     <div class="form-group">
                         <label for="editRecordAmt">Amount (<span class="curr-symbol">€</span>)</label>
-                        <input type="number" id="editRecordAmt" step="0.01" min="0.01" placeholder="0.00" required>
+                        <div class="input-calc-group">
+                            <input type="number" id="editRecordAmt" step="0.01" min="0.01" placeholder="0.00" required title="Click 🧮 or double-click to calculate">
+                            <button type="button" class="btn-calc-trigger" onclick="openAmountCalculator('editRecordAmt', 'Edit Expense/Savings')" title="Open Calculator" aria-label="Open Calculator">
+                                <svg class="calc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                                    <line x1="8" y1="6" x2="16" y2="6"></line>
+                                    <line x1="16" y1="14" x2="16" y2="18"></line>
+                                    <path d="M16 10h.01"></path>
+                                    <path d="M12 10h.01"></path>
+                                    <path d="M8 10h.01"></path>
+                                    <path d="M12 14h.01"></path>
+                                    <path d="M8 14h.01"></path>
+                                    <path d="M12 18h.01"></path>
+                                    <path d="M8 18h.01"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -2128,7 +2580,23 @@
                         </div>
                         <div class="form-group">
                             <label for="editTripExpAmount">Amount (<span class="curr-symbol">€</span>)</label>
-                            <input type="number" id="editTripExpAmount" step="0.01" min="0.01" required oninput="updateEditSplitPreview()">
+                            <div class="input-calc-group">
+                                <input type="number" id="editTripExpAmount" step="0.01" min="0.01" required oninput="updateEditSplitPreview()" title="Click 🧮 or double-click to calculate">
+                                <button type="button" class="btn-calc-trigger" onclick="openAmountCalculator('editTripExpAmount', 'Edit Trip Expense')" title="Open Calculator" aria-label="Open Calculator">
+                                    <svg class="calc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                                        <line x1="8" y1="6" x2="16" y2="6"></line>
+                                        <line x1="16" y1="14" x2="16" y2="18"></line>
+                                        <path d="M16 10h.01"></path>
+                                        <path d="M12 10h.01"></path>
+                                        <path d="M8 10h.01"></path>
+                                        <path d="M12 14h.01"></path>
+                                        <path d="M8 14h.01"></path>
+                                        <path d="M12 18h.01"></path>
+                                        <path d="M8 18h.01"></path>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -2180,6 +2648,79 @@
                     <button type="submit" class="btn-primary" id="saveEditTripExpBtn">Save Changes</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Amount Calculator Modal -->
+    <div id="amountCalculatorModal" class="modal-overlay calc-modal-overlay" style="display: none;" onclick="handleCalcOverlayClick(event)">
+        <div class="modal-container calc-modal-container" role="dialog" aria-labelledby="calcModalTitle" aria-modal="true">
+            <div class="modal-header calc-modal-header">
+                <div class="calc-header-info">
+                    <div class="calc-header-title-row">
+                        <span class="calc-badge-icon">🧮</span>
+                        <h2 id="calcModalTitle" style="font-size: 1.1rem; margin: 0; color: #ffffff;">Amount Calculator</h2>
+                    </div>
+                    <span class="calc-target-badge" id="calcTargetBadge">Expense Amount</span>
+                </div>
+                <button type="button" class="modal-close-btn" onclick="closeAmountCalculator()" aria-label="Close calculator">✕</button>
+            </div>
+
+            <div class="calc-modal-body">
+                <!-- Calculator Screen -->
+                <div class="calc-screen">
+                    <div class="calc-expression-row">
+                        <input type="text" id="calcExpressionInput" class="calc-expression-input" placeholder="Type calculation or use keypad..." autocomplete="off" spellcheck="false" oninput="calcHandleInputEvent(event)">
+                    </div>
+                    <div class="calc-result-row">
+                        <span class="calc-currency-prefix curr-symbol">€</span>
+                        <span class="calc-result" id="calcResultDisplay">0.00</span>
+                    </div>
+                </div>
+
+                <!-- Quick Presets -->
+                <div class="calc-presets-row">
+                    <button type="button" class="calc-preset-btn" onclick="calcApplyQuickOp('/2')" title="Split in half (÷2)">÷ 2</button>
+                    <button type="button" class="calc-preset-btn" onclick="calcApplyQuickOp('/3')" title="Split in 3 (÷3)">÷ 3</button>
+                    <button type="button" class="calc-preset-btn" onclick="calcApplyQuickOp('/4')" title="Split in 4 (÷4)">÷ 4</button>
+                    <button type="button" class="calc-preset-btn" onclick="calcApplyQuickOp('+10%')" title="Add 10% (tip or tax)">+10%</button>
+                    <button type="button" class="calc-preset-btn" onclick="calcApplyQuickOp('+20%')" title="Add 20% (VAT)">+20%</button>
+                </div>
+
+                <!-- Keypad -->
+                <div class="calc-keypad">
+                    <button type="button" class="calc-key-btn calc-key-clear" onclick="calcClear()" title="Clear expression">C</button>
+                    <button type="button" class="calc-key-btn calc-key-func" onclick="calcAppend('(')">(</button>
+                    <button type="button" class="calc-key-btn calc-key-func" onclick="calcAppend(')')">)</button>
+                    <button type="button" class="calc-key-btn calc-key-func" onclick="calcBackspace()" title="Backspace">⌫</button>
+
+                    <button type="button" class="calc-key-btn calc-key-num" onclick="calcAppend('7')">7</button>
+                    <button type="button" class="calc-key-btn calc-key-num" onclick="calcAppend('8')">8</button>
+                    <button type="button" class="calc-key-btn calc-key-num" onclick="calcAppend('9')">9</button>
+                    <button type="button" class="calc-key-btn calc-key-op" onclick="calcAppend('÷')">÷</button>
+
+                    <button type="button" class="calc-key-btn calc-key-num" onclick="calcAppend('4')">4</button>
+                    <button type="button" class="calc-key-btn calc-key-num" onclick="calcAppend('5')">5</button>
+                    <button type="button" class="calc-key-btn calc-key-num" onclick="calcAppend('6')">6</button>
+                    <button type="button" class="calc-key-btn calc-key-op" onclick="calcAppend('×')">×</button>
+
+                    <button type="button" class="calc-key-btn calc-key-num" onclick="calcAppend('1')">1</button>
+                    <button type="button" class="calc-key-btn calc-key-num" onclick="calcAppend('2')">2</button>
+                    <button type="button" class="calc-key-btn calc-key-num" onclick="calcAppend('3')">3</button>
+                    <button type="button" class="calc-key-btn calc-key-op" onclick="calcAppend('-')">-</button>
+
+                    <button type="button" class="calc-key-btn calc-key-num" onclick="calcAppend('0')">0</button>
+                    <button type="button" class="calc-key-btn calc-key-num" onclick="calcAppend('.')">.</button>
+                    <button type="button" class="calc-key-btn calc-key-func" onclick="calcAppend('%')">%</button>
+                    <button type="button" class="calc-key-btn calc-key-op" onclick="calcAppend('+')">+</button>
+                </div>
+            </div>
+
+            <div class="calc-modal-footer">
+                <button type="button" class="calc-footer-btn-cancel" onclick="closeAmountCalculator()">Cancel</button>
+                <button type="button" class="calc-footer-btn-apply" id="calcApplyBtn" onclick="calcApplyAmount()">
+                    ✓ Use Amount (<span id="calcFooterAmount">€0.00</span>)
+                </button>
+            </div>
         </div>
     </div>
 
@@ -4330,6 +4871,372 @@
             }
         }
         window.saveEditedTripExpense = saveEditedTripExpense;
+
+        // ==========================================
+        // AMOUNT CALCULATOR SUBSYSTEM
+        // ==========================================
+        let calcTargetInputId = null;
+        let calcPendingResult = 0;
+
+        // Safe mathematical expression parser (recursive descent AST without eval)
+        function evaluateMath(raw) {
+            if (!raw || typeof raw !== 'string') return 0;
+            let str = raw.replace(/×/g, '*').replace(/÷/g, '/');
+
+            // Handle percentage relative to base: A [+-] B% => A [+-] (A * B / 100)
+            str = str.replace(/([0-9.]+|\))\s*([+-])\s*([0-9.]+)\s*%/g, function(match, base, op, pct) {
+                return base + ' ' + op + ' (' + base + ' * ' + pct + ' / 100)';
+            });
+            // Standalone percentage: B% => (B / 100)
+            str = str.replace(/([0-9.]+)\s*%/g, function(match, p1) {
+                return '(' + p1 + ' / 100)';
+            });
+
+            const tokens = [];
+            let i = 0;
+            while (i < str.length) {
+                const c = str[i];
+                if (/\s/.test(c)) { i++; continue; }
+                if (/[0-9.]/.test(c)) {
+                    let num = '';
+                    while (i < str.length && /[0-9.]/.test(str[i])) {
+                        num += str[i];
+                        i++;
+                    }
+                    if (num === '.' || num.split('.').length > 2) return null;
+                    tokens.push({ type: 'NUM', val: parseFloat(num) });
+                    continue;
+                }
+                if ('+-*/()'.includes(c)) {
+                    tokens.push({ type: c });
+                    i++;
+                    continue;
+                }
+                return null; // invalid token
+            }
+
+            let pos = 0;
+            function peek() { return tokens[pos]; }
+            function consume(type) {
+                const t = tokens[pos];
+                if (t && (!type || t.type === type)) { pos++; return t; }
+                return null;
+            }
+
+            function parseExpr() {
+                let left = parseTerm();
+                if (left === null) return null;
+                while (peek() && (peek().type === '+' || peek().type === '-')) {
+                    const op = consume().type;
+                    const right = parseTerm();
+                    if (right === null) return null;
+                    left = op === '+' ? left + right : left - right;
+                }
+                return left;
+            }
+
+            function parseTerm() {
+                let left = parseFactor();
+                if (left === null) return null;
+                while (peek() && (peek().type === '*' || peek().type === '/')) {
+                    const op = consume().type;
+                    const right = parseFactor();
+                    if (right === null) return null;
+                    if (op === '/') {
+                        if (right === 0) return null;
+                        left = left / right;
+                    } else {
+                        left = left * right;
+                    }
+                }
+                return left;
+            }
+
+            function parseFactor() {
+                const t = peek();
+                if (!t) return null;
+                if (t.type === '+') { consume('+'); return parseFactor(); }
+                if (t.type === '-') { consume('-'); const v = parseFactor(); return v !== null ? -v : null; }
+                if (t.type === 'NUM') { consume('NUM'); return t.val; }
+                if (t.type === '(') { consume('('); const v = parseExpr(); if (v === null || !consume(')')) return null; return v; }
+                return null;
+            }
+
+            const res = parseExpr();
+            if (res !== null && pos === tokens.length && isFinite(res)) {
+                return Math.round(res * 100) / 100;
+            }
+            return null;
+        }
+
+        function tentativeEvaluate(expr) {
+            let res = evaluateMath(expr);
+            if (res !== null) return res;
+            let trimmed = expr.trim();
+            while (trimmed.length > 0 && /[+\-×÷/*(]$/.test(trimmed)) {
+                trimmed = trimmed.replace(/[+\-×÷/*(]+$/, '').trim();
+            }
+            const openP = (trimmed.match(/\(/g) || []).length;
+            const closeP = (trimmed.match(/\)/g) || []).length;
+            if (openP > closeP) {
+                trimmed += ')'.repeat(openP - closeP);
+            }
+            return evaluateMath(trimmed);
+        }
+
+        window.openAmountCalculator = function (targetId, labelName) {
+            const input = document.getElementById(targetId);
+            if (!input) return;
+            if (input.disabled) {
+                alert("This amount field is currently locked.");
+                return;
+            }
+            calcTargetInputId = targetId;
+
+            const badge = document.getElementById('calcTargetBadge');
+            if (badge) {
+                badge.textContent = labelName || 'Amount';
+            }
+
+            const currSymbol = (currencySymbols && currencySymbols[currentCurrency]) ? currencySymbols[currentCurrency] : '€';
+            const prefixEl = document.querySelector('#amountCalculatorModal .calc-currency-prefix');
+            if (prefixEl) prefixEl.textContent = currSymbol;
+
+            const existingVal = parseFloat(input.value);
+            const exprInput = document.getElementById('calcExpressionInput');
+            if (!isNaN(existingVal) && existingVal > 0) {
+                exprInput.value = existingVal.toString();
+                calcPendingResult = existingVal;
+            } else {
+                exprInput.value = '';
+                calcPendingResult = 0;
+            }
+
+            calcRefreshDisplay();
+
+            const modal = document.getElementById('amountCalculatorModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                setTimeout(() => {
+                    if (exprInput) {
+                        exprInput.focus();
+                        exprInput.select();
+                    }
+                }, 50);
+            }
+        };
+
+        window.closeAmountCalculator = function () {
+            const modal = document.getElementById('amountCalculatorModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+            if (calcTargetInputId) {
+                const input = document.getElementById(calcTargetInputId);
+                if (input) input.focus();
+            }
+        };
+
+        window.handleCalcOverlayClick = function (e) {
+            if (e.target && e.target.id === 'amountCalculatorModal') {
+                closeAmountCalculator();
+            }
+        };
+
+        function calcRefreshDisplay() {
+            const exprInput = document.getElementById('calcExpressionInput');
+            const resultEl = document.getElementById('calcResultDisplay');
+            const footerAmt = document.getElementById('calcFooterAmount');
+            const currSymbol = (currencySymbols && currencySymbols[currentCurrency]) ? currencySymbols[currentCurrency] : '€';
+
+            if (!exprInput || !resultEl) return;
+
+            const raw = exprInput.value.trim();
+            if (!raw) {
+                calcPendingResult = 0;
+                resultEl.textContent = '0.00';
+                if (footerAmt) footerAmt.textContent = `${currSymbol}0.00`;
+                return;
+            }
+
+            const evaluated = tentativeEvaluate(raw);
+            if (evaluated !== null && isFinite(evaluated)) {
+                calcPendingResult = Math.max(0, evaluated);
+                resultEl.textContent = calcPendingResult.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                if (footerAmt) footerAmt.textContent = `${currSymbol}${calcPendingResult.toFixed(2)}`;
+            } else {
+                resultEl.textContent = calcPendingResult.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                if (footerAmt) footerAmt.textContent = `${currSymbol}${calcPendingResult.toFixed(2)}`;
+            }
+        }
+
+        window.calcHandleInputEvent = function (e) {
+            const input = e.target;
+            if (!input) return;
+            const cursor = input.selectionStart;
+            const val = input.value;
+            const replaced = val.replace(/\*/g, '×').replace(/\//g, '÷');
+            if (val !== replaced) {
+                input.value = replaced;
+                input.setSelectionRange(cursor, cursor);
+            }
+            calcRefreshDisplay();
+        };
+
+        window.calcAppend = function (char) {
+            const exprInput = document.getElementById('calcExpressionInput');
+            if (!exprInput) return;
+
+            let val = exprInput.value;
+            const isOp = ['+', '-', '×', '÷'].includes(char);
+
+            if (isOp) {
+                if (!val) {
+                    if (char === '-') {
+                        val = '-';
+                    } else if (calcPendingResult > 0) {
+                        val = calcPendingResult.toString() + ' ' + char + ' ';
+                    }
+                } else {
+                    if (/\s*[+\-×÷]\s*$/.test(val)) {
+                        val = val.replace(/\s*[+\-×÷]\s*$/, ' ' + char + ' ');
+                    } else {
+                        val += ' ' + char + ' ';
+                    }
+                }
+            } else if (char === '.') {
+                const lastNum = val.split(/[+\-×÷/*()%\s]/).pop();
+                if (!lastNum.includes('.')) {
+                    val += (lastNum === '' ? '0.' : '.');
+                }
+            } else if (char === '%') {
+                if (/[0-9)]$/.test(val.trim())) {
+                    val += '%';
+                }
+            } else if (char === '(') {
+                if (/[0-9%)]$/.test(val.trim())) {
+                    val += ' × (';
+                } else {
+                    val += '(';
+                }
+            } else if (char === ')') {
+                const openCount = (val.match(/\(/g) || []).length;
+                const closeCount = (val.match(/\)/g) || []).length;
+                if (openCount > closeCount && /[0-9%)]$/.test(val.trim())) {
+                    val += ')';
+                }
+            } else {
+                val += char;
+            }
+
+            exprInput.value = val;
+            calcRefreshDisplay();
+            exprInput.focus();
+        };
+
+        window.calcClear = function () {
+            const exprInput = document.getElementById('calcExpressionInput');
+            if (exprInput) {
+                exprInput.value = '';
+                calcPendingResult = 0;
+                calcRefreshDisplay();
+                exprInput.focus();
+            }
+        };
+
+        window.calcBackspace = function () {
+            const exprInput = document.getElementById('calcExpressionInput');
+            if (!exprInput) return;
+            let val = exprInput.value;
+            if (val.endsWith(' ')) {
+                val = val.replace(/\s*[+\-×÷]\s*$/, '');
+            } else {
+                val = val.slice(0, -1);
+            }
+            exprInput.value = val;
+            calcRefreshDisplay();
+            exprInput.focus();
+        };
+
+        window.calcApplyQuickOp = function (opStr) {
+            const exprInput = document.getElementById('calcExpressionInput');
+            if (!exprInput) return;
+
+            let val = exprInput.value.trim();
+            if (!val && calcPendingResult > 0) {
+                val = calcPendingResult.toString();
+            }
+            if (!val) return;
+
+            if (opStr === '/2') {
+                val = `(${val}) ÷ 2`;
+            } else if (opStr === '/3') {
+                val = `(${val}) ÷ 3`;
+            } else if (opStr === '/4') {
+                val = `(${val}) ÷ 4`;
+            } else if (opStr === '+10%') {
+                val = `(${val}) + 10%`;
+            } else if (opStr === '+20%') {
+                val = `(${val}) + 20%`;
+            }
+
+            exprInput.value = val;
+            calcRefreshDisplay();
+            exprInput.focus();
+        };
+
+        window.calcApplyAmount = function () {
+            if (!calcTargetInputId) {
+                closeAmountCalculator();
+                return;
+            }
+            calcRefreshDisplay();
+            const targetInput = document.getElementById(calcTargetInputId);
+            if (targetInput) {
+                targetInput.value = calcPendingResult > 0 ? calcPendingResult.toFixed(2) : (calcPendingResult === 0 ? '' : calcPendingResult.toFixed(2));
+                targetInput.dispatchEvent(new Event('input', { bubbles: true }));
+                targetInput.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+            closeAmountCalculator();
+        };
+
+        // Attach double-click listener to all amount fields for quick-calc access
+        ['incomeInput', 'needsAmt', 'wantsAmt', 'savingsAmt', 'tripExpAmount', 'editRecordAmt', 'editTripExpAmount'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('dblclick', () => {
+                    const label = el.closest('.form-group')?.querySelector('label')?.textContent?.replace(/\s*\([^)]*\)/, '')?.trim() || 'Amount';
+                    openAmountCalculator(id, label);
+                });
+            }
+        });
+
+        // Global keyboard shortcuts when calculator modal is open
+        window.addEventListener('keydown', (e) => {
+            const modal = document.getElementById('amountCalculatorModal');
+            if (!modal || modal.style.display === 'none') return;
+
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                closeAmountCalculator();
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                calcApplyAmount();
+            } else if (e.key === '=') {
+                e.preventDefault();
+                const evaluated = tentativeEvaluate(document.getElementById('calcExpressionInput')?.value || '');
+                if (evaluated !== null && isFinite(evaluated)) {
+                    document.getElementById('calcExpressionInput').value = evaluated.toString();
+                    calcRefreshDisplay();
+                }
+            } else if (e.key === '*' && document.activeElement !== document.getElementById('calcExpressionInput')) {
+                e.preventDefault();
+                calcAppend('×');
+            } else if (e.key === '/' && document.activeElement !== document.getElementById('calcExpressionInput')) {
+                e.preventDefault();
+                calcAppend('÷');
+            }
+        });
     </script>
 </body>
 

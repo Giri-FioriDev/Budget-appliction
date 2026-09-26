@@ -91,6 +91,7 @@ The frontend application code in [`index.html`](file:///D:/budget%20app/Budget-a
     - **Data & Export**: Frictionless data interoperability actions.
   - **Edit Record Modal (`#editRecordModal`)**: Allows users to modify existing logged expenditures or savings (date, budget bucket/type, category/detail, amount, and notes) with live Firestore document merging (`setDoc(..., { merge: true })`).
   - **Edit Trip Expense Modal (`#editTripExpenseModal`)**: Enables modifying existing logged trip expenditures (date, amount, description, category, payer, and participating split members).
+  - **Integrated Amount Calculator (`#amountCalculatorModal`)**: Embedded directly into all monetary amount fields (`#incomeInput`, `#needsAmt`, `#wantsAmt`, `#savingsAmt`, `#tripExpAmount`, `#editRecordAmt`, `#editTripExpAmount`) with a trailing calculator icon button and double-click shortcut. Features live expression preview, tactile keypad (digits 0-9, `+`, `-`, `×`, `÷`, `%`, `(`, `)`), quick presets (`÷2`, `÷3`, `÷4`, `+10%`, `+20%`), physical keyboard navigation, safe arithmetic evaluation without `eval()`, and seamless injection into the target input triggering reactive validation and split updates.
   - **Dynamic Layout & Viewport Optimization**: Centered desktop shell (`max-width: 1060px`) eliminating right-side empty space, paired with mobile table containers showing 15 rows with smooth touch scrolling (`overflow-y: auto`).
 
 ### 5.2 Application State & Controller
