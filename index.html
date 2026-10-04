@@ -318,6 +318,596 @@
             width: 100%;
         }
 
+        /* Daily Activity Heatmap Styles */
+        .heatmap-card {
+            margin-top: 0;
+            overflow: visible;
+            position: relative;
+        }
+
+        .heatmap-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            border-bottom: 1px solid var(--color-border-muted);
+            padding-bottom: 14px;
+        }
+
+        .heatmap-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .heatmap-title-wrap h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            border-bottom: none;
+        }
+
+        .heatmap-month-badge {
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+            background: rgba(47, 129, 247, 0.15);
+            color: var(--color-accent-fg);
+            border: 1px solid rgba(47, 129, 247, 0.35);
+            letter-spacing: 0.3px;
+        }
+
+        .heatmap-summary-pills {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .heatmap-pill {
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 16px;
+            background: rgba(22, 27, 34, 0.7);
+            border: 1px solid var(--color-border-default);
+            color: var(--color-fg-muted);
+        }
+
+        .heatmap-pill-income {
+            background: rgba(35, 134, 54, 0.18);
+            border-color: rgba(63, 185, 80, 0.4);
+            color: #3fb950;
+        }
+
+        .heatmap-pill-spent {
+            background: rgba(142, 28, 62, 0.22);
+            border-color: rgba(188, 44, 88, 0.45);
+            color: #ff7597;
+        }
+
+        .heatmap-calendar-wrapper {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .heatmap-weekdays-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            text-align: center;
+        }
+
+        .heatmap-weekdays-header span {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--color-fg-muted);
+            padding: 4px 0;
+        }
+
+        .heatmap-days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .heatmap-cell {
+            position: relative;
+            aspect-ratio: 1 / 1;
+            min-height: 52px;
+            border-radius: var(--radius-md);
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: transform 0.16s cubic-bezier(0.3, 0, 0.5, 1), box-shadow 0.16s ease, border-color 0.16s ease;
+            user-select: none;
+            overflow: hidden;
+        }
+
+        .heatmap-cell:hover {
+            transform: translateY(-2px);
+            z-index: 5;
+        }
+
+        .heatmap-cell-pad {
+            aspect-ratio: 1 / 1;
+            min-height: 52px;
+            opacity: 0.18;
+            pointer-events: none;
+            border: 1px dashed rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-md);
+        }
+
+        /* Empty / Zero activity day */
+        .heatmap-cell-empty {
+            background: rgba(22, 27, 34, 0.65);
+            border: 1px solid rgba(240, 246, 252, 0.08);
+            color: var(--color-fg-muted);
+        }
+
+        .heatmap-cell-empty:hover {
+            background: rgba(30, 36, 45, 0.85);
+            border-color: rgba(255, 255, 255, 0.22);
+            color: var(--color-fg-default);
+        }
+
+        /* Burgundy Palette for Expenses */
+        /* Level 1: Low spend (bottom 25%) */
+        .heatmap-cell-burgundy-1 {
+            background: rgba(115, 24, 52, 0.38);
+            border: 1px solid rgba(165, 38, 76, 0.45);
+            color: #f0f6fc;
+        }
+        .heatmap-cell-burgundy-1:hover {
+            border-color: rgba(215, 55, 105, 0.7);
+            box-shadow: 0 4px 12px rgba(115, 24, 52, 0.4);
+        }
+
+        /* Level 2: Moderate spend (25% - 50%) */
+        .heatmap-cell-burgundy-2 {
+            background: rgba(138, 20, 60, 0.62);
+            border: 1px solid rgba(195, 35, 85, 0.60);
+            color: #ffffff;
+        }
+        .heatmap-cell-burgundy-2:hover {
+            border-color: rgba(235, 50, 110, 0.85);
+            box-shadow: 0 4px 14px rgba(138, 20, 60, 0.5);
+        }
+
+        /* Level 3: Substantial spend (50% - 75%) */
+        .heatmap-cell-burgundy-3 {
+            background: rgba(165, 18, 68, 0.84);
+            border: 1px solid rgba(228, 42, 98, 0.75);
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(165, 18, 68, 0.3);
+        }
+        .heatmap-cell-burgundy-3:hover {
+            border-color: #ff5289;
+            box-shadow: 0 4px 16px rgba(165, 18, 68, 0.6);
+        }
+
+        /* Level 4: Peak spend (top 25%) */
+        .heatmap-cell-burgundy-4 {
+            background: linear-gradient(135deg, #7c0b2b 0%, #a81344 50%, #c01a52 100%);
+            border: 1px solid #ff4d80;
+            color: #ffffff;
+            box-shadow: 0 2px 10px rgba(192, 26, 82, 0.45);
+        }
+        .heatmap-cell-burgundy-4:hover {
+            border-color: #ff7aa3;
+            box-shadow: 0 6px 20px rgba(220, 30, 95, 0.65);
+        }
+
+        /* Income Green */
+        .heatmap-cell-income {
+            background: linear-gradient(135deg, rgba(28, 100, 42, 0.88) 0%, rgba(35, 134, 54, 0.95) 100%);
+            border: 1px solid #3fb950;
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(46, 160, 67, 0.35);
+        }
+        .heatmap-cell-income:hover {
+            border-color: #56d364;
+            box-shadow: 0 6px 18px rgba(46, 160, 67, 0.55);
+        }
+
+        /* Split Day: Income + Expense */
+        .heatmap-cell-split {
+            background: linear-gradient(135deg, rgba(35, 134, 54, 0.92) 0%, rgba(35, 134, 54, 0.92) 48%, rgba(255, 255, 255, 0.25) 49%, rgba(255, 255, 255, 0.25) 51%, rgba(165, 18, 68, 0.92) 52%, rgba(138, 20, 60, 0.95) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            color: #ffffff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+        }
+        .heatmap-cell-split:hover {
+            border-color: #ffffff;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Today Ring Highlight */
+        .heatmap-cell.is-today {
+            outline: 2px solid #58a6ff;
+            outline-offset: -1px;
+            box-shadow: 0 0 12px rgba(88, 166, 255, 0.5);
+        }
+
+        .heatmap-cell-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .heatmap-cell-day {
+            font-size: 0.85rem;
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: -0.2px;
+        }
+
+        .heatmap-cell-indicator {
+            font-size: 0.65rem;
+            line-height: 1;
+        }
+
+        .heatmap-cell-amt {
+            font-size: 0.72rem;
+            font-weight: 600;
+            line-height: 1.1;
+            text-align: right;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Heatmap Legend */
+        .heatmap-legend {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding-top: 14px;
+            border-top: 1px solid var(--color-border-muted);
+            font-size: 0.76rem;
+            color: var(--color-fg-muted);
+        }
+
+        .legend-scale-group,
+        .legend-types-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .legend-label {
+            font-weight: 600;
+            color: var(--color-fg-default);
+            margin-right: 2px;
+        }
+
+        .legend-scale-text {
+            font-size: 0.72rem;
+            color: var(--color-fg-muted);
+        }
+
+        .legend-cell {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .is-today-legend {
+            outline: 2px solid #58a6ff;
+            outline-offset: -1px;
+        }
+
+        .legend-type-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Floating Tooltip */
+        .heatmap-tooltip {
+            position: fixed;
+            z-index: 1100;
+            pointer-events: none;
+            background: rgba(13, 17, 23, 0.92);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: var(--radius-md);
+            padding: 10px 14px;
+            color: var(--color-fg-default);
+            font-size: 0.8rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+            max-width: 260px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            transition: opacity 0.12s ease;
+        }
+
+        .heatmap-tooltip-title {
+            font-weight: 700;
+            color: #ffffff;
+            border-bottom: 1px solid var(--color-border-muted);
+            padding-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .heatmap-tooltip-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            font-weight: 500;
+        }
+
+        .heatmap-tooltip-row.income {
+            color: #3fb950;
+            font-weight: 700;
+        }
+
+        .heatmap-tooltip-row.expense {
+            color: #ff7597;
+            font-weight: 700;
+        }
+
+        .heatmap-tooltip-hint {
+            font-size: 0.7rem;
+            color: var(--color-fg-muted);
+            margin-top: 2px;
+            font-style: italic;
+        }
+
+        /* Interactive Detail Drawer Panel */
+        .heatmap-detail-panel {
+            background: rgba(22, 27, 34, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            animation: fadeIn 0.25s ease-out;
+            margin-top: 4px;
+        }
+
+        .heatmap-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .heatmap-detail-title-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .heatmap-detail-date {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .heatmap-detail-badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .heatmap-detail-close {
+            background: transparent;
+            border: none;
+            color: var(--color-fg-muted);
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 2px 6px;
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+        }
+
+        .heatmap-detail-close:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .heatmap-detail-metrics {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .heatmap-detail-metric-card {
+            flex: 1;
+            min-width: 120px;
+            background: rgba(13, 17, 23, 0.5);
+            border: 1px solid var(--color-border-muted);
+            border-radius: var(--radius-md);
+            padding: 8px 12px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .heatmap-detail-metric-label {
+            font-size: 0.72rem;
+            color: var(--color-fg-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .heatmap-detail-metric-val {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .heatmap-detail-metric-val.income {
+            color: #3fb950;
+        }
+
+        .heatmap-detail-metric-val.expense {
+            color: #ff7597;
+        }
+
+        .heatmap-detail-tx-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .heatmap-detail-tx-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(13, 17, 23, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-md);
+            padding: 8px 12px;
+            font-size: 0.85rem;
+        }
+
+        .heatmap-detail-tx-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .heatmap-detail-tx-tag {
+            font-size: 0.68rem;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .heatmap-detail-tx-tag.needs {
+            background: rgba(47, 129, 247, 0.15);
+            color: #58a6ff;
+            border: 1px solid rgba(47, 129, 247, 0.3);
+        }
+
+        .heatmap-detail-tx-tag.wants {
+            background: rgba(162, 38, 75, 0.2);
+            color: #ff7597;
+            border: 1px solid rgba(162, 38, 75, 0.4);
+        }
+
+        .heatmap-detail-tx-tag.savings {
+            background: rgba(35, 134, 54, 0.2);
+            color: #3fb950;
+            border: 1px solid rgba(35, 134, 54, 0.4);
+        }
+
+        .heatmap-detail-tx-tag.income {
+            background: rgba(46, 160, 67, 0.25);
+            color: #56d364;
+            border: 1px solid rgba(46, 160, 67, 0.45);
+        }
+
+        .heatmap-detail-tx-title {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .heatmap-detail-tx-note {
+            font-size: 0.75rem;
+            color: var(--color-fg-muted);
+            margin-left: 6px;
+        }
+
+        .heatmap-detail-tx-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .heatmap-detail-tx-amt {
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .heatmap-detail-quick-btn {
+            font-size: 0.78rem;
+            padding: 5px 10px;
+            border-radius: var(--radius-md);
+            background: var(--color-btn-bg);
+            border: 1px solid var(--color-btn-border);
+            color: var(--color-fg-default);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+            align-self: flex-start;
+        }
+
+        .heatmap-detail-quick-btn:hover {
+            background: var(--color-btn-hover-bg);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary {
+            background-color: var(--color-btn-bg);
+            color: var(--color-fg-default);
+            border: 1px solid var(--color-border-default);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--color-btn-hover-bg);
+            border-color: #8b949e;
+            color: #ffffff;
+        }
+
+        @media (max-width: 600px) {
+            .heatmap-weekdays-header span {
+                font-size: 0.65rem;
+            }
+            .heatmap-days-grid {
+                gap: 4px;
+            }
+            .heatmap-cell,
+            .heatmap-cell-pad {
+                min-height: 40px;
+                padding: 3px 4px;
+            }
+            .heatmap-cell-day {
+                font-size: 0.72rem;
+            }
+            .heatmap-cell-amt {
+                font-size: 0.60rem;
+            }
+            .heatmap-legend {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+        }
+
         /* Balance Hero Card in Overview */
         .balance-hero-card {
             background: linear-gradient(135deg, rgba(22, 27, 34, 0.70), rgba(13, 17, 23, 0.58));
@@ -521,9 +1111,13 @@
                 align-items: end;
             }
 
-            .income-form,
             .currency-form {
                 grid-template-columns: 1fr auto;
+            }
+
+            .income-form {
+                grid-template-columns: 1.4fr 1.2fr auto;
+                align-items: end;
             }
 
             .entry-form {
@@ -1833,6 +2427,77 @@
                         </div>
                     </div>
 
+                    <!-- Daily Spending & Activity Heatmap -->
+                    <div class="card heatmap-card" id="heatmapCard">
+                        <div class="card-header heatmap-header">
+                            <div class="heatmap-title-wrap">
+                                <h2>Daily Activity Heatmap</h2>
+                                <span class="heatmap-month-badge" id="heatmapMonthBadge">October 2026</span>
+                            </div>
+                            <div class="heatmap-summary-pills">
+                                <span class="heatmap-pill heatmap-pill-income" id="heatmapTotalIncomePill">Income: €0.00</span>
+                                <span class="heatmap-pill heatmap-pill-spent" id="heatmapTotalSpentPill">Spent: €0.00</span>
+                                <span class="heatmap-pill" id="heatmapActiveDaysPill">Active: 0 days</span>
+                            </div>
+                        </div>
+
+                        <!-- Calendar Grid Wrapper -->
+                        <div class="heatmap-calendar-wrapper">
+                            <div class="heatmap-weekdays-header">
+                                <span>Mon</span>
+                                <span>Tue</span>
+                                <span>Wed</span>
+                                <span>Thu</span>
+                                <span>Fri</span>
+                                <span>Sat</span>
+                                <span>Sun</span>
+                            </div>
+                            <div class="heatmap-days-grid" id="heatmapDaysGrid">
+                                <!-- Generated dynamically by renderHeatmap() -->
+                            </div>
+                        </div>
+
+                        <!-- Heatmap Legend -->
+                        <div class="heatmap-legend">
+                            <div class="legend-scale-group">
+                                <span class="legend-label">Expenses (Burgundy):</span>
+                                <span class="legend-scale-text">Low</span>
+                                <span class="legend-cell heatmap-cell-burgundy-1" title="Light expense"></span>
+                                <span class="legend-cell heatmap-cell-burgundy-2" title="Moderate expense"></span>
+                                <span class="legend-cell heatmap-cell-burgundy-3" title="Substantial expense"></span>
+                                <span class="legend-cell heatmap-cell-burgundy-4" title="Peak expense"></span>
+                                <span class="legend-scale-text">High</span>
+                            </div>
+                            <div class="legend-types-group">
+                                <div class="legend-type-item">
+                                    <span class="legend-cell heatmap-cell-income"></span>
+                                    <span>Income (Green)</span>
+                                </div>
+                                <div class="legend-type-item">
+                                    <span class="legend-cell heatmap-cell-split"></span>
+                                    <span>Both</span>
+                                </div>
+                                <div class="legend-type-item">
+                                    <span class="legend-cell heatmap-cell-empty is-today-legend"></span>
+                                    <span>Today</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Day Detail Inspector Drawer -->
+                        <div class="heatmap-detail-panel" id="heatmapDetailPanel" style="display: none;">
+                            <div class="heatmap-detail-header">
+                                <div class="heatmap-detail-title-group">
+                                    <span class="heatmap-detail-date" id="heatmapDetailDate"></span>
+                                    <span class="heatmap-detail-badge" id="heatmapDetailBadge"></span>
+                                </div>
+                                <button type="button" class="heatmap-detail-close" onclick="closeHeatmapDetail()" title="Close details">✕</button>
+                            </div>
+                            <div class="heatmap-detail-metrics" id="heatmapDetailMetrics"></div>
+                            <div class="heatmap-detail-tx-list" id="heatmapDetailTxList"></div>
+                        </div>
+                    </div>
+
                     <div class="card">
                         <div class="card-header">
                             <h2>Monthly Settings & Income</h2>
@@ -1876,7 +2541,14 @@
                                     </button>
                                 </div>
                             </div>
-                            <button type="submit" class="btn-primary">Set Monthly Income</button>
+                            <div class="form-group">
+                                <label for="incomeDateInput">Payday / Income Date</label>
+                                <input type="date" id="incomeDateInput">
+                            </div>
+                            <div style="display: flex; gap: 8px; align-self: end;">
+                                <button type="submit" id="setIncomeBtn" class="btn-primary">Set Monthly Income</button>
+                                <button type="button" id="editIncomeBtn" class="btn-secondary" style="display: none;" onclick="enableIncomeEdit()">✏️ Edit</button>
+                            </div>
                         </form>
 
                         <div class="target-grid" style="margin-top: 10px;">
@@ -2651,6 +3323,9 @@
         </div>
     </div>
 
+    <!-- Heatmap Floating Tooltip -->
+    <div id="heatmapFloatingTooltip" class="heatmap-tooltip" style="display: none;"></div>
+
     <!-- Amount Calculator Modal -->
     <div id="amountCalculatorModal" class="modal-overlay calc-modal-overlay" style="display: none;" onclick="handleCalcOverlayClick(event)">
         <div class="modal-container calc-modal-container" role="dialog" aria-labelledby="calcModalTitle" aria-modal="true">
@@ -2958,7 +3633,7 @@
         }
 
         function setupDatePickers() {
-            ['needsDate', 'wantsDate', 'savingsDate', 'selectedMonthInput', 'editRecordDate', 'tripExpDate', 'editTripExpDate'].forEach(id => {
+            ['needsDate', 'wantsDate', 'savingsDate', 'selectedMonthInput', 'editRecordDate', 'tripExpDate', 'editTripExpDate', 'incomeDateInput'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
                     el.addEventListener('click', () => {
@@ -2970,16 +3645,54 @@
 
         function updateIncomeForMonth() {
             const monthlyIncomes = (userDataCache && userDataCache.monthlyIncomes) ? userDataCache.monthlyIncomes : {};
+            const monthlyIncomeDates = (userDataCache && userDataCache.monthlyIncomeDates) ? userDataCache.monthlyIncomeDates : {};
+            const incInput = document.getElementById('incomeInput');
+            const dateInput = document.getElementById('incomeDateInput');
+            const setBtn = document.getElementById('setIncomeBtn');
+            const editBtn = document.getElementById('editIncomeBtn');
+            const defaultDate = `${selectedMonthKey}-01`;
+
             if (monthlyIncomes[selectedMonthKey] !== undefined) {
                 netIncome = monthlyIncomes[selectedMonthKey];
-                document.getElementById('incomeInput').value = netIncome.toFixed(2);
-                document.getElementById('incomeInput').disabled = true;
+                if (incInput) {
+                    incInput.value = netIncome.toFixed(2);
+                    incInput.disabled = true;
+                }
+                if (dateInput) {
+                    dateInput.value = monthlyIncomeDates[selectedMonthKey] || defaultDate;
+                    dateInput.disabled = true;
+                }
+                if (setBtn) setBtn.style.display = 'none';
+                if (editBtn) editBtn.style.display = 'inline-flex';
             } else {
                 netIncome = 0;
-                document.getElementById('incomeInput').value = '';
-                document.getElementById('incomeInput').disabled = false;
+                if (incInput) {
+                    incInput.value = '';
+                    incInput.disabled = false;
+                }
+                if (dateInput) {
+                    dateInput.value = defaultDate;
+                    dateInput.disabled = false;
+                }
+                if (setBtn) setBtn.style.display = 'inline-flex';
+                if (editBtn) editBtn.style.display = 'none';
             }
         }
+
+        window.enableIncomeEdit = function () {
+            const incInput = document.getElementById('incomeInput');
+            const dateInput = document.getElementById('incomeDateInput');
+            const setBtn = document.getElementById('setIncomeBtn');
+            const editBtn = document.getElementById('editIncomeBtn');
+
+            if (incInput) {
+                incInput.disabled = false;
+                incInput.focus();
+            }
+            if (dateInput) dateInput.disabled = false;
+            if (setBtn) setBtn.style.display = 'inline-flex';
+            if (editBtn) editBtn.style.display = 'none';
+        };
 
         async function initializeUserData() {
             const userDocRef = doc(db, "users", currentUser.uid);
@@ -2990,7 +3703,7 @@
                 currentCurrency = userDataCache.currency || 'EUR';
             } else {
                 currentCurrency = 'EUR';
-                userDataCache = { currency: 'EUR', monthlyIncomes: {}, tripMembers: ["You", "Alex", "Sam"], tripName: "Vacation Trip" };
+                userDataCache = { currency: 'EUR', monthlyIncomes: {}, monthlyIncomeDates: {}, tripMembers: ["You", "Alex", "Sam"], tripName: "Vacation Trip" };
                 await setDoc(userDocRef, userDataCache);
             }
 
@@ -3051,18 +3764,31 @@
         document.getElementById('incomeForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const val = parseFloat(document.getElementById('incomeInput').value);
-            if (isNaN(val) || val <= 0) return;
+            if (isNaN(val) || val <= 0) return alert("Please enter a valid income amount.");
+
+            const dateInput = document.getElementById('incomeDateInput');
+            const incomeDateVal = (dateInput && dateInput.value) ? dateInput.value : `${selectedMonthKey}-01`;
 
             netIncome = val;
             const userDocRef = doc(db, "users", currentUser.uid);
             const userDoc = await getDoc(userDocRef);
             const existingIncomes = userDoc.exists() && userDoc.data().monthlyIncomes ? userDoc.data().monthlyIncomes : {};
+            const existingIncomeDates = userDoc.exists() && userDoc.data().monthlyIncomeDates ? userDoc.data().monthlyIncomeDates : {};
 
             existingIncomes[selectedMonthKey] = netIncome;
-            if (userDataCache) userDataCache.monthlyIncomes = existingIncomes;
+            existingIncomeDates[selectedMonthKey] = incomeDateVal;
 
-            await setDoc(userDocRef, { monthlyIncomes: existingIncomes }, { merge: true });
-            document.getElementById('incomeInput').disabled = true;
+            if (userDataCache) {
+                userDataCache.monthlyIncomes = existingIncomes;
+                userDataCache.monthlyIncomeDates = existingIncomeDates;
+            }
+
+            await setDoc(userDocRef, {
+                monthlyIncomes: existingIncomes,
+                monthlyIncomeDates: existingIncomeDates
+            }, { merge: true });
+
+            updateIncomeForMonth();
             updateDashboard();
             alert(`Monthly income registered for ${selectedMonthKey}!`);
         });
@@ -3481,7 +4207,378 @@
                 }
                 renderTable(type, currentMonthTxs);
             });
+            renderHeatmap();
         }
+
+        // ==========================================
+        // DAILY ACTIVITY HEATMAP SYSTEM
+        // ==========================================
+
+        let activeHeatmapDetailDate = null;
+
+        function renderHeatmap() {
+            const fmt = getFormatter();
+            if (!selectedMonthKey || !selectedMonthKey.includes('-')) return;
+
+            const [yearStr, monthStr] = selectedMonthKey.split('-');
+            const year = parseInt(yearStr, 10);
+            const month = parseInt(monthStr, 10);
+
+            // Month badge label (e.g. October 2026)
+            const monthDateObj = new Date(year, month - 1, 1);
+            const monthName = monthDateObj.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+            const badgeEl = document.getElementById('heatmapMonthBadge');
+            if (badgeEl) badgeEl.textContent = monthName;
+
+            // Days in this month
+            const daysInMonth = new Date(year, month, 0).getDate();
+
+            // Monday-first offset (0 for Mon, 1 for Tue, ..., 6 for Sun)
+            const firstDayIndex = new Date(year, month - 1, 1).getDay(); // 0 is Sun
+            const startOffset = (firstDayIndex + 6) % 7;
+
+            // Payday date
+            const monthlyIncomeDates = (userDataCache && userDataCache.monthlyIncomeDates) ? userDataCache.monthlyIncomeDates : {};
+            const paydayDate = monthlyIncomeDates[selectedMonthKey] || `${selectedMonthKey}-01`;
+
+            // Active month transactions
+            const currentMonthTxs = transactions.filter(tx => tx.date && tx.date.startsWith(selectedMonthKey));
+
+            // Group by day
+            const dayMap = {};
+            let maxDayExpense = 0;
+            let totalMonthExpense = 0;
+            let totalMonthIncome = 0;
+            let activeSpendDays = 0;
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dayStr = `${selectedMonthKey}-${String(d).padStart(2, '0')}`;
+                dayMap[dayStr] = {
+                    date: dayStr,
+                    dayNum: d,
+                    spent: 0,
+                    income: 0,
+                    txs: []
+                };
+
+                // Add registered monthly income on payday
+                if (dayStr === paydayDate && netIncome > 0) {
+                    dayMap[dayStr].income += netIncome;
+                }
+            }
+
+            currentMonthTxs.forEach(tx => {
+                const dStr = tx.date;
+                if (!dayMap[dStr]) return;
+                const isInc = (tx.type === 'income' || (tx.category && tx.category.toLowerCase().includes('income')) || (tx.category && tx.category.toLowerCase().includes('salary')));
+                if (isInc) {
+                    dayMap[dStr].income += tx.amount;
+                    dayMap[dStr].txs.push(tx);
+                } else {
+                    dayMap[dStr].spent += tx.amount;
+                    dayMap[dStr].txs.push(tx);
+                }
+            });
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dayStr = `${selectedMonthKey}-${String(d).padStart(2, '0')}`;
+                const item = dayMap[dayStr];
+                if (item.spent > 0) {
+                    activeSpendDays++;
+                    totalMonthExpense += item.spent;
+                    if (item.spent > maxDayExpense) maxDayExpense = item.spent;
+                }
+                totalMonthIncome += item.income;
+            }
+
+            // Summary pills
+            const incPill = document.getElementById('heatmapTotalIncomePill');
+            const spentPill = document.getElementById('heatmapTotalSpentPill');
+            const activePill = document.getElementById('heatmapActiveDaysPill');
+            if (incPill) incPill.textContent = `Income: ${fmt.format(totalMonthIncome)}`;
+            if (spentPill) spentPill.textContent = `Spent: ${fmt.format(totalMonthExpense)}`;
+            if (activePill) activePill.textContent = `Active: ${activeSpendDays} ${activeSpendDays === 1 ? 'day' : 'days'}`;
+
+            // Render calendar grid
+            const grid = document.getElementById('heatmapDaysGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            // Leading blank padding
+            for (let i = 0; i < startOffset; i++) {
+                const pad = document.createElement('div');
+                pad.className = 'heatmap-cell-pad';
+                grid.appendChild(pad);
+            }
+
+            const todayStr = getTodayString();
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dayStr = `${selectedMonthKey}-${String(d).padStart(2, '0')}`;
+                const dData = dayMap[dayStr];
+                const cell = document.createElement('div');
+                cell.className = 'heatmap-cell';
+                cell.setAttribute('data-date', dayStr);
+
+                if (dayStr === todayStr) {
+                    cell.classList.add('is-today');
+                }
+
+                const hasIncome = dData.income > 0;
+                const hasExpense = dData.spent > 0;
+
+                if (hasIncome && hasExpense) {
+                    cell.classList.add('heatmap-cell-split');
+                } else if (hasIncome) {
+                    cell.classList.add('heatmap-cell-income');
+                } else if (hasExpense) {
+                    const ratio = maxDayExpense > 0 ? (dData.spent / maxDayExpense) : 0;
+                    if (ratio <= 0.25) {
+                        cell.classList.add('heatmap-cell-burgundy-1');
+                    } else if (ratio <= 0.50) {
+                        cell.classList.add('heatmap-cell-burgundy-2');
+                    } else if (ratio <= 0.75) {
+                        cell.classList.add('heatmap-cell-burgundy-3');
+                    } else {
+                        cell.classList.add('heatmap-cell-burgundy-4');
+                    }
+                } else {
+                    cell.classList.add('heatmap-cell-empty');
+                }
+
+                let indicator = '';
+                if (hasIncome && hasExpense) indicator = '🟢/🍷';
+                else if (hasIncome) indicator = '🟢';
+                else if (hasExpense && dData.spent >= maxDayExpense && maxDayExpense > 0) indicator = '🔥';
+
+                let amtDisplay = '';
+                if (hasExpense) {
+                    amtDisplay = fmt.format(dData.spent);
+                } else if (hasIncome) {
+                    amtDisplay = `+${fmt.format(dData.income)}`;
+                }
+
+                cell.innerHTML = `
+                    <div class="heatmap-cell-top">
+                        <span class="heatmap-cell-day">${d}</span>
+                        <span class="heatmap-cell-indicator">${indicator}</span>
+                    </div>
+                    <div class="heatmap-cell-amt" title="${amtDisplay}">${amtDisplay}</div>
+                `;
+
+                cell.addEventListener('mouseenter', (e) => showHeatmapTooltip(e, dData));
+                cell.addEventListener('mousemove', (e) => positionHeatmapTooltip(e));
+                cell.addEventListener('mouseleave', hideHeatmapTooltip);
+                cell.addEventListener('click', () => openHeatmapDetail(dData));
+
+                grid.appendChild(cell);
+            }
+
+            // Keep detail inspector refreshed if open for active month
+            if (activeHeatmapDetailDate && dayMap[activeHeatmapDetailDate]) {
+                openHeatmapDetail(dayMap[activeHeatmapDetailDate], false);
+            } else if (activeHeatmapDetailDate && !activeHeatmapDetailDate.startsWith(selectedMonthKey)) {
+                closeHeatmapDetail();
+            }
+        }
+
+        function showHeatmapTooltip(e, dData) {
+            const tooltip = document.getElementById('heatmapFloatingTooltip');
+            if (!tooltip) return;
+            const fmt = getFormatter();
+            const dateObj = new Date(dData.date + 'T00:00:00');
+            const formattedDate = dateObj.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+
+            let rowsHtml = '';
+            if (dData.income > 0) {
+                rowsHtml += `<div class="heatmap-tooltip-row income"><span>Income:</span><span>+${fmt.format(dData.income)}</span></div>`;
+            }
+            if (dData.spent > 0) {
+                rowsHtml += `<div class="heatmap-tooltip-row expense"><span>Spent:</span><span>-${fmt.format(dData.spent)}</span></div>`;
+            }
+            if (dData.income > 0 && dData.spent > 0) {
+                const net = dData.income - dData.spent;
+                rowsHtml += `<div class="heatmap-tooltip-row" style="color: ${net >= 0 ? '#3fb950' : '#ff7597'};"><span>Net:</span><span>${net >= 0 ? '+' : ''}${fmt.format(net)}</span></div>`;
+            }
+            if (dData.spent === 0 && dData.income === 0) {
+                rowsHtml += `<div style="color: var(--color-fg-muted); font-size: 0.75rem;">No spending or income logged</div>`;
+            }
+
+            if (dData.txs.length > 0) {
+                rowsHtml += `<div style="border-top: 1px solid var(--color-border-muted); margin-top: 4px; padding-top: 4px;">`;
+                const maxToShow = 3;
+                dData.txs.slice(0, maxToShow).forEach(t => {
+                    rowsHtml += `<div style="display: flex; justify-content: space-between; font-size: 0.72rem; gap: 8px;"><span style="color: var(--color-fg-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(t.category)}</span><span style="font-weight: 600;">${fmt.format(t.amount)}</span></div>`;
+                });
+                if (dData.txs.length > maxToShow) {
+                    rowsHtml += `<div style="font-size: 0.68rem; color: var(--color-accent-fg); text-align: right;">+${dData.txs.length - maxToShow} more...</div>`;
+                }
+                rowsHtml += `</div>`;
+            }
+
+            tooltip.innerHTML = `
+                <div class="heatmap-tooltip-title">
+                    <span>${formattedDate}</span>
+                    ${dData.date === getTodayString() ? '<span style="font-size: 0.68rem; background: var(--color-accent-fg); color: #fff; padding: 1px 5px; border-radius: 4px;">TODAY</span>' : ''}
+                </div>
+                ${rowsHtml}
+                <div class="heatmap-tooltip-hint">Click day to view details & log</div>
+            `;
+            tooltip.style.display = 'flex';
+            positionHeatmapTooltip(e);
+        }
+
+        function positionHeatmapTooltip(e) {
+            const tooltip = document.getElementById('heatmapFloatingTooltip');
+            if (!tooltip || tooltip.style.display === 'none') return;
+            const pad = 14;
+            let x = e.clientX + pad;
+            let y = e.clientY + pad;
+            const rect = tooltip.getBoundingClientRect();
+            if (x + rect.width > window.innerWidth - 10) {
+                x = e.clientX - rect.width - pad;
+            }
+            if (y + rect.height > window.innerHeight - 10) {
+                y = e.clientY - rect.height - pad;
+            }
+            tooltip.style.left = `${Math.max(10, x)}px`;
+            tooltip.style.top = `${Math.max(10, y)}px`;
+        }
+
+        function hideHeatmapTooltip() {
+            const tooltip = document.getElementById('heatmapFloatingTooltip');
+            if (tooltip) tooltip.style.display = 'none';
+        }
+
+        function openHeatmapDetail(dData, shouldScroll = true) {
+            hideHeatmapTooltip();
+            activeHeatmapDetailDate = dData.date;
+            const panel = document.getElementById('heatmapDetailPanel');
+            if (!panel) return;
+
+            const fmt = getFormatter();
+            const dateObj = new Date(dData.date + 'T00:00:00');
+            const formattedDate = dateObj.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+
+            const dateTitle = document.getElementById('heatmapDetailDate');
+            if (dateTitle) dateTitle.textContent = formattedDate;
+
+            const badge = document.getElementById('heatmapDetailBadge');
+            if (badge) {
+                if (dData.date === getTodayString()) {
+                    badge.textContent = 'Today';
+                    badge.style.display = 'inline-block';
+                    badge.style.background = 'rgba(47, 129, 247, 0.2)';
+                    badge.style.color = 'var(--color-accent-fg)';
+                    badge.style.border = '1px solid rgba(47, 129, 247, 0.4)';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+
+            const metricsEl = document.getElementById('heatmapDetailMetrics');
+            if (metricsEl) {
+                const net = dData.income - dData.spent;
+                metricsEl.innerHTML = `
+                    <div class="heatmap-detail-metric-card">
+                        <span class="heatmap-detail-metric-label">Income</span>
+                        <span class="heatmap-detail-metric-val income">+${fmt.format(dData.income)}</span>
+                    </div>
+                    <div class="heatmap-detail-metric-card">
+                        <span class="heatmap-detail-metric-label">Expenses</span>
+                        <span class="heatmap-detail-metric-val expense">-${fmt.format(dData.spent)}</span>
+                    </div>
+                    <div class="heatmap-detail-metric-card">
+                        <span class="heatmap-detail-metric-label">Net for Day</span>
+                        <span class="heatmap-detail-metric-val" style="color: ${net >= 0 ? '#3fb950' : '#ff7597'};">${net >= 0 ? '+' : ''}${fmt.format(net)}</span>
+                    </div>
+                `;
+            }
+
+            const listEl = document.getElementById('heatmapDetailTxList');
+            if (listEl) {
+                if (dData.txs.length === 0 && dData.income === 0) {
+                    listEl.innerHTML = `
+                        <div style="color: var(--color-fg-muted); font-size: 0.85rem; padding: 8px 0;">
+                            No spending or income entries recorded for this day.
+                        </div>
+                        <button type="button" class="heatmap-detail-quick-btn" onclick="quickLogExpenseForDate('${dData.date}')">
+                            ➕ Log Expense on this Day
+                        </button>
+                    `;
+                } else {
+                    let itemsHtml = '';
+                    const monthlyIncomeDates = (userDataCache && userDataCache.monthlyIncomeDates) ? userDataCache.monthlyIncomeDates : {};
+                    const paydayDate = monthlyIncomeDates[selectedMonthKey] || `${selectedMonthKey}-01`;
+                    if (dData.date === paydayDate && netIncome > 0) {
+                        itemsHtml += `
+                            <div class="heatmap-detail-tx-item">
+                                <div class="heatmap-detail-tx-left">
+                                    <span class="heatmap-detail-tx-tag income">Income</span>
+                                    <span class="heatmap-detail-tx-title">Monthly Net Income (Payday)</span>
+                                </div>
+                                <div class="heatmap-detail-tx-right">
+                                    <span class="heatmap-detail-tx-amt" style="color: #3fb950;">+${fmt.format(netIncome)}</span>
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    dData.txs.forEach(t => {
+                        const isInc = (t.type === 'income' || (t.category && t.category.toLowerCase().includes('income')) || (t.category && t.category.toLowerCase().includes('salary')));
+                        const tagClass = isInc ? 'income' : (t.type || 'needs');
+                        itemsHtml += `
+                            <div class="heatmap-detail-tx-item">
+                                <div class="heatmap-detail-tx-left">
+                                    <span class="heatmap-detail-tx-tag ${tagClass}">${isInc ? 'Income' : (t.type || 'Expense')}</span>
+                                    <span class="heatmap-detail-tx-title">${escapeHtml(t.category)}</span>
+                                    ${t.note ? `<span class="heatmap-detail-tx-note">(${escapeHtml(t.note)})</span>` : ''}
+                                </div>
+                                <div class="heatmap-detail-tx-right">
+                                    <span class="heatmap-detail-tx-amt" style="color: ${isInc ? '#3fb950' : '#ff7597'};">
+                                        ${isInc ? '+' : '-'}${fmt.format(t.amount)}
+                                    </span>
+                                    <button type="button" class="btn-action-icon" onclick="openEditModal('${t.id}')" title="Edit">✏️</button>
+                                    <button type="button" class="btn-action-icon delete" onclick="deleteEntry('${t.id}')" title="Delete">✕</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    itemsHtml += `
+                        <button type="button" class="heatmap-detail-quick-btn" style="margin-top: 6px;" onclick="quickLogExpenseForDate('${dData.date}')">
+                            ➕ Add Another Expense on this Day
+                        </button>
+                    `;
+                    listEl.innerHTML = itemsHtml;
+                }
+            }
+
+            panel.style.display = 'flex';
+            if (shouldScroll) {
+                panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        window.closeHeatmapDetail = function () {
+            activeHeatmapDetailDate = null;
+            const panel = document.getElementById('heatmapDetailPanel');
+            if (panel) panel.style.display = 'none';
+        };
+
+        window.quickLogExpenseForDate = function (dateStr) {
+            const needsTabBtn = document.querySelector('.UnderlineNav-item[data-target="tab-needs"]');
+            if (needsTabBtn) {
+                needsTabBtn.click();
+                const dateInput = document.getElementById('needsDate');
+                if (dateInput) dateInput.value = dateStr;
+                const catInput = document.getElementById('needsCat');
+                if (catInput) {
+                    catInput.focus();
+                    catInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        };
 
         function formatDisplayDate(dateStr) {
             if (!dateStr || typeof dateStr !== 'string') return '';
