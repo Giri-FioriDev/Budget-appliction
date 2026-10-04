@@ -2419,15 +2419,16 @@
                     </div>
 
                     <div class="card">
-                        <div class="card-header">
-                            <h2>Spending Distribution</h2>
+                        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                            <h2 style="border-bottom: none; margin: 0; padding: 0;">Spending Distribution</h2>
+                            <span style="font-size: 0.75rem; background: rgba(47, 129, 247, 0.15); color: var(--color-accent-fg); border: 1px solid rgba(47, 129, 247, 0.3); padding: 2px 8px; border-radius: 12px; font-weight: 600;">50/30/20 Summary</span>
                         </div>
                         <div class="chart-container">
                             <canvas id="overviewChart"></canvas>
                         </div>
                     </div>
 
-                    <!-- Daily Spending & Activity Heatmap -->
+                    <!-- Daily Spending & Activity Heatmap directly below the donut chart -->
                     <div class="card heatmap-card" id="heatmapCard">
                         <div class="card-header heatmap-header">
                             <div class="heatmap-title-wrap">
@@ -3732,6 +3733,7 @@
                 initCharts();
                 setupTabs();
             }
+            updateDashboard();
             listenToTransactions();
             listenToTripExpenses();
         }
@@ -4008,6 +4010,14 @@
                     const targetId = e.currentTarget.getAttribute('data-target');
                     e.currentTarget.classList.add('active');
                     document.getElementById(targetId).classList.add('active');
+                    if (targetId === 'tab-overview') {
+                        try {
+                            renderHeatmap();
+                            if (overviewChart) overviewChart.resize();
+                        } catch (err) {
+                            console.error("Tab switch heatmap render error:", err);
+                        }
+                    }
                 });
             });
         }
@@ -4027,9 +4037,10 @@
             const currentMonthTxs = transactions.filter(tx => tx.date && tx.date.startsWith(currentMonthPrefix));
 
             currentMonthTxs.forEach(tx => {
-                if (spent[tx.type] !== undefined) spent[tx.type] += tx.amount;
-                const normalizedCat = tx.category.toLowerCase().trim();
-                catTotals[normalizedCat] = (catTotals[normalizedCat] || 0) + tx.amount;
+                const amt = typeof tx.amount === 'number' ? tx.amount : (parseFloat(tx.amount) || 0);
+                if (spent[tx.type] !== undefined) spent[tx.type] += amt;
+                const normalizedCat = (tx.category || '').toLowerCase().trim();
+                catTotals[normalizedCat] = (catTotals[normalizedCat] || 0) + amt;
             });
 
             const totalSpent = spent.needs + spent.wants + spent.savings;
@@ -4207,7 +4218,11 @@
                 }
                 renderTable(type, currentMonthTxs);
             });
-            renderHeatmap();
+            try {
+                renderHeatmap();
+            } catch (err) {
+                console.error("Heatmap render error in updateDashboard:", err);
+            }
         }
 
         // ==========================================
@@ -4242,7 +4257,7 @@
             const paydayDate = monthlyIncomeDates[selectedMonthKey] || `${selectedMonthKey}-01`;
 
             // Active month transactions
-            const currentMonthTxs = transactions.filter(tx => tx.date && tx.date.startsWith(selectedMonthKey));
+            const currentMonthTxs = (transactions || []).filter(tx => tx && tx.date && tx.date.startsWith(selectedMonthKey));
 
             // Group by day
             const dayMap = {};
@@ -4270,12 +4285,13 @@
             currentMonthTxs.forEach(tx => {
                 const dStr = tx.date;
                 if (!dayMap[dStr]) return;
+                const amt = typeof tx.amount === 'number' ? tx.amount : (parseFloat(tx.amount) || 0);
                 const isInc = (tx.type === 'income' || (tx.category && tx.category.toLowerCase().includes('income')) || (tx.category && tx.category.toLowerCase().includes('salary')));
                 if (isInc) {
-                    dayMap[dStr].income += tx.amount;
+                    dayMap[dStr].income += amt;
                     dayMap[dStr].txs.push(tx);
                 } else {
-                    dayMap[dStr].spent += tx.amount;
+                    dayMap[dStr].spent += amt;
                     dayMap[dStr].txs.push(tx);
                 }
             });
@@ -6334,6 +6350,13 @@
                 calcAppend('÷');
             }
         });
+
+        // Initial render so heatmap days, pills, and headers are populated immediately on load
+        try {
+            renderHeatmap();
+        } catch (e) {
+            console.warn("Initial heatmap render error:", e);
+        }
     </script>
 </body>
 
