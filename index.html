@@ -938,7 +938,13 @@
             justify-content: space-between;
             align-items: flex-start;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 16px;
+        }
+
+        .hero-primary-block {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
         }
 
         .balance-hero-label {
@@ -947,6 +953,18 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
             color: var(--color-fg-muted);
+        }
+
+        .hero-tag-badge {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: rgba(47, 129, 247, 0.15);
+            color: var(--color-accent-fg);
+            border: 1px solid rgba(47, 129, 247, 0.3);
         }
 
         .balance-hero-amount {
@@ -961,6 +979,73 @@
 
         .balance-hero-amount.status-danger {
             color: var(--color-danger-fg) !important;
+        }
+
+        .balance-hero-subtext {
+            font-size: 12px;
+            color: var(--color-fg-muted);
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .hero-secondary-block {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+        }
+
+        .month-balance-card-pill {
+            background: rgba(13, 17, 23, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius-md);
+            padding: 8px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+            min-width: 175px;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .month-balance-pill-label {
+            font-size: 11px;
+            color: var(--color-fg-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .month-tag-highlight {
+            color: var(--color-accent-fg);
+            font-weight: 700;
+        }
+
+        .month-balance-pill-amount {
+            font-size: 1.45rem;
+            font-weight: 700;
+            color: var(--color-success-fg);
+            line-height: 1.15;
+            transition: color 0.3s ease;
+        }
+
+        .month-balance-pill-amount.status-danger {
+            color: var(--color-danger-fg) !important;
+        }
+
+        @media (max-width: 600px) {
+            .hero-secondary-block {
+                align-items: flex-start;
+                width: 100%;
+            }
+            .month-balance-card-pill {
+                align-items: flex-start;
+                width: 100%;
+            }
         }
 
         .balance-hero-badge {
@@ -2390,30 +2475,53 @@
 
                 <!-- OVERVIEW TAB -->
                 <section id="tab-overview" class="tab-pane active">
-                    <!-- Current Available Balance Hero Card -->
+                    <!-- Balance Overview Hero Card -->
                     <div class="card balance-hero-card">
                         <div class="balance-hero-header">
-                            <div>
-                                <div class="balance-hero-label">Current Available Balance</div>
-                                <div class="balance-hero-amount" id="availableBalanceDisplay">€0.00</div>
+                            <div class="hero-primary-block">
+                                <div class="balance-hero-label" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                    <span>Total Balance Available</span>
+                                    <span class="hero-tag-badge">All Months Summed</span>
+                                </div>
+                                <div class="balance-hero-amount" id="totalAvailableBalanceDisplay">€0.00</div>
+                                <div class="balance-hero-subtext" id="totalMonthsCountText">Across all recorded months</div>
                             </div>
-                            <div class="balance-hero-badge" id="balanceStatusBadge">
-                                <span class="status-indicator"></span>
-                                <span id="balanceStatusText">On Track</span>
+
+                            <div class="hero-secondary-block">
+                                <div class="month-balance-card-pill">
+                                    <div class="month-balance-pill-label">
+                                        <span>Month Balance</span>
+                                        <span class="month-tag-highlight" id="heroActiveMonthLabel">(Active Month)</span>
+                                    </div>
+                                    <div class="month-balance-pill-amount" id="availableBalanceDisplay">€0.00</div>
+                                </div>
+                                <div class="balance-hero-badge" id="balanceStatusBadge">
+                                    <span class="status-indicator"></span>
+                                    <span id="balanceStatusText">On Track</span>
+                                </div>
                             </div>
                         </div>
+
                         <div class="balance-hero-breakdown">
                             <div class="balance-breakdown-item">
                                 <span class="breakdown-label">Net Monthly Income</span>
                                 <span class="breakdown-value" id="overviewNetIncomeDisplay">€0.00</span>
                             </div>
                             <div class="balance-breakdown-item">
-                                <span class="breakdown-label">Total Logged Spent</span>
+                                <span class="breakdown-label">Month Spent</span>
                                 <span class="breakdown-value" id="overviewTotalSpentDisplay">€0.00</span>
                             </div>
                             <div class="balance-breakdown-item">
-                                <span class="breakdown-label">Savings Allocated</span>
+                                <span class="breakdown-label">Month Savings</span>
                                 <span class="breakdown-value" id="overviewSavingsDisplay">€0.00</span>
+                            </div>
+                            <div class="balance-breakdown-item">
+                                <span class="breakdown-label">All-Time Total Incomes</span>
+                                <span class="breakdown-value" id="overviewAllTimeIncomeDisplay">€0.00</span>
+                            </div>
+                            <div class="balance-breakdown-item">
+                                <span class="breakdown-label">All-Time Total Spent</span>
+                                <span class="breakdown-value" id="overviewAllTimeSpentDisplay">€0.00</span>
                             </div>
                         </div>
                     </div>
@@ -2554,7 +2662,14 @@
 
                         <div class="target-grid" style="margin-top: 10px;">
                             <div class="target-box target-box-balance">
-                                <div class="target-label">Available Balance</div>
+                                <div class="target-label" style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span>Total Balance Available</span>
+                                    <span style="font-size: 10px; background: rgba(47, 129, 247, 0.2); padding: 2px 6px; border-radius: 8px; color: var(--color-accent-fg); font-weight: 600;">All Months</span>
+                                </div>
+                                <div class="target-value" id="gridTotalBalanceDisplay">€0.00</div>
+                            </div>
+                            <div class="target-box target-box-balance">
+                                <div class="target-label">Month Balance (<span id="gridActiveMonthName">This Month</span>)</div>
                                 <div class="target-value" id="gridAvailableBalanceDisplay">€0.00</div>
                             </div>
                             <div class="target-box">
@@ -4048,6 +4163,77 @@
             const formattedBalance = fmt.format(availableBalance);
             const remainingForChart = Math.max(0, availableBalance);
 
+            // Calculate Total Balance Available (All Months Summed Up)
+            const monthlyIncomes = (userDataCache && userDataCache.monthlyIncomes) ? userDataCache.monthlyIncomes : {};
+            const allMonthKeys = new Set(Object.keys(monthlyIncomes));
+            transactions.forEach(tx => {
+                if (tx.date && tx.date.length >= 7) {
+                    allMonthKeys.add(tx.date.slice(0, 7));
+                }
+            });
+
+            let totalAllTimeIncome = 0;
+            Object.values(monthlyIncomes).forEach(val => {
+                const num = parseFloat(val) || 0;
+                totalAllTimeIncome += num;
+            });
+
+            let totalAllTimeSpent = 0;
+            transactions.forEach(tx => {
+                const amt = typeof tx.amount === 'number' ? tx.amount : (parseFloat(tx.amount) || 0);
+                totalAllTimeSpent += amt;
+            });
+
+            const totalAvailableBalance = totalAllTimeIncome - totalAllTimeSpent;
+            const formattedTotalBalance = fmt.format(totalAvailableBalance);
+
+            // Active Month display labels
+            let activeMonthLong = 'This Month';
+            if (selectedMonthKey && selectedMonthKey.includes('-')) {
+                const [yStr, mStr] = selectedMonthKey.split('-');
+                const monthDateObj = new Date(parseInt(yStr, 10), parseInt(mStr, 10) - 1, 1);
+                activeMonthLong = monthDateObj.toLocaleString('default', { month: 'short', year: 'numeric' });
+            }
+
+            // Update Total Balance Available in Overview (Hero Card & Target Grid)
+            const totalAvailEl = document.getElementById('totalAvailableBalanceDisplay');
+            const gridTotalAvailEl = document.getElementById('gridTotalBalanceDisplay');
+            const monthsCountEl = document.getElementById('totalMonthsCountText');
+            const heroMonthLabel = document.getElementById('heroActiveMonthLabel');
+            const gridMonthName = document.getElementById('gridActiveMonthName');
+            const allTimeIncEl = document.getElementById('overviewAllTimeIncomeDisplay');
+            const allTimeSpentEl = document.getElementById('overviewAllTimeSpentDisplay');
+
+            if (totalAvailEl) {
+                totalAvailEl.textContent = formattedTotalBalance;
+                if (totalAvailableBalance < 0) {
+                    totalAvailEl.classList.add('status-danger');
+                } else {
+                    totalAvailEl.classList.remove('status-danger');
+                }
+            }
+
+            if (gridTotalAvailEl) {
+                gridTotalAvailEl.textContent = formattedTotalBalance;
+                if (totalAvailableBalance < 0) {
+                    gridTotalAvailEl.classList.add('status-danger');
+                } else {
+                    gridTotalAvailEl.classList.remove('status-danger');
+                }
+            }
+
+            if (monthsCountEl) {
+                const count = allMonthKeys.size;
+                monthsCountEl.textContent = count > 0 
+                    ? `Across ${count} recorded month${count === 1 ? '' : 's'}`
+                    : 'No recorded months yet';
+            }
+
+            if (heroMonthLabel) heroMonthLabel.textContent = `(${activeMonthLong})`;
+            if (gridMonthName) gridMonthName.textContent = activeMonthLong;
+            if (allTimeIncEl) allTimeIncEl.textContent = fmt.format(totalAllTimeIncome);
+            if (allTimeSpentEl) allTimeSpentEl.textContent = fmt.format(totalAllTimeSpent);
+
             // Update Current Available Balance in Overview (Hero Card & Target Grid)
             const availEl = document.getElementById('availableBalanceDisplay');
             const gridAvailEl = document.getElementById('gridAvailableBalanceDisplay');
@@ -4074,7 +4260,7 @@
             }
 
             if (heroCard) {
-                if (availableBalance < 0) {
+                if (totalAvailableBalance < 0 || availableBalance < 0) {
                     heroCard.classList.add('danger');
                 } else {
                     heroCard.classList.remove('danger');
@@ -4082,11 +4268,14 @@
             }
 
             if (statusBadge && statusText) {
-                if (netIncome <= 0 && totalSpent <= 0) {
+                if (netIncome <= 0 && totalSpent <= 0 && totalAllTimeIncome <= 0) {
                     statusText.textContent = 'Set Income';
                     statusBadge.className = 'balance-hero-badge neutral';
                 } else if (availableBalance < 0) {
-                    statusText.textContent = 'Over Budget';
+                    statusText.textContent = 'Month Over Budget';
+                    statusBadge.className = 'balance-hero-badge status-danger';
+                } else if (totalAvailableBalance < 0) {
+                    statusText.textContent = 'Overall Negative';
                     statusBadge.className = 'balance-hero-badge status-danger';
                 } else {
                     statusText.textContent = 'On Track';
