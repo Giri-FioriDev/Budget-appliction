@@ -4791,34 +4791,34 @@
         // PAYPAL / BANK CSV IMPORT SYSTEM
         // ==========================================
 
-        function categorizeMerchant(name) {
-            const n = (name || '').toLowerCase();
+        function categorizeMerchant(name, email, desc) {
+            const combined = `${name || ''} ${email || ''} ${desc || ''}`.toLowerCase();
             // Groceries (Needs)
-            if (/rewe|aldi|lidl|netto|edeka|penny|kaufland|spar|nammamarkt|supermarkt|lebensmittel|markt|fresh food/i.test(n)) {
+            if (/rewe|aldi|lidl|netto|edeka|penny|kaufland|spar|nammamarkt|supermarkt|lebensmittel|markt|fresh food|fleischerei|metzgerei/i.test(combined)) {
                 return { type: 'needs', category: 'Groceries' };
             }
             // Clothing (Wants)
-            if (/c&a|h&m|new yorker|zara|uniqlo|primark|zalando|asos|clothing|kleidung/i.test(n)) {
+            if (/c&a|h&m|new yorker|zara|uniqlo|primark|zalando|asos|clothing|kleidung|under armour|jack & jones|jack  jones|tnf|the north face|only stores|outlet|fashion/i.test(combined)) {
                 return { type: 'wants', category: 'Clothing' };
             }
             // Eating out (Wants)
-            if (/baeckerei|bäckerei|cafe|café|bistro|burger|restaurant|pizza|sushi|gelateria|eis|bar|imbiss|döner|koez firat|backwerk|kaffee|susify/i.test(n)) {
+            if (/baeckerei|bäckerei|bäcker|cafe|café|bistro|burger|restaurant|pizza|sushi|gelateria|eis|bar|imbiss|döner|koez firat|backwerk|kaffee|susify|junge|ditsch|chocolade|lindt/i.test(combined)) {
                 return { type: 'wants', category: 'Eating out' };
             }
             // Gas / Transportation (Needs)
-            if (/bahn|db vertrieb|hvv|bvg|transport|taxi|uber|bolt|voi|tier|lime|flixbus|tankstelle|shell|aral|total/i.test(n)) {
+            if (/bahn|db vertrieb|hvv|bvg|logpay|switch|transport|taxi|uber|bolt|voi|tier|lime|flixbus|tankstelle|shell|aral|total/i.test(combined)) {
                 return { type: 'needs', category: 'Gas / Transportation' };
             }
             // Personal Care (Wants)
-            if (/rossmann|dm-drogerie|dm drogerie|müller|douglas|apotheke|friseur|barber/i.test(n)) {
+            if (/rossmann|dm-drogerie|dm drogerie|müller|douglas|apotheke|friseur|barber/i.test(combined)) {
                 return { type: 'wants', category: 'Personal Care' };
             }
             // Hobbies (Wants)
-            if (/fit|fitness|gym|sport|creativer|kino|cinema|steam|playstation|nintendo/i.test(n)) {
+            if (/fit|fitness|gym|sport|creativer|kino|cinema|steam|playstation|nintendo|onthatass|on that ass/i.test(combined)) {
                 return { type: 'wants', category: 'Hobbies' };
             }
             // Phone / Utilities (Needs)
-            if (/telekom|vodafone|o2|telefonica|strom|vattenfall/i.test(n)) {
+            if (/telekom|vodafone|o2|telefonica|ortel|strom|vattenfall/i.test(combined)) {
                 return { type: 'needs', category: 'Phone Bill' };
             }
             // Miscellaneous (Needs)
@@ -4826,6 +4826,10 @@
         }
 
         function parsePayPalCSV(text) {
+            if (!text) return [];
+            if (text.charCodeAt(0) === 0xFEFF) {
+                text = text.slice(1);
+            }
             const rows = [];
             let row = [];
             let inQuotes = false;
@@ -4866,33 +4870,54 @@
 
             if (rows.length < 2) return [];
 
-            const headers = rows[0].map(h => h.trim());
-            const dateIdx = headers.indexOf('Date');
-            const nameIdx = headers.indexOf('Name');
-            const typeIdx = headers.indexOf('Type');
-            const statusIdx = headers.indexOf('Status');
-            const grossIdx = headers.indexOf('Gross');
-            const balanceImpactIdx = headers.indexOf('Balance Impact');
-            const txnIdIdx = headers.indexOf('Transaction ID');
+            const headers = rows[0].map(h => h.trim().replace(/^[\uFEFF\s]+/, ''));
+            const findCol = (...candidates) => {
+                for (const c of candidates) {
+                    const idx = headers.findIndex(h => h.toLowerCase() === c.toLowerCase());
+                    if (idx !== -1) return idx;
+                }
+                for (const c of candidates) {
+                    const idx = headers.findIndex(h => h.toLowerCase().includes(c.toLowerCase()));
+                    if (idx !== -1) return idx;
+                }
+                return -1;
+            };
+
+            const dateIdx = findCol('Date', 'Datum');
+            const grossIdx = findCol('Gross', 'Brutto', 'Amount', 'Betrag', 'Net', 'Netto');
 
             if (dateIdx === -1 || grossIdx === -1) {
                 throw new Error("Invalid CSV format: Missing 'Date' or 'Gross' columns.");
             }
 
+            const nameIdx = findCol('Name', 'Empfänger', 'Absender', 'To', 'From', 'Merchant', 'Payee');
+            const descIdx = findCol('Description', 'Type', 'Typ', 'Beschreibung', 'Transaction Type', 'Action', 'Aktion');
+            const statusIdx = findCol('Status', 'Transaction Status', 'Status / Zustand');
+            const balanceImpactIdx = findCol('Balance Impact', 'Impact', 'Guthabenwirkung');
+            const txnIdIdx = findCol('Transaction ID', 'Transaktionscode', 'Txn ID');
+            const emailIdx = findCol('From Email Address', 'Absender-E-Mail-Adresse', 'Email', 'E-Mail', 'To Email Address');
+
             const parseDate = (dStr) => {
                 const trimmed = (dStr || '').trim();
+                if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return trimmed;
+                const ymdMatch = trimmed.match(/^(\d{4})[\/\.](\d{1,2})[\/\.](\d{1,2})$/);
+                if (ymdMatch) {
+                    const [, y, m, d] = ymdMatch;
+                    return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+                }
                 const dmyMatch = trimmed.match(/^(\d{1,2})[\/\.](\d{1,2})[\/\.](\d{4})$/);
                 if (dmyMatch) {
                     const [, d, m, y] = dmyMatch;
                     return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
                 }
-                if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return trimmed;
                 return trimmed;
             };
 
             const parseAmount = (amtStr) => {
-                if (!amtStr) return 0;
+                if (!amtStr) return { value: 0, isNegative: false };
                 let s = amtStr.trim().replace(/['"$\s€£₹]/g, '');
+                const isNegative = s.startsWith('-') || /^\(.*\)$/.test(s);
+                s = s.replace(/^[+-]/, '').replace(/[()]/g, '');
                 if (s.includes(',') && !s.includes('.')) {
                     s = s.replace(',', '.');
                 } else if (s.includes('.') && s.includes(',')) {
@@ -4903,37 +4928,74 @@
                     }
                 }
                 const val = parseFloat(s);
-                return isNaN(val) ? 0 : Math.abs(val);
+                const absVal = isNaN(val) ? 0 : Math.abs(val);
+                return {
+                    value: absVal,
+                    isNegative: isNegative
+                };
             };
 
+            const ignoredDescRegex = /hold|reservierung|autorisierung|reversal|rücknahme|aufhebung|deposit|einzahlung|aufladung|bank transfer|transfer to bank|transfer from bank|withdrawal|auszahlung|currency conversion|währungsumrechnung/i;
+            const invalidStatusRegex = /pending|denied|failed|cancelled|canceled|reversed|abgelehnt|storniert|offen/i;
+
             const results = [];
+            const seenTxnIds = new Set();
+
             for (let i = 1; i < rows.length; i++) {
                 const r = rows[i];
-                const status = statusIdx !== -1 ? r[statusIdx] : 'Completed';
-                const impact = balanceImpactIdx !== -1 ? r[balanceImpactIdx] : 'Debit';
-                const type = typeIdx !== -1 ? r[typeIdx] : '';
+                const status = statusIdx !== -1 ? (r[statusIdx] || '').trim() : '';
+                const desc = descIdx !== -1 ? (r[descIdx] || '').trim() : '';
+                const balanceImpact = balanceImpactIdx !== -1 ? (r[balanceImpactIdx] || '').trim().toLowerCase() : '';
+                const amtInfo = parseAmount(r[grossIdx]);
+                const txnId = txnIdIdx !== -1 ? (r[txnIdIdx] || '').trim() : '';
 
-                const isCompleted = !status || status.trim().toLowerCase() === 'completed';
-                const isDebit = impact ? impact.trim().toLowerCase() === 'debit' : true;
-                const isNotInternalHold = !type.toLowerCase().includes('account hold');
-
-                if (isCompleted && isDebit && isNotInternalHold) {
-                    const rawAmt = r[grossIdx];
-                    const amount = parseAmount(rawAmt);
-                    if (amount > 0) {
-                        const name = nameIdx !== -1 ? r[nameIdx].trim() : 'PayPal Transaction';
-                        const catInfo = categorizeMerchant(name);
-                        results.push({
-                            date: parseDate(r[dateIdx]),
-                            rawDate: r[dateIdx],
-                            category: catInfo.category,
-                            type: catInfo.type,
-                            amount: amount,
-                            note: name,
-                            paypalTxId: txnIdIdx !== -1 ? r[txnIdIdx].trim() : ''
-                        });
-                    }
+                // 1. Skip non-completed transactions if status is present
+                if (status && invalidStatusRegex.test(status)) {
+                    continue;
                 }
+
+                // 2. Skip internal non-spending transactions (holds, bank deposits, transfers, reversals, conversions)
+                if (desc && ignoredDescRegex.test(desc)) {
+                    continue;
+                }
+
+                // 3. Check debit vs credit:
+                // If Balance Impact is present: 'debit' / 'soll' is spending; 'credit' / 'haben' is inflow.
+                // If Balance Impact is NOT present: an expenditure must have a negative amount (outflow).
+                let isDebit = false;
+                if (balanceImpact) {
+                    isDebit = balanceImpact === 'debit' || balanceImpact === 'soll';
+                } else {
+                    isDebit = amtInfo.isNegative;
+                }
+
+                if (!isDebit || amtInfo.value <= 0.0001) {
+                    continue;
+                }
+
+                // 4. Deduplicate within the file by Transaction ID if present
+                if (txnId && seenTxnIds.has(txnId)) {
+                    continue;
+                }
+                if (txnId) seenTxnIds.add(txnId);
+
+                const name = (nameIdx !== -1 ? (r[nameIdx] || '').trim() : '') ||
+                             (emailIdx !== -1 ? (r[emailIdx] || '').trim() : '') ||
+                             desc ||
+                             'PayPal Transaction';
+
+                const email = emailIdx !== -1 ? (r[emailIdx] || '').trim() : '';
+                const catInfo = categorizeMerchant(name, email, desc);
+
+                results.push({
+                    date: parseDate(r[dateIdx]),
+                    rawDate: r[dateIdx],
+                    category: catInfo.category,
+                    type: catInfo.type,
+                    amount: amtInfo.value,
+                    note: name,
+                    paypalTxId: txnId
+                });
             }
             return results;
         }
@@ -4961,10 +5023,12 @@
 
         function openImportModal(items) {
             currentImportItems = items.map((item, idx) => {
-                const isDuplicate = transactions.some(tx =>
-                    (item.paypalTxId && tx.paypalTxId === item.paypalTxId) ||
-                    (tx.date === item.date && Math.abs(tx.amount - item.amount) < 0.001 && tx.note === item.note)
-                );
+                const isDuplicate = transactions.some(tx => {
+                    if (item.paypalTxId && tx.paypalTxId) {
+                        return tx.paypalTxId === item.paypalTxId;
+                    }
+                    return tx.date === item.date && Math.abs(tx.amount - item.amount) < 0.001 && tx.note === item.note;
+                });
                 return {
                     ...item,
                     id: idx,
