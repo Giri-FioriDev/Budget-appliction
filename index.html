@@ -999,14 +999,15 @@
             background: rgba(13, 17, 23, 0.65);
             border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: var(--radius-md);
-            padding: 8px 16px;
+            padding: 10px 16px;
             display: flex;
             flex-direction: column;
-            align-items: flex-end;
-            gap: 2px;
-            min-width: 175px;
+            align-items: flex-start;
+            gap: 4px;
+            min-width: 230px;
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
         }
 
         .month-balance-pill-label {
@@ -1017,7 +1018,7 @@
             letter-spacing: 0.4px;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
         }
 
         .month-tag-highlight {
@@ -1035,6 +1036,45 @@
 
         .month-balance-pill-amount.status-danger {
             color: var(--color-danger-fg) !important;
+        }
+
+        .total-balance-pill-subtext {
+            font-size: 11px;
+            color: var(--color-fg-muted);
+            margin-top: 1px;
+        }
+
+        .btn-toggle-eye {
+            background: transparent;
+            border: none;
+            color: var(--color-fg-muted);
+            cursor: pointer;
+            padding: 2px 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-sm);
+            transition: color 0.2s ease, transform 0.15s ease;
+            line-height: 1;
+            vertical-align: middle;
+        }
+
+        .btn-toggle-eye:hover {
+            color: var(--color-accent-fg);
+            transform: scale(1.15);
+        }
+
+        .btn-toggle-eye svg {
+            width: 14px;
+            height: 14px;
+            display: block;
+        }
+
+        .balance-hidden-dots {
+            font-family: monospace;
+            letter-spacing: 3px;
+            color: var(--color-fg-muted) !important;
+            font-weight: 700;
         }
 
         @media (max-width: 600px) {
@@ -2480,24 +2520,31 @@
                         <div class="balance-hero-header">
                             <div class="hero-primary-block">
                                 <div class="balance-hero-label" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                                    <span>Total Balance Available</span>
-                                    <span class="hero-tag-badge">All Months Summed</span>
+                                    <span>Month Balance</span>
+                                    <span class="hero-tag-badge" id="heroActiveMonthLabel">Oct 2026</span>
                                 </div>
-                                <div class="balance-hero-amount" id="totalAvailableBalanceDisplay">€0.00</div>
-                                <div class="balance-hero-subtext" id="totalMonthsCountText">Across all recorded months</div>
+                                <div class="balance-hero-amount" id="availableBalanceDisplay">€0.00</div>
+                                <div class="balance-hero-subtext" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                                    <div class="balance-hero-badge" id="balanceStatusBadge">
+                                        <span class="status-indicator"></span>
+                                        <span id="balanceStatusText">On Track</span>
+                                    </div>
+                                    <span style="color: var(--color-fg-muted); font-size: 12px;">Active Month Budget</span>
+                                </div>
                             </div>
 
                             <div class="hero-secondary-block">
                                 <div class="month-balance-card-pill">
-                                    <div class="month-balance-pill-label">
-                                        <span>Month Balance</span>
-                                        <span class="month-tag-highlight" id="heroActiveMonthLabel">(Active Month)</span>
+                                    <div class="month-balance-pill-label" style="display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 6px;">
+                                        <div style="display: flex; align-items: center; gap: 5px;">
+                                            <span>Total Balance Available</span>
+                                            <button type="button" class="btn-toggle-eye" id="toggleTotalBalanceBtn" onclick="toggleTotalBalanceVisibility()" title="Toggle Total Balance Visibility" aria-label="Toggle Total Balance Visibility">
+                                            </button>
+                                        </div>
+                                        <span class="hero-chip-pill" style="font-size: 10px; background: rgba(47, 129, 247, 0.15); color: var(--color-accent-fg); padding: 1px 6px; border-radius: 8px; font-weight: 600;">All Months</span>
                                     </div>
-                                    <div class="month-balance-pill-amount" id="availableBalanceDisplay">€0.00</div>
-                                </div>
-                                <div class="balance-hero-badge" id="balanceStatusBadge">
-                                    <span class="status-indicator"></span>
-                                    <span id="balanceStatusText">On Track</span>
+                                    <div class="month-balance-pill-amount" id="totalAvailableBalanceDisplay">••••••</div>
+                                    <div class="total-balance-pill-subtext" id="totalMonthsCountText">Across all recorded months</div>
                                 </div>
                             </div>
                         </div>
@@ -2662,15 +2709,19 @@
 
                         <div class="target-grid" style="margin-top: 10px;">
                             <div class="target-box target-box-balance">
-                                <div class="target-label" style="display: flex; justify-content: space-between; align-items: center;">
-                                    <span>Total Balance Available</span>
-                                    <span style="font-size: 10px; background: rgba(47, 129, 247, 0.2); padding: 2px 6px; border-radius: 8px; color: var(--color-accent-fg); font-weight: 600;">All Months</span>
-                                </div>
-                                <div class="target-value" id="gridTotalBalanceDisplay">€0.00</div>
-                            </div>
-                            <div class="target-box target-box-balance">
                                 <div class="target-label">Month Balance (<span id="gridActiveMonthName">This Month</span>)</div>
                                 <div class="target-value" id="gridAvailableBalanceDisplay">€0.00</div>
+                            </div>
+                            <div class="target-box target-box-balance">
+                                <div class="target-label" style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="display: flex; align-items: center; gap: 5px;">
+                                        <span>Total Balance Available</span>
+                                        <button type="button" class="btn-toggle-eye" onclick="toggleTotalBalanceVisibility()" title="Toggle Total Balance Visibility" aria-label="Toggle Total Balance Visibility">
+                                        </button>
+                                    </span>
+                                    <span style="font-size: 10px; background: rgba(47, 129, 247, 0.2); padding: 2px 6px; border-radius: 8px; color: var(--color-accent-fg); font-weight: 600;">All Months</span>
+                                </div>
+                                <div class="target-value" id="gridTotalBalanceDisplay">••••••</div>
                             </div>
                             <div class="target-box">
                                 <div class="target-label">Needs Target (50%)</div>
@@ -3688,6 +3739,18 @@
         let selectedMonthKey = getCurrentMonthKey();
         let userDataCache = null;
 
+        let isTotalBalanceHidden = localStorage.getItem('hideTotalBalance') === null
+            ? true
+            : localStorage.getItem('hideTotalBalance') === 'true';
+
+        window.toggleTotalBalanceVisibility = function () {
+            isTotalBalanceHidden = !isTotalBalanceHidden;
+            try {
+                localStorage.setItem('hideTotalBalance', isTotalBalanceHidden ? 'true' : 'false');
+            } catch (e) { }
+            updateDashboard();
+        };
+
         function getFormatter() {
             return new Intl.NumberFormat('en-DE', { style: 'currency', currency: currentCurrency });
         }
@@ -4204,21 +4267,45 @@
             const allTimeIncEl = document.getElementById('overviewAllTimeIncomeDisplay');
             const allTimeSpentEl = document.getElementById('overviewAllTimeSpentDisplay');
 
+            const eyeOpenSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+            const eyeClosedSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path><line x1="2" y1="2" x2="22" y2="22"></line></svg>`;
+
+            const eyeBtns = document.querySelectorAll('.btn-toggle-eye');
+            eyeBtns.forEach(btn => {
+                btn.innerHTML = isTotalBalanceHidden ? eyeClosedSvg : eyeOpenSvg;
+                btn.title = isTotalBalanceHidden ? "Show Total Balance" : "Hide Total Balance";
+                btn.setAttribute('aria-label', isTotalBalanceHidden ? "Show Total Balance" : "Hide Total Balance");
+            });
+
             if (totalAvailEl) {
-                totalAvailEl.textContent = formattedTotalBalance;
-                if (totalAvailableBalance < 0) {
-                    totalAvailEl.classList.add('status-danger');
-                } else {
+                if (isTotalBalanceHidden) {
+                    totalAvailEl.textContent = '••••••';
+                    totalAvailEl.classList.add('balance-hidden-dots');
                     totalAvailEl.classList.remove('status-danger');
+                } else {
+                    totalAvailEl.textContent = formattedTotalBalance;
+                    totalAvailEl.classList.remove('balance-hidden-dots');
+                    if (totalAvailableBalance < 0) {
+                        totalAvailEl.classList.add('status-danger');
+                    } else {
+                        totalAvailEl.classList.remove('status-danger');
+                    }
                 }
             }
 
             if (gridTotalAvailEl) {
-                gridTotalAvailEl.textContent = formattedTotalBalance;
-                if (totalAvailableBalance < 0) {
-                    gridTotalAvailEl.classList.add('status-danger');
-                } else {
+                if (isTotalBalanceHidden) {
+                    gridTotalAvailEl.textContent = '••••••';
+                    gridTotalAvailEl.classList.add('balance-hidden-dots');
                     gridTotalAvailEl.classList.remove('status-danger');
+                } else {
+                    gridTotalAvailEl.textContent = formattedTotalBalance;
+                    gridTotalAvailEl.classList.remove('balance-hidden-dots');
+                    if (totalAvailableBalance < 0) {
+                        gridTotalAvailEl.classList.add('status-danger');
+                    } else {
+                        gridTotalAvailEl.classList.remove('status-danger');
+                    }
                 }
             }
 
@@ -4229,7 +4316,7 @@
                     : 'No recorded months yet';
             }
 
-            if (heroMonthLabel) heroMonthLabel.textContent = `(${activeMonthLong})`;
+            if (heroMonthLabel) heroMonthLabel.textContent = activeMonthLong;
             if (gridMonthName) gridMonthName.textContent = activeMonthLong;
             if (allTimeIncEl) allTimeIncEl.textContent = fmt.format(totalAllTimeIncome);
             if (allTimeSpentEl) allTimeSpentEl.textContent = fmt.format(totalAllTimeSpent);
@@ -4260,7 +4347,7 @@
             }
 
             if (heroCard) {
-                if (totalAvailableBalance < 0 || availableBalance < 0) {
+                if (availableBalance < 0 || (!isTotalBalanceHidden && totalAvailableBalance < 0)) {
                     heroCard.classList.add('danger');
                 } else {
                     heroCard.classList.remove('danger');
@@ -4268,14 +4355,11 @@
             }
 
             if (statusBadge && statusText) {
-                if (netIncome <= 0 && totalSpent <= 0 && totalAllTimeIncome <= 0) {
+                if (netIncome <= 0 && totalSpent <= 0) {
                     statusText.textContent = 'Set Income';
                     statusBadge.className = 'balance-hero-badge neutral';
                 } else if (availableBalance < 0) {
-                    statusText.textContent = 'Month Over Budget';
-                    statusBadge.className = 'balance-hero-badge status-danger';
-                } else if (totalAvailableBalance < 0) {
-                    statusText.textContent = 'Overall Negative';
+                    statusText.textContent = 'Over Budget';
                     statusBadge.className = 'balance-hero-badge status-danger';
                 } else {
                     statusText.textContent = 'On Track';
