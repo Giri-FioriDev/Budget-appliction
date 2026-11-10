@@ -2469,8 +2469,12 @@
         <button id="loginBtn" class="btn-primary" style="height: 48px; padding: 0 30px; font-size: 16px;">
             Sign in with Google
         </button>
+        <button type="button" id="loginRedirectBtn"
+            style="background: rgba(22, 27, 34, 0.7); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); color: var(--color-fg-muted); padding: 8px 16px; font-size: 13px; cursor: pointer; margin-top: 12px; transition: var(--transition);">
+            🔄 Sign in using Redirect (if popup is blocked)
+        </button>
         <button type="button" id="loginConfigBtn"
-            style="background: transparent; border: none; color: var(--color-fg-muted); font-size: 13px; cursor: pointer; text-decoration: underline; margin-top: 18px;">
+            style="background: transparent; border: none; color: var(--color-fg-muted); font-size: 13px; cursor: pointer; text-decoration: underline; margin-top: 14px;">
             ⚙️ Configure Firebase Connection
         </button>
     </div>
@@ -3577,7 +3581,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, setDoc, getDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider, browserPopupRedirectResolver, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         // ==========================================
         // DYNAMIC FIREBASE CONFIGURATION & INITIALIZATION
@@ -3773,9 +3777,28 @@
                 const projEl = document.getElementById('connectedProjectId');
                 if (projEl) projEl.textContent = firebaseConfig.projectId || 'Connected';
 
-                document.getElementById('loginBtn').addEventListener('click', () => {
-                    signInWithPopup(auth, provider).catch(err => alert("Login failed: " + err.message));
+                // Handle redirect result if user signed in via redirect flow
+                getRedirectResult(auth).catch(err => {
+                    console.error("Redirect sign-in error:", err);
                 });
+
+                document.getElementById('loginBtn').addEventListener('click', () => {
+                    signInWithPopup(auth, provider, browserPopupRedirectResolver).catch(err => {
+                        console.error("Popup sign-in error:", err);
+                        if (err.code === 'auth/popup-blocked' || err.code === 'auth/cancelled-popup-request') {
+                            signInWithRedirect(auth, provider);
+                        } else {
+                            alert("Login failed: " + err.message + "\n\nTip: You can also use 'Sign in using Redirect' below if the popup is blocked.");
+                        }
+                    });
+                });
+
+                const redirectBtn = document.getElementById('loginRedirectBtn');
+                if (redirectBtn) {
+                    redirectBtn.addEventListener('click', () => {
+                        signInWithRedirect(auth, provider).catch(err => alert("Redirect login failed: " + err.message));
+                    });
+                }
 
                 document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
 
