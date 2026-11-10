@@ -3805,11 +3805,18 @@
                 onAuthStateChanged(auth, async (user) => {
                     if (user) {
                         currentUser = user;
+                        const logoutBtn = document.getElementById('logoutBtn');
+                        if (logoutBtn && user.email) {
+                            logoutBtn.textContent = `Sign Out (${user.email.split('@')[0]})`;
+                            logoutBtn.title = `Signed in as ${user.email}`;
+                        }
                         loginScreen.style.display = 'none';
                         appContainer.style.display = 'flex';
                         await initializeUserData();
                     } else {
                         currentUser = null;
+                        const logoutBtn = document.getElementById('logoutBtn');
+                        if (logoutBtn) logoutBtn.textContent = 'Sign Out';
                         loginScreen.style.display = 'flex';
                         appContainer.style.display = 'none';
                         if (unsubscribeTxs) unsubscribeTxs();
@@ -3897,46 +3904,63 @@
         };
 
         async function initializeUserData() {
-            const userDocRef = doc(db, "users", currentUser.uid);
-            const userDoc = await getDoc(userDocRef);
+            try {
+                const userDocRef = doc(db, "users", currentUser.uid);
+                const userDoc = await getDoc(userDocRef);
 
-            if (userDoc.exists()) {
-                userDataCache = userDoc.data();
-                currentCurrency = userDataCache.currency || 'EUR';
-            } else {
-                currentCurrency = 'EUR';
-                userDataCache = { currency: 'EUR', monthlyIncomes: {}, monthlyIncomeDates: {}, tripMembers: ["You", "Alex", "Sam"], tripName: "Vacation Trip" };
-                await setDoc(userDocRef, userDataCache);
+                if (userDoc.exists()) {
+                    userDataCache = userDoc.data();
+                    currentCurrency = userDataCache.currency || 'EUR';
+                } else {
+                    currentCurrency = 'EUR';
+                    userDataCache = { currency: 'EUR', monthlyIncomes: {}, monthlyIncomeDates: {}, tripMembers: ["You", "Alex", "Sam"], tripName: "Vacation Trip" };
+                    await setDoc(userDocRef, userDataCache);
+                }
+
+                document.getElementById('currencySelect').value = currentCurrency;
+                updateCurrencySymbols();
+
+                // If user has recorded monthly incomes, find the most recent month if current month has no data
+                const currentMonth = getCurrentMonthKey();
+                const availableMonths = Object.keys(userDataCache.monthlyIncomes || {}).sort();
+                if (availableMonths.length > 0 && !userDataCache.monthlyIncomes[currentMonth]) {
+                    selectedMonthKey = availableMonths[availableMonths.length - 1];
+                } else {
+                    selectedMonthKey = currentMonth;
+                }
+
+                const monthInput = document.getElementById('selectedMonthInput');
+                if (monthInput) monthInput.value = selectedMonthKey;
+
+                updateIncomeForMonth();
+                resetDateInputs();
+                setupDatePickers();
+
+                // Trips & Splits State Initialization
+                tripMembers = (userDataCache && Array.isArray(userDataCache.tripMembers) && userDataCache.tripMembers.length > 0)
+                    ? userDataCache.tripMembers
+                    : ["You", "Alex", "Sam"];
+                tripName = (userDataCache && userDataCache.tripName) ? userDataCache.tripName : "Vacation Trip";
+                const tripTitleEl = document.getElementById('tripTitleDisplay');
+                if (tripTitleEl) tripTitleEl.textContent = tripName;
+
+                renderTripMembers();
+
+                if (!overviewChart) {
+                    initCharts();
+                    setupTabs();
+                }
+                updateDashboard();
+                listenToTransactions();
+                listenToTripExpenses();
+            } catch (err) {
+                console.error("Failed to initialize user data:", err);
+                if (err.code === 'permission-denied') {
+                    alert("⚠️ Firestore Permission Denied!\n\nYour Cloud Firestore Security Rules may have expired or blocked access. Please check Firestore Rules in the Firebase Console.");
+                } else {
+                    alert("Error loading user data: " + err.message);
+                }
             }
-
-            document.getElementById('currencySelect').value = currentCurrency;
-            updateCurrencySymbols();
-
-            selectedMonthKey = getCurrentMonthKey();
-            const monthInput = document.getElementById('selectedMonthInput');
-            if (monthInput) monthInput.value = selectedMonthKey;
-
-            updateIncomeForMonth();
-            resetDateInputs();
-            setupDatePickers();
-
-            // Trips & Splits State Initialization
-            tripMembers = (userDataCache && Array.isArray(userDataCache.tripMembers) && userDataCache.tripMembers.length > 0)
-                ? userDataCache.tripMembers
-                : ["You", "Alex", "Sam"];
-            tripName = (userDataCache && userDataCache.tripName) ? userDataCache.tripName : "Vacation Trip";
-            const tripTitleEl = document.getElementById('tripTitleDisplay');
-            if (tripTitleEl) tripTitleEl.textContent = tripName;
-
-            renderTripMembers();
-
-            if (!overviewChart) {
-                initCharts();
-                setupTabs();
-            }
-            updateDashboard();
-            listenToTransactions();
-            listenToTripExpenses();
         }
 
         function updateCurrencySymbols() {
@@ -4003,7 +4027,28 @@
                 snapshot.forEach((docSnap) => {
                     transactions.push({ id: docSnap.id, ...docSnap.data() });
                 });
+
+                // Auto-switch to most recent transaction month if current view has no data but other months do
+                const curMonthTxs = transactions.filter(t => t.date && t.date.startsWith(selectedMonthKey));
+                if (curMonthTxs.length === 0 && transactions.length > 0) {
+                    const sortedDates = transactions.map(t => t.date).filter(Boolean).sort();
+                    if (sortedDates.length > 0) {
+                        const latestTxMonth = sortedDates[sortedDates.length - 1].slice(0, 7);
+                        if (latestTxMonth && latestTxMonth !== selectedMonthKey) {
+                            selectedMonthKey = latestTxMonth;
+                            const mInput = document.getElementById('selectedMonthInput');
+                            if (mInput) mInput.value = selectedMonthKey;
+                            updateIncomeForMonth();
+                        }
+                    }
+                }
+
                 updateDashboard();
+            }, (err) => {
+                console.error("Firestore transactions snapshot error:", err);
+                if (err.code === 'permission-denied') {
+                    alert("⚠️ Firestore Permission Denied for transactions!\n\nPlease ensure your Firestore Security Rules allow read/write for authenticated users.");
+                }
             });
         }
 
